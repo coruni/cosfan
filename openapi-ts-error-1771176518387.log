@@ -1,0 +1,12 @@
+[2026-02-15T17:28:38.387Z] Error: this.handler is not a function
+Stack:
+TypeError: this.handler is not a function
+    at PluginInstance.run (file:///F:/project/greey/greey-app/node_modules/@hey-api/shared/dist/index.mjs:2035:14)
+    at generateOutput (file:///F:/project/greey/greey-app/node_modules/@hey-api/openapi-ts/dist/src-BqiDMJko.mjs:28:63)
+    at async createClient$1 (file:///F:/project/greey/greey-app/node_modules/@hey-api/openapi-ts/dist/src-BqiDMJko.mjs:122:3)
+    at async file:///F:/project/greey/greey-app/node_modules/@hey-api/openapi-ts/dist/src-BqiDMJko.mjs:182:12
+    at async Promise.all (index 0)
+    at async createClient (file:///F:/project/greey/greey-app/node_modules/@hey-api/openapi-ts/dist/src-BqiDMJko.mjs:180:21)
+    at async Command.<anonymous> (file:///F:/project/greey/greey-app/node_modules/@hey-api/openapi-ts/dist/run.mjs:38:8)
+    at async Command.parseAsync (F:\project\greey\greey-app\node_modules\commander\lib\command.js:1122:5)
+    at async runCli (file:///F:/project/greey/greey-app/node_modules/@hey-api/openapi-ts/dist/run.mjs:42:3)
