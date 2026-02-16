@@ -11,10 +11,10 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import { articleControllerGetUserBrowseHistory, articleControllerGetLikedArticles, articleControllerGetFavoritedArticles, userControllerUpdate } from '@/api/sdk.gen';
 import type { ArticleControllerFindAllResponse, UserControllerGetProfileResponse } from '@/api/types.gen';
 import { ArticleGrid } from '@/components/article/ArticleGrid';
-import Link from 'next/link';
+import { Link, useRouter, usePathname } from '@/i18n';
 import { Crown, Wallet, Eye, Heart, Bookmark, Edit, Clock, Sparkles, Loader2, Camera } from 'lucide-react';
 import { useState, useRef } from 'react';
-import { useSearchParams, usePathname, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import {
   Dialog,
   DialogContent,

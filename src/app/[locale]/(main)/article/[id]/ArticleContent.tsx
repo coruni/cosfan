@@ -1,16 +1,17 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams } from 'next/navigation';
-import { articleControllerFindOne } from '@/api/sdk.gen';
+import { articleControllerFindOne, articleControllerLike, articleControllerFavoriteArticle } from '@/api/sdk.gen';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Eye, Heart, MessageCircle, Bookmark, Share2, Lock, Crown } from 'lucide-react';
 import Image from 'next/image';
-import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { ImageGallery } from '@/components/article/ImageGallery';
+import { toast } from 'sonner';
+import { Link } from '@/i18n';
 
 interface Article {
   id: number;
@@ -36,6 +37,8 @@ interface Article {
   requireMembership: boolean;
   viewPrice?: string;
   createdAt: string;
+  isLiked?: boolean;
+  isFavorited?: boolean;
 }
 
 interface ArticleContentProps {
@@ -46,6 +49,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
   const params = useParams();
   const id = params.id as string;
   const { isAuthenticated, user } = useAuth();
+  const queryClient = useQueryClient();
 
   const { data: article, isLoading } = useQuery({
     queryKey: ['article', id],
@@ -57,6 +61,77 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     },
     initialData,
   });
+
+  const likeMutation = useMutation({
+    mutationFn: async () => {
+      await articleControllerLike({
+        path: { id },
+        body: undefined
+      });
+    },
+    onSuccess: () => {
+      const newIsLiked = !isLiked;
+      toast.success(newIsLiked ? '点赞成功' : '取消点赞');
+      queryClient.setQueryData(['article', id], (old: Article | undefined) => {
+        if (!old) return old;
+        return { ...old, isLiked: newIsLiked, likes: newIsLiked ? old.likes + 1 : Math.max(0, old.likes - 1) };
+      });
+    },
+    onError: () => {
+      toast.error('操作失败');
+    },
+  });
+
+  const favoriteMutation = useMutation({
+    mutationFn: async () => {
+      await articleControllerFavoriteArticle({
+        path: { id },
+      });
+    },
+    onSuccess: () => {
+      const newIsFavorited = !isFavorited;
+      toast.success(newIsFavorited ? '收藏成功' : '取消收藏');
+      queryClient.setQueryData(['article', id], (old: Article | undefined) => {
+        if (!old) return old;
+        return { ...old, isFavorited: newIsFavorited };
+      });
+    },
+    onError: () => {
+      toast.error('操作失败');
+    },
+  });
+
+  const handleLike = () => {
+    if (!isAuthenticated) {
+      toast.error('请先登录');
+      return;
+    }
+    likeMutation.mutate();
+  };
+
+  const handleFavorite = () => {
+    if (!isAuthenticated) {
+      toast.error('请先登录');
+      return;
+    }
+    favoriteMutation.mutate();
+  };
+
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: article?.title,
+          url: window.location.href,
+        });
+      } catch {
+        // User cancelled share
+      }
+    } else {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('链接已复制到剪贴板');
+    }
+  };
 
   if (isLoading && !initialData) {
     return (
@@ -90,6 +165,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     (article.requireLogin && !isAuthenticated) ||
     (article.requireMembership && !user?.membershipStatus);
 
+  const isLiked = article.isLiked ?? false;
+  const isFavorited = article.isFavorited ?? false;
+
   return (
     <div className="space-y-6">
       <header className="space-y-4">
@@ -112,23 +190,35 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <Button variant="outline" size="sm" className="text-muted-foreground">
+          <Button variant="ghost" size="sm" className="text-muted-foreground cursor-default">
             <Eye className="h-4 w-4 mr-1" />
             {article.views}
           </Button>
-          <Button variant="outline" size="sm">
-            <Heart className="h-4 w-4 mr-1" />
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleLike}
+            disabled={likeMutation.isPending}
+            className={isLiked ? 'text-red-500 border-red-500 hover:bg-red-50' : ''}
+          >
+            <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
             {article.likes}
           </Button>
-          <Button variant="outline" size="sm" className="text-muted-foreground">
+          <Button variant="ghost" size="sm" className="text-muted-foreground cursor-default">
             <MessageCircle className="h-4 w-4 mr-1" />
             {article.commentCount}
           </Button>
-          <Button variant="outline" size="sm">
-            <Bookmark className="h-4 w-4 mr-1" />
-            收藏
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={handleFavorite}
+            disabled={favoriteMutation.isPending}
+            className={isFavorited ? 'text-amber-500 border-amber-500 hover:bg-amber-50' : ''}
+          >
+            <Bookmark className={`h-4 w-4 mr-1 ${isFavorited ? 'fill-current' : ''}`} />
+            {isFavorited ? '已收藏' : '收藏'}
           </Button>
-          <Button variant="outline" size="sm">
+          <Button variant="outline" size="sm" onClick={handleShare}>
             <Share2 className="h-4 w-4 mr-1" />
             分享
           </Button>

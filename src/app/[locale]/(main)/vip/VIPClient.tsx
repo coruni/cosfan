@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Check, Crown, Zap, Star, Loader2, CreditCard, CheckCircle } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import Link from 'next/link';
+import { Link } from '@/i18n';
 import { toast } from 'sonner';
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';

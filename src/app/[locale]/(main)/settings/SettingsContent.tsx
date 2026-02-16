@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Switch } from '@/components/ui/switch';
 import { useQuery, useMutation } from '@tanstack/react-query';
 import { userControllerChangePassword, userControllerGetUserConfig, userControllerUpdateUserConfig } from '@/api/sdk.gen';
-import Link from 'next/link';
+import { Link } from '@/i18n';
 import { Crown, Bell, Shield, Moon, Sun, Monitor, LogOut, Loader2, ChevronRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';

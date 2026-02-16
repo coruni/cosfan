@@ -4,7 +4,7 @@ import { articleControllerFindAll, categoryControllerFindAll } from '@/api/sdk.g
 import { client } from '@/api/client.gen';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import Link from 'next/link';
+import { Link } from '@/i18n';
 import { User } from 'lucide-react';
 import { API_BASE_URL } from '@/config/constants';
 

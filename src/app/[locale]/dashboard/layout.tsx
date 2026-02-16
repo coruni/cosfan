@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Link, usePathname } from '@/i18n';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
   LayoutDashboard, 

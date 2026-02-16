@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/i18n';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';

@@ -33,7 +33,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Search, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, ExternalLink, Eye } from 'lucide-react';
 import { toast } from 'sonner';
-import Link from 'next/link';
+import { Link } from '@/i18n';
 import { Table as UITable, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 import { ArticleControllerFindAllResponse } from '@/api';
 
