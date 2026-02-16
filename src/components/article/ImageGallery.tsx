@@ -155,7 +155,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
             </VisuallyHidden>
             <div className="relative w-full h-full flex items-center justify-center">
               {/* Breadcrumb Navigation */}
-              <div className="absolute top-4 left-4 z-50 text-white text-sm">
+              {/* <div className="absolute top-4 left-4 z-50 text-white text-sm">
                 <div className="flex items-center gap-2">
                   <span>首页</span>
                   <span> / </span>
@@ -163,7 +163,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
                   <span> / </span>
                   <span>图片 {currentIndex + 1} / {totalImages}</span>
                 </div>
-              </div>
+              </div> */}
               
               <Button
                 variant="ghost"

@@ -12,22 +12,53 @@ import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
 import { ImageGallery } from '@/components/article/ImageGallery';
 
-export function ArticleContent() {
+interface Article {
+  id: number;
+  title: string;
+  summary?: string;
+  images: string[];
+  views: number;
+  likes: number;
+  favoriteCount: number;
+  commentCount: number;
+  cover: string;
+  author: {
+    id: number;
+    nickname: string;
+    avatar: string;
+  };
+  category?: {
+    id: number;
+    name: string;
+  };
+  requireLogin: boolean;
+  requirePayment: boolean;
+  requireMembership: boolean;
+  viewPrice?: string;
+  createdAt: string;
+}
+
+interface ArticleContentProps {
+  initialData?: Article;
+}
+
+export function ArticleContent({ initialData }: ArticleContentProps) {
   const params = useParams();
   const id = params.id as string;
   const { isAuthenticated, user } = useAuth();
 
-  const { data: articleData, isLoading, error } = useQuery({
+  const { data: article, isLoading } = useQuery({
     queryKey: ['article', id],
     queryFn: async () => {
       const response = await articleControllerFindOne({
         path: { id },
       });
-      return response.data?.data;
+      return response.data?.data as Article | undefined;
     },
+    initialData,
   });
 
-  if (isLoading) {
+  if (isLoading && !initialData) {
     return (
       <div className="space-y-6">
         <Skeleton className="h-8 w-3/4" />
@@ -44,7 +75,7 @@ export function ArticleContent() {
     );
   }
 
-  if (error || !articleData) {
+  if (!article) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
         <p className="text-lg text-muted-foreground">文章不存在或已被删除</p>
@@ -54,32 +85,6 @@ export function ArticleContent() {
       </div>
     );
   }
-
-  const article = articleData as {
-    id: number;
-    title: string;
-    summary?: string;
-    images: string[];
-    views: number;
-    likes: number;
-    favoriteCount: number;
-    commentCount: number;
-    cover: string;
-    author: {
-      id: number;
-      nickname: string;
-      avatar: string;
-    };
-    category?: {
-      id: number;
-      name: string;
-    };
-    requireLogin: boolean;
-    requirePayment: boolean;
-    requireMembership: boolean;
-    viewPrice?: string;
-    createdAt: string;
-  };
 
   const isLocked = 
     (article.requireLogin && !isAuthenticated) ||
@@ -106,23 +111,23 @@ export function ArticleContent() {
           </Link>
         </div>
 
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4 text-sm text-muted-foreground">
-            <div className="flex items-center gap-1">
+        <div className="flex flex-wrap items-center gap-4 text-sm">
+          <div className="flex items-center gap-4 text-muted-foreground">
+            <span className="flex items-center gap-1">
               <Eye className="h-4 w-4" />
-              <span>{article.views}</span>
-            </div>
-            <div className="flex items-center gap-1">
+              {article.views}
+            </span>
+            <span className="flex items-center gap-1">
               <Heart className="h-4 w-4" />
-              <span>{article.likes}</span>
-            </div>
-            <div className="flex items-center gap-1">
+              {article.likes}
+            </span>
+            <span className="flex items-center gap-1">
               <MessageCircle className="h-4 w-4" />
-              <span>{article.commentCount}</span>
-            </div>
+              {article.commentCount}
+            </span>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             <Button variant="outline" size="sm">
               <Heart className="h-4 w-4 mr-1" />
               点赞
