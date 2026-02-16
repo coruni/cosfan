@@ -111,36 +111,27 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
           </Link>
         </div>
 
-        <div className="flex flex-wrap items-center gap-4 text-sm">
-          <div className="flex items-center gap-4 text-muted-foreground">
-            <span className="flex items-center gap-1">
-              <Eye className="h-4 w-4" />
-              {article.views}
-            </span>
-            <span className="flex items-center gap-1">
-              <Heart className="h-4 w-4" />
-              {article.likes}
-            </span>
-            <span className="flex items-center gap-1">
-              <MessageCircle className="h-4 w-4" />
-              {article.commentCount}
-            </span>
-          </div>
-          
-          <div className="flex items-center gap-2 ml-auto">
-            <Button variant="outline" size="sm">
-              <Heart className="h-4 w-4 mr-1" />
-              点赞
-            </Button>
-            <Button variant="outline" size="sm">
-              <Bookmark className="h-4 w-4 mr-1" />
-              收藏
-            </Button>
-            <Button variant="outline" size="sm">
-              <Share2 className="h-4 w-4 mr-1" />
-              分享
-            </Button>
-          </div>
+        <div className="flex flex-wrap items-center gap-2 text-sm">
+          <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <Eye className="h-4 w-4 mr-1" />
+            {article.views}
+          </Button>
+          <Button variant="outline" size="sm">
+            <Heart className="h-4 w-4 mr-1" />
+            {article.likes}
+          </Button>
+          <Button variant="ghost" size="sm" className="text-muted-foreground">
+            <MessageCircle className="h-4 w-4 mr-1" />
+            {article.commentCount}
+          </Button>
+          <Button variant="outline" size="sm">
+            <Bookmark className="h-4 w-4 mr-1" />
+            收藏
+          </Button>
+          <Button variant="outline" size="sm">
+            <Share2 className="h-4 w-4 mr-1" />
+            分享
+          </Button>
         </div>
 
         {article.summary && (

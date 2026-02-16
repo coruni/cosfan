@@ -143,7 +143,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
         <DialogPrimitive.Portal>
           <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/50" />
           <DialogPrimitive.Content
-            className="fixed inset-0 z-50 m-0 w-full h-full p-0 bg-black/95 border-0 rounded-none cursor-pointer"
+            className="fixed inset-0 z-50 m-0 w-full h-full p-0 bg-black/50 border-0 rounded-none cursor-pointer"
             onKeyDown={handleKeyDown}
             onWheel={handleWheel}
             onTouchStart={handleTouchStart}
