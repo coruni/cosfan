@@ -1,6 +1,46 @@
 import { Suspense } from 'react';
+import type { Metadata } from 'next';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HomePageContent } from './HomePageContent';
+import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo';
+import { configControllerGetPublicConfigs } from '@/api/sdk.gen';
+import { client } from '@/api/client.gen';
+import { API_BASE_URL, APP_NAME } from '@/config/constants';
+
+async function getSiteConfig() {
+  try {
+    client.setConfig({ baseUrl: API_BASE_URL });
+    const response = await configControllerGetPublicConfigs();
+    return response.data?.data;
+  } catch (error) {
+    console.error('Failed to fetch site config:', error);
+    return null;
+  }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const config = await getSiteConfig();
+  const siteName = config?.site_name || APP_NAME;
+  const siteSubtitle = config?.site_subtitle || '';
+  const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
+  const keywords = config?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';
+
+  const fullTitle = siteSubtitle ? `${siteName} | ${siteSubtitle}` : siteName;
+
+  return {
+    title: {
+      absolute: fullTitle,
+    },
+    description,
+    keywords: keywords.split(','),
+    openGraph: {
+      title: fullTitle,
+      description,
+      type: 'website',
+      locale: 'zh_CN',
+    },
+  };
+}
 
 function HomeSkeleton() {
   return (
@@ -23,10 +63,31 @@ function HomeSkeleton() {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const config = await getSiteConfig();
+  const siteName = config?.site_name || APP_NAME;
+  const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+
   return (
-    <Suspense fallback={<HomeSkeleton />}>
-      <HomePageContent />
-    </Suspense>
+    <>
+      <OrganizationJsonLd
+        name={siteName}
+        url={baseUrl}
+        description={description}
+      />
+      <WebSiteJsonLd
+        name={siteName}
+        url={baseUrl}
+        description={description}
+        potentialAction={{
+          target: `${baseUrl}/search?q={search_term_string}`,
+          queryInput: 'required name=search_term_string',
+        }}
+      />
+      <Suspense fallback={<HomeSkeleton />}>
+        <HomePageContent />
+      </Suspense>
+    </>
   );
 }

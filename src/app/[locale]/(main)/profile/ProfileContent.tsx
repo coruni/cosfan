@@ -12,7 +12,7 @@ import { articleControllerGetUserBrowseHistory, articleControllerGetLikedArticle
 import type { ArticleControllerFindAllResponse, UserControllerGetProfileResponse } from '@/api/types.gen';
 import { ArticleGrid } from '@/components/article/ArticleGrid';
 import { Link, useRouter, usePathname } from '@/i18n';
-import { Crown, Wallet, Eye, Heart, Bookmark, Edit, Clock, Sparkles, Loader2, Camera } from 'lucide-react';
+import { Crown, Eye, Heart, Bookmark, Edit, Clock, Sparkles, Loader2, Camera } from 'lucide-react';
 import { useState, useRef } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
@@ -313,13 +313,8 @@ export default function ProfileContent() {
               <p className="text-sm text-muted-foreground">关注</p>
             </div>
             <div className="text-center">
-              <Link href="/wallet">
-                <p className="text-2xl font-bold hover:text-primary cursor-pointer">
-                  <Wallet className="h-5 w-5 inline mr-1" />
-                  钱包
-                </p>
-              </Link>
-              <p className="text-sm text-muted-foreground">余额</p>
+              <p className="text-2xl font-bold">{userData?.points || 0}</p>
+              <p className="text-sm text-muted-foreground">积分</p>
             </div>
           </div>
         </CardContent>

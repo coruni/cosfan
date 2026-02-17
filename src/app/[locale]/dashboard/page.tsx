@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { userControllerFindAll, articleControllerFindAll, tagControllerFindAll, orderControllerGetAllOrders, categoryControllerFindAll } from '@/api/sdk.gen';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, FileText, Tag, ShoppingCart, TrendingUp, Eye, Heart, DollarSign } from 'lucide-react';
+import { Link } from '@/i18n';
 
 export default function DashboardPage() {
   const { data: usersData } = useQuery({
@@ -114,27 +115,27 @@ export default function DashboardPage() {
             <CardDescription>常用管理功能入口</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-2">
-            <a href="/dashboard/users" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+            <Link href="/dashboard/users" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
               <Users className="h-5 w-5 text-blue-600" />
               <div>
                 <p className="font-medium">用户管理</p>
                 <p className="text-sm text-muted-foreground">管理平台用户</p>
               </div>
-            </a>
-            <a href="/dashboard/articles" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+            </Link>
+            <Link href="/dashboard/articles" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
               <FileText className="h-5 w-5 text-green-600" />
               <div>
                 <p className="font-medium">文章管理</p>
                 <p className="text-sm text-muted-foreground">审核和管理文章内容</p>
               </div>
-            </a>
-            <a href="/dashboard/orders" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
+            </Link>
+            <Link href="/dashboard/orders" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
               <ShoppingCart className="h-5 w-5 text-orange-600" />
               <div>
                 <p className="font-medium">订单管理</p>
                 <p className="text-sm text-muted-foreground">查看和处理订单</p>
               </div>
-            </a>
+            </Link>
           </CardContent>
         </Card>
 

@@ -9,7 +9,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ROUTES } from '@/config/constants';
-import { User, Settings, LogOut, Crown, Wallet } from 'lucide-react';
+import { User, Settings, LogOut, Crown } from 'lucide-react';
 import type { UserData } from '@/lib/auth';
 
 interface UserDropdownProps {
@@ -69,12 +69,6 @@ export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogo
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
-            <Link href={ROUTES.WALLET} className="cursor-pointer" onClick={onClose}>
-              <Wallet className="mr-2 h-4 w-4" />
-              钱包
-            </Link>
-          </DropdownMenuItem>
-          <DropdownMenuItem asChild>
             <Link href={ROUTES.PROFILE} className="cursor-pointer" onClick={onClose}>
               <User className="mr-2 h-4 w-4" />
               个人中心
@@ -122,12 +116,6 @@ export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogo
           <Link href={ROUTES.VIP} className="cursor-pointer">
             <Crown className="mr-2 h-4 w-4" />
             会员
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href={ROUTES.WALLET} className="cursor-pointer">
-            <Wallet className="mr-2 h-4 w-4" />
-            钱包
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>

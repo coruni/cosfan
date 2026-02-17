@@ -6,7 +6,7 @@ import { articleControllerFindOne, articleControllerLike, articleControllerFavor
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Eye, Heart, MessageCircle, Bookmark, Share2, Lock, Crown } from 'lucide-react';
+import { Eye, Heart, MessageCircle, Bookmark, Share2, Lock, Crown, Download, ExternalLink, Copy, Key } from 'lucide-react';
 import Image from 'next/image';
 import { useAuth } from '@/contexts/AuthContext';
 import { ImageGallery } from '@/components/article/ImageGallery';
@@ -39,6 +39,14 @@ interface Article {
   createdAt: string;
   isLiked?: boolean;
   isFavorited?: boolean;
+  downloads?: Array<{
+    id?: number;
+    type?: string;
+    url?: string;
+    password?: string;
+    extractionCode?: string;
+  }>;
+  downloadCount?: number;
 }
 
 interface ArticleContentProps {
@@ -251,7 +259,107 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
           )}
         </div>
       ) : (
-        <ImageGallery images={article.images} />
+        <>
+          <ImageGallery images={article.images} />
+          
+          {article.downloads && article.downloads.length > 0 && (
+            <div className="mt-6 space-y-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2">
+                <Download className="h-5 w-5" />
+                下载资源
+                {article.downloadCount && (
+                  <span className="text-sm font-normal text-muted-foreground">
+                    ({article.downloadCount} 次下载)
+                  </span>
+                )}
+              </h2>
+              <div className="grid gap-3">
+                {article.downloads.map((download, index) => (
+                  <div 
+                    key={download.id || index}
+                    className="flex items-center justify-between p-4 border rounded-lg bg-card"
+                  >
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
+                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                        <Download className="h-5 w-5 text-primary" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs px-2 py-0.5 rounded bg-muted font-medium">
+                            {download.type === 'baidu' && '百度网盘'}
+                            {download.type === 'quark' && '夸克网盘'}
+                            {download.type === 'aliyun' && '阿里云盘'}
+                            {download.type === 'onedrive' && 'OneDrive'}
+                            {download.type === 'google' && 'Google Drive'}
+                            {download.type === 'dropbox' && 'Dropbox'}
+                            {download.type === 'lanzou' && '蓝奏云'}
+                            {download.type === 'mega' && 'Mega'}
+                            {download.type === 'direct' && '直链下载'}
+                            {download.type === 'other' && '其他'}
+                            {!download.type && '未知'}
+                          </span>
+                        </div>
+                        <p className="text-sm truncate text-muted-foreground mt-1">
+                          {download.url}
+                        </p>
+                        {(download.password || download.extractionCode) && (
+                          <div className="flex items-center gap-3 mt-2">
+                            {download.password && (
+                              <div className="flex items-center gap-1 text-xs">
+                                <Key className="h-3 w-3 text-muted-foreground" />
+                                <span className="text-muted-foreground">密码:</span>
+                                <code className="px-1.5 py-0.5 bg-muted rounded font-mono">
+                                  {download.password}
+                                </code>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(download.password || '');
+                                    toast.success('密码已复制');
+                                  }}
+                                  className="text-primary hover:underline"
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </button>
+                              </div>
+                            )}
+                            {download.extractionCode && (
+                              <div className="flex items-center gap-1 text-xs">
+                                <span className="text-muted-foreground">提取码:</span>
+                                <code className="px-1.5 py-0.5 bg-muted rounded font-mono">
+                                  {download.extractionCode}
+                                </code>
+                                <button
+                                  onClick={() => {
+                                    navigator.clipboard.writeText(download.extractionCode || '');
+                                    toast.success('提取码已复制');
+                                  }}
+                                  className="text-primary hover:underline"
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        if (download.url) {
+                          window.open(download.url, '_blank');
+                        }
+                      }}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-1" />
+                      打开
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

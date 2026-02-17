@@ -43,6 +43,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteName = config?.site_name || APP_NAME;
   const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
   const keywords = config?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+  const siteLogo = config?.site_logo;
+  const siteFavicon = config?.site_favicon;
 
   return {
     title: {
@@ -53,18 +56,33 @@ export async function generateMetadata(): Promise<Metadata> {
     keywords: keywords.split(','),
     authors: [{ name: siteName }],
     creator: siteName,
+    icons: {
+      icon: siteFavicon || '/favicon.ico',
+      apple: siteLogo || '/apple-touch-icon.png',
+    },
     openGraph: {
       type: 'website',
       locale: 'zh_CN',
-      url: '/',
+      url: baseUrl,
       title: siteName,
       description,
       siteName,
+      images: siteLogo
+        ? [{ url: siteLogo, alt: siteName }]
+        : [
+            {
+              url: `${baseUrl}/og-image.png`,
+              width: 1200,
+              height: 630,
+              alt: siteName,
+            },
+          ],
     },
     twitter: {
       card: 'summary_large_image',
       title: siteName,
       description,
+      images: siteLogo ? [siteLogo] : [`${baseUrl}/og-image.png`],
     },
     robots: {
       index: true,

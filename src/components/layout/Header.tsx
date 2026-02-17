@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { UserDropdown } from '@/components/layout/UserDropdown';
 import { ROUTES } from '@/config/constants';
-import { Menu, Search, User, Wallet, Crown, Home, Grid3X3, Settings } from 'lucide-react';
+import { Menu, Search, User, Crown, Home, Grid3X3, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 
 const NAV_LINKS = [
@@ -89,7 +89,6 @@ export function Header() {
                   <>
                     <div className="h-px bg-border my-2" />
                     <MobileNavLink href={ROUTES.VIP} label="会员" icon={Crown} />
-                    <MobileNavLink href={ROUTES.WALLET} label="钱包" icon={Wallet} />
                     <MobileNavLink href={ROUTES.PROFILE} label="个人中心" icon={User} />
                     <MobileNavLink href={ROUTES.SETTINGS} label="设置" icon={Settings} />
                   </>

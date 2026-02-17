@@ -12,7 +12,6 @@ export const ROUTES = {
   USER: (id: string | number) => `/user/${id}`,
   PROFILE: '/profile',
   SETTINGS: '/settings',
-  WALLET: '/wallet',
   VIP: '/vip',
 } as const;
 

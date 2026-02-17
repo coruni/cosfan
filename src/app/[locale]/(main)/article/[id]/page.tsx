@@ -1,9 +1,10 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { articleControllerFindOne } from '@/api/sdk.gen';
+import { articleControllerFindOne, configControllerGetPublicConfigs } from '@/api/sdk.gen';
 import { client } from '@/api/client.gen';
-import { API_BASE_URL } from '@/config/constants';
+import { API_BASE_URL, APP_NAME } from '@/config/constants';
 import { ArticleContent } from './ArticleContent';
+import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -56,10 +57,15 @@ export default async function ArticlePage({ params }: PageProps) {
   client.setConfig({ baseUrl: API_BASE_URL });
   
   let initialData = null;
+  let siteConfig = null;
   
   try {
-    const response = await articleControllerFindOne({ path: { id } });
-    initialData = response.data?.data;
+    const [articleResponse, configResponse] = await Promise.all([
+      articleControllerFindOne({ path: { id } }),
+      configControllerGetPublicConfigs(),
+    ]);
+    initialData = articleResponse.data?.data;
+    siteConfig = configResponse.data?.data;
   } catch {
     notFound();
   }
@@ -68,5 +74,40 @@ export default async function ArticlePage({ params }: PageProps) {
     notFound();
   }
 
-  return <ArticleContent initialData={initialData} />;
+  const siteName = siteConfig?.site_name || APP_NAME;
+  const siteLogo = siteConfig?.site_logo;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+  const articleUrl = `${baseUrl}/article/${id}`;
+  const images = initialData.images?.slice(0, 5) || [];
+  const coverImage = initialData.cover || images[0];
+
+  return (
+    <>
+      <ArticleJsonLd
+        title={initialData.title}
+        description={initialData.summary || `${initialData.title} - 高清图集`}
+        url={articleUrl}
+        images={coverImage ? [coverImage, ...images.slice(0, 4)] : undefined}
+        datePublished={initialData.createdAt}
+        dateModified={initialData.updatedAt}
+        author={
+          initialData.author?.nickname
+            ? { name: initialData.author.nickname }
+            : undefined
+        }
+        publisher={{
+          name: siteName,
+          logo: siteLogo || `${baseUrl}/icon-192.png`,
+        }}
+      />
+      <BreadcrumbJsonLd
+        items={[
+          { name: '首页', url: baseUrl },
+          { name: '文章', url: `${baseUrl}/article` },
+          { name: initialData.title, url: articleUrl },
+        ]}
+      />
+      <ArticleContent initialData={initialData} />
+    </>
+  );
 }
