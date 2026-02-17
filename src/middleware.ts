@@ -18,13 +18,13 @@ export function middleware(request: NextRequest) {
 
   if (isAuthenticated && AUTH_PATHS.some(path => pathnameWithoutLocale.startsWith(path))) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${routing.defaultLocale}`;
+    url.pathname = '/';
     return NextResponse.redirect(url);
   }
 
   if (!isAuthenticated && PROTECTED_PATHS.some(path => pathnameWithoutLocale.startsWith(path))) {
     const url = request.nextUrl.clone();
-    url.pathname = `/${routing.defaultLocale}/login`;
+    url.pathname = '/login';
     url.searchParams.set('redirect', pathname);
     return NextResponse.redirect(url);
   }
@@ -36,11 +36,6 @@ export const config = {
   matcher: [
     '/',
     '/(zh|en)/:path*',
-    '/login',
-    '/register',
-    '/profile/:path*',
-    '/settings/:path*',
-    '/wallet/:path*',
-    '/dashboard/:path*',
+    '/((?!api|_next|_vercel|.*\\..*).*)',
   ],
 };
