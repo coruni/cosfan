@@ -12,6 +12,14 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ImageGallery } from '@/components/article/ImageGallery';
 import { toast } from 'sonner';
 import { Link } from '@/i18n';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 interface Article {
   id: number;
@@ -141,6 +149,22 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     }
   };
 
+  const getDownloadTypeLabel = (type?: string) => {
+    const labels: Record<string, string> = {
+      baidu: '百度网盘',
+      quark: '夸克网盘',
+      aliyun: '阿里云盘',
+      onedrive: 'OneDrive',
+      google: 'Google Drive',
+      dropbox: 'Dropbox',
+      lanzou: '蓝奏云',
+      mega: 'Mega',
+      direct: '直链下载',
+      other: '其他',
+    };
+    return labels[type || ''] || '未知';
+  };
+
   if (isLoading && !initialData) {
     return (
       <div className="space-y-6">
@@ -230,6 +254,100 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
             <Share2 className="h-4 w-4 mr-1" />
             分享
           </Button>
+          {article.downloads && article.downloads.length > 0 && (
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <Download className="h-4 w-4 mr-1" />
+                  下载 ({article.downloads.length})
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-lg">
+                <DialogHeader>
+                  <DialogTitle className="flex items-center gap-2">
+                    <Download className="h-5 w-5" />
+                    下载资源
+                  </DialogTitle>
+                  <DialogDescription>
+                    共 {article.downloads.length} 个下载资源
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3 mt-2">
+                  {article.downloads.map((download, index) => (
+                    <div 
+                      key={download.id || index}
+                      className="flex items-center justify-between p-3 border rounded-lg bg-card"
+                    >
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <Download className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs px-2 py-0.5 rounded bg-muted font-medium">
+                              {getDownloadTypeLabel(download.type)}
+                            </span>
+                          </div>
+                          <p className="text-sm truncate text-muted-foreground mt-0.5">
+                            {download.url}
+                          </p>
+                          {(download.password || download.extractionCode) && (
+                            <div className="flex items-center gap-3 mt-1.5">
+                              {download.password && (
+                                <div className="flex items-center gap-1 text-xs">
+                                  <Key className="h-3 w-3 text-muted-foreground" />
+                                  <span className="text-muted-foreground">密码:</span>
+                                  <code className="px-1 py-0.5 bg-muted rounded font-mono text-xs">
+                                    {download.password}
+                                  </code>
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(download.password || '');
+                                      toast.success('密码已复制');
+                                    }}
+                                    className="text-primary hover:underline"
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              )}
+                              {download.extractionCode && (
+                                <div className="flex items-center gap-1 text-xs">
+                                  <span className="text-muted-foreground">提取码:</span>
+                                  <code className="px-1 py-0.5 bg-muted rounded font-mono text-xs">
+                                    {download.extractionCode}
+                                  </code>
+                                  <button
+                                    onClick={() => {
+                                      navigator.clipboard.writeText(download.extractionCode || '');
+                                      toast.success('提取码已复制');
+                                    }}
+                                    className="text-primary hover:underline"
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        onClick={() => {
+                          if (download.url) {
+                            window.open(download.url, '_blank');
+                          }
+                        }}
+                      >
+                        <ExternalLink className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
 
         {article.summary && (
@@ -259,107 +377,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
           )}
         </div>
       ) : (
-        <>
-          <ImageGallery images={article.images} />
-          
-          {article.downloads && article.downloads.length > 0 && (
-            <div className="mt-6 space-y-4">
-              <h2 className="text-lg font-semibold flex items-center gap-2">
-                <Download className="h-5 w-5" />
-                下载资源
-                {article.downloadCount && (
-                  <span className="text-sm font-normal text-muted-foreground">
-                    ({article.downloadCount} 次下载)
-                  </span>
-                )}
-              </h2>
-              <div className="grid gap-3">
-                {article.downloads.map((download, index) => (
-                  <div 
-                    key={download.id || index}
-                    className="flex items-center justify-between p-4 border rounded-lg bg-card"
-                  >
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
-                        <Download className="h-5 w-5 text-primary" />
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs px-2 py-0.5 rounded bg-muted font-medium">
-                            {download.type === 'baidu' && '百度网盘'}
-                            {download.type === 'quark' && '夸克网盘'}
-                            {download.type === 'aliyun' && '阿里云盘'}
-                            {download.type === 'onedrive' && 'OneDrive'}
-                            {download.type === 'google' && 'Google Drive'}
-                            {download.type === 'dropbox' && 'Dropbox'}
-                            {download.type === 'lanzou' && '蓝奏云'}
-                            {download.type === 'mega' && 'Mega'}
-                            {download.type === 'direct' && '直链下载'}
-                            {download.type === 'other' && '其他'}
-                            {!download.type && '未知'}
-                          </span>
-                        </div>
-                        <p className="text-sm truncate text-muted-foreground mt-1">
-                          {download.url}
-                        </p>
-                        {(download.password || download.extractionCode) && (
-                          <div className="flex items-center gap-3 mt-2">
-                            {download.password && (
-                              <div className="flex items-center gap-1 text-xs">
-                                <Key className="h-3 w-3 text-muted-foreground" />
-                                <span className="text-muted-foreground">密码:</span>
-                                <code className="px-1.5 py-0.5 bg-muted rounded font-mono">
-                                  {download.password}
-                                </code>
-                                <button
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(download.password || '');
-                                    toast.success('密码已复制');
-                                  }}
-                                  className="text-primary hover:underline"
-                                >
-                                  <Copy className="h-3 w-3" />
-                                </button>
-                              </div>
-                            )}
-                            {download.extractionCode && (
-                              <div className="flex items-center gap-1 text-xs">
-                                <span className="text-muted-foreground">提取码:</span>
-                                <code className="px-1.5 py-0.5 bg-muted rounded font-mono">
-                                  {download.extractionCode}
-                                </code>
-                                <button
-                                  onClick={() => {
-                                    navigator.clipboard.writeText(download.extractionCode || '');
-                                    toast.success('提取码已复制');
-                                  }}
-                                  className="text-primary hover:underline"
-                                >
-                                  <Copy className="h-3 w-3" />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      onClick={() => {
-                        if (download.url) {
-                          window.open(download.url, '_blank');
-                        }
-                      }}
-                    >
-                      <ExternalLink className="h-4 w-4 mr-1" />
-                      打开
-                    </Button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-        </>
+        <ImageGallery images={article.images} />
       )}
     </div>
   );
