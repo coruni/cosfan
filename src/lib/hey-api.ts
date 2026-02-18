@@ -9,11 +9,24 @@ const isServer = typeof window === 'undefined';
 function getDeviceId(): string {
   if (isServer) return 'server';
   
+  // 优先从cookie中读取device_id（由middleware设置）
+  const cookieDeviceId = getCookie('device_id');
+  if (cookieDeviceId) {
+    // 同步到localStorage
+    localStorage.setItem(STORAGE_KEYS.DEVICE_ID, cookieDeviceId);
+    return cookieDeviceId;
+  }
+  
+  // 如果cookie中没有，从localStorage读取
   let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
   if (!deviceId) {
+    // 如果都没有，生成新的
     deviceId = 'device_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
     localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
+    // 同步到cookie
+    document.cookie = `device_id=${deviceId}; path=/; max-age=31536000; SameSite=Lax`;
   }
+  
   return deviceId;
 }
 
@@ -129,22 +142,42 @@ async function refreshAccessToken(): Promise<boolean> {
   return refreshPromise;
 }
 
+// 用于服务端设置认证信息的回调
+let serverAuthCallback: (() => Promise<{ token?: string; deviceId?: string }>) | null = null;
+
+export function setServerAuthCallback(callback: () => Promise<{ token?: string; deviceId?: string }>) {
+  serverAuthCallback = callback;
+}
+
 export function setupClientInterceptors() {
-  client.interceptors.request.use((options) => {
-    const token = getAccessToken();
-    
-    if (token) {
-      setHeader(options, 'Authorization', `Bearer ${token}`);
-    }
-    
-    if (!isServer) {
+  client.interceptors.request.use(async (options) => {
+    if (isServer) {
+      // 服务端：使用回调函数获取认证信息
+      if (serverAuthCallback) {
+        const { token, deviceId } = await serverAuthCallback();
+        
+        if (token) {
+          setHeader(options, 'Authorization', `Bearer ${token}`);
+        }
+        
+        setHeader(options, 'Device-Id', deviceId || 'ssr-default');
+        setHeader(options, 'Device-Type', 'server');
+      } else {
+        setHeader(options, 'Device-Type', 'server');
+        setHeader(options, 'Device-Id', 'ssr-default');
+      }
+    } else {
+      // 客户端：从localStorage和cookie中获取
+      const token = getAccessToken();
+      
+      if (token) {
+        setHeader(options, 'Authorization', `Bearer ${token}`);
+      }
+      
       const deviceId = getDeviceId();
       setHeader(options, 'Device-Id', deviceId);
       setHeader(options, 'Device-Type', 'web');
       setHeader(options, 'Device-Name', navigator.userAgent);
-    } else {
-      setHeader(options, 'Device-Type', 'server');
-      setHeader(options, 'Device-Id', 'ssr');
     }
   });
 

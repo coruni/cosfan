@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { articleControllerFindOne, articleControllerLike, articleControllerFavoriteArticle } from '@/api/sdk.gen';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -26,6 +26,7 @@ interface Article {
   title: string;
   summary?: string;
   images: string[];
+  imageCount?: number;
   views: number;
   likes: number;
   favoriteCount: number;
@@ -63,6 +64,7 @@ interface ArticleContentProps {
 
 export function ArticleContent({ initialData }: ArticleContentProps) {
   const params = useParams();
+  const pathname = usePathname();
   const id = params.id as string;
   const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
@@ -193,12 +195,21 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     );
   }
 
-  const isLocked = 
-    (article.requireLogin && !isAuthenticated) ||
-    (article.requireMembership && !user?.membershipStatus);
-
+  // 不再使用 isLocked 一刀切的逻辑
+  // 后端会根据权限返回相应数量的图片
+  // 前端只需要显示后端返回的图片，并根据 imageCount 判断是否还有更多内容
+  
   const isLiked = article.isLiked ?? false;
   const isFavorited = article.isFavorited ?? false;
+  
+  // 判断是否能看到全部图片：imageCount 和 images.length 相等
+  const canViewAllImages = article.imageCount === article.images.length;
+  const remainingImages = article.imageCount && article.images.length 
+    ? article.imageCount - article.images.length 
+    : 0;
+  
+  // 判断是否有图片可以显示
+  const hasImages = article.images && article.images.length > 0;
 
   return (
     <div className="space-y-6">
@@ -355,29 +366,54 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         )}
       </header>
 
-      {isLocked ? (
-        <div className="flex flex-col items-center justify-center py-20 space-y-4">
-          <Lock className="h-16 w-16 text-muted-foreground" />
-          <p className="text-lg font-medium">该内容需要权限查看</p>
-          {article.requireMembership && (
-            <div className="flex items-center gap-2 text-primary">
-              <Crown className="h-5 w-5" />
-              <span>需要VIP会员</span>
+      {hasImages ? (
+        <>
+          <ImageGallery images={article.images} />
+          
+          {!canViewAllImages && remainingImages > 0 && (
+            <div className="flex flex-col items-center justify-center py-10 space-y-4 border-t">
+              <Lock className="h-12 w-12 text-muted-foreground" />
+              <p className="text-lg font-medium">还有 {remainingImages} 张图片未解锁</p>
+              {article.requirePayment && article.viewPrice && (
+                <p className="text-muted-foreground">
+                  支付 {article.viewPrice} 元查看完整内容
+                </p>
+              )}
+              {article.requireMembership && (
+                <div className="flex items-center gap-2 text-primary">
+                  <Crown className="h-5 w-5" />
+                  <span>VIP会员可查看全部</span>
+                </div>
+              )}
+              {article.requireLogin && !isAuthenticated && (
+                <p className="text-muted-foreground">
+                  登录后可查看更多内容
+                </p>
+              )}
+              {!isAuthenticated ? (
+                <Link href={`/login?redirect=${encodeURIComponent(pathname)}`}>
+                  <Button>登录查看更多</Button>
+                </Link>
+              ) : article.requireMembership && !user?.membershipStatus ? (
+                <Link href="/vip">
+                  <Button>
+                    <Crown className="h-4 w-4 mr-2" />
+                    开通VIP
+                  </Button>
+                </Link>
+              ) : article.requirePayment ? (
+                <Button>
+                  支付 {article.viewPrice} 元解锁
+                </Button>
+              ) : null}
             </div>
           )}
-          {!isAuthenticated && (
-            <Link href="/login">
-              <Button>登录查看</Button>
-            </Link>
-          )}
-          {isAuthenticated && article.requireMembership && (
-            <Link href="/vip">
-              <Button>开通VIP</Button>
-            </Link>
-          )}
-        </div>
+        </>
       ) : (
-        <ImageGallery images={article.images} />
+        <div className="flex flex-col items-center justify-center py-20 space-y-4">
+          <Lock className="h-16 w-16 text-muted-foreground" />
+          <p className="text-lg font-medium">暂无图片内容</p>
+        </div>
       )}
     </div>
   );

@@ -3,6 +3,7 @@ import { categoryControllerFindAll } from '@/api/sdk.gen';
 import { client } from '@/api/client.gen';
 import { API_BASE_URL } from '@/config/constants';
 import { CosersContent } from './CosersContent';
+import { initServerInterceptors } from '@/lib/server-init';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -20,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 async function getCosers() {
   try {
+    initServerInterceptors();
     client.setConfig({ baseUrl: API_BASE_URL });
     const response = await categoryControllerFindAll();
     return response.data?.data.data || [];

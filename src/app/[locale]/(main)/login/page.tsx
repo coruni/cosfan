@@ -58,7 +58,13 @@ function LoginForm() {
         await login(token, refreshToken);
         toast.success('登录成功');
         const redirect = searchParams.get('redirect') || ROUTES.HOME;
-        router.push(redirect);
+        
+        // 使用 window.location.href 刷新页面的原因：
+        // 1. 确保拦截器重新读取最新的认证信息
+        // 2. 清空React Query缓存，避免显示旧数据
+        // 3. 重新执行SSR，获取需要认证的完整数据
+        // 4. 确保所有组件状态重置
+        window.location.href = redirect;
       } else {
         toast.error(response.data?.message || '登录失败');
       }

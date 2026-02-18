@@ -98,7 +98,7 @@ export default function ArticleNewPage() {
     cover: '',
     categoryId: 0,
     tagNames: [] as string[],
-    status: 'DRAFT' as 'DRAFT' | 'PUBLISHED',
+    status: 'DRAFT' as 'DRAFT' | 'PENDING' | 'PUBLISHED',
     requireLogin: false,
     requirePayment: false,
     requireMembership: false,
@@ -357,7 +357,7 @@ export default function ArticleNewPage() {
     }
     createMutation.mutate({
       ...form,
-      images: form.images.join('\n'),
+      images: form.images.join(','),
       sort: 0,
       requireFollow: false,
       listRequireLogin: false,
@@ -540,6 +540,7 @@ export default function ArticleNewPage() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="DRAFT">草稿</SelectItem>
+                    <SelectItem value="PENDING">待审核</SelectItem>
                     <SelectItem value="PUBLISHED">已发布</SelectItem>
                   </SelectContent>
                 </Select>

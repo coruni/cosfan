@@ -11,6 +11,7 @@ import { configControllerGetPublicConfigs } from '@/api/sdk.gen';
 import { client } from '@/api/client.gen';
 import { API_BASE_URL, APP_NAME } from '@/config/constants';
 import { routing } from '@/i18n/routing';
+import { initServerInterceptors } from '@/lib/server-init';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -24,6 +25,7 @@ const geistMono = Geist_Mono({
 
 async function getSiteConfig() {
   try {
+    initServerInterceptors();
     client.setConfig({ baseUrl: API_BASE_URL });
     const response = await configControllerGetPublicConfigs();
     return response.data?.data;

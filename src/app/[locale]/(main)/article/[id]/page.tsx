@@ -5,6 +5,7 @@ import { client } from '@/api/client.gen';
 import { API_BASE_URL, APP_NAME } from '@/config/constants';
 import { ArticleContent } from './ArticleContent';
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo';
+import { initServerInterceptors } from '@/lib/server-init';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -13,6 +14,7 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   
+  initServerInterceptors();
   client.setConfig({ baseUrl: API_BASE_URL });
   
   try {
@@ -54,6 +56,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function ArticlePage({ params }: PageProps) {
   const { id } = await params;
   
+  initServerInterceptors();
   client.setConfig({ baseUrl: API_BASE_URL });
   
   let initialData = null;

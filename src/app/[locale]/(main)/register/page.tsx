@@ -107,7 +107,8 @@ export default function RegisterPage() {
         const { token, refreshToken } = response.data.data;
         await login(token, refreshToken);
         toast.success('注册成功');
-        router.push(ROUTES.HOME);
+        // 使用 window.location.href 刷新页面，确保拦截器重新初始化
+        window.location.href = ROUTES.HOME;
       } else {
         toast.error('注册失败');
       }

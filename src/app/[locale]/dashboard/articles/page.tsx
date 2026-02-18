@@ -98,6 +98,8 @@ export default function ArticlesPage() {
     switch (status) {
       case 'PUBLISHED':
         return <Badge variant="default">已发布</Badge>;
+      case 'PENDING':
+        return <Badge variant="outline" className="border-yellow-500 text-yellow-600">待审核</Badge>;
       case 'DRAFT':
         return <Badge variant="secondary">草稿</Badge>;
       default:
@@ -142,6 +144,7 @@ export default function ArticlesPage() {
               <SelectContent>
                 <SelectItem value="ALL">全部</SelectItem>
                 <SelectItem value="PUBLISHED">已发布</SelectItem>
+                <SelectItem value="PENDING">待审核</SelectItem>
                 <SelectItem value="DRAFT">草稿</SelectItem>
               </SelectContent>
             </Select>

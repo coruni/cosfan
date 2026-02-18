@@ -402,7 +402,7 @@ export default function ArticleEditPage() {
     }
     updateMutation.mutate({
       ...form,
-      images: form.images.join('\n'),
+      images: form.images.join(','),
       downloads: form.downloads.length > 0 ? form.downloads : undefined,
     });
   };
@@ -590,6 +590,7 @@ export default function ArticleEditPage() {
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="DRAFT">草稿</SelectItem>
+                    <SelectItem value="PENDING">待审核</SelectItem>
                     <SelectItem value="PUBLISHED">已发布</SelectItem>
                   </SelectContent>
                 </Select>

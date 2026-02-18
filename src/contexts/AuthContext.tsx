@@ -48,11 +48,24 @@ function getAccessToken(): string | null {
 function getDeviceId(): string {
   if (isServer) return 'ssr';
   
+  // 优先从cookie中读取device_id（由middleware设置）
+  const cookieDeviceId = getCookie('device_id');
+  if (cookieDeviceId) {
+    // 同步到localStorage
+    localStorage.setItem(STORAGE_KEYS.DEVICE_ID, cookieDeviceId);
+    return cookieDeviceId;
+  }
+  
+  // 如果cookie中没有，从localStorage读取
   let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
   if (!deviceId) {
+    // 如果都没有，生成新的
     deviceId = 'device_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
     localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
   }
+  
+  // 同步到cookie
+  document.cookie = `device_id=${deviceId}; path=/; max-age=31536000; SameSite=Lax`;
   return deviceId;
 }
 
@@ -65,8 +78,9 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
   useEffect(() => {
     setupClientInterceptors();
     
+    // 确保device_id在cookie和localStorage中同步
     const deviceId = getDeviceId();
-    document.cookie = `device_id=${deviceId}; path=/; max-age=31536000; SameSite=Lax`;
+    console.log('Device ID initialized:', deviceId);
   }, []);
 
   useEffect(() => {
@@ -123,6 +137,14 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
       localStorage.removeItem(STORAGE_KEYS.USER_INFO);
     }
     setUser(null);
+    
+    // 退出登录后刷新页面，原因：
+    // 1. 清空所有认证状态和缓存
+    // 2. 重新执行SSR，获取未认证状态的数据
+    // 3. 确保所有组件状态重置
+    if (!isServer) {
+      window.location.href = '/';
+    }
   };
 
   const refreshUser = async () => {
