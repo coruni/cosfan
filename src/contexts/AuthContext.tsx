@@ -45,6 +45,16 @@ function getAccessToken(): string | null {
   return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
 }
 
+/**
+ * 检查客户端是否已登录（仅检查token是否存在）
+ * @returns 如果存在有效的access_token返回true，否则返回false
+ */
+function isClientAuthenticated(): boolean {
+  if (isServer) return false;
+  const token = getAccessToken();
+  return !!token;
+}
+
 function getDeviceId(): string {
   if (isServer) return 'ssr';
   
@@ -93,10 +103,16 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
 
     const initAuth = async () => {
       console.log('initAuth started');
-      const token = getAccessToken();
-      console.log('Init auth - token exists:', !!token);
-      if (token) {
-        if (!localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) {
+      
+      // 先检查是否已登录
+      const isAuthenticated = isClientAuthenticated();
+      console.log('Init auth - is authenticated:', isAuthenticated);
+      
+      // 只有在已登录的情况下才尝试获取用户信息
+      if (isAuthenticated) {
+        const token = getAccessToken();
+        // 同步token到localStorage（如果还没有）
+        if (token && !localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) {
           localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
         }
         try {
@@ -104,9 +120,15 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
           console.log('Refresh user success');
         } catch (error) {
           console.error('Refresh user failed:', error);
+          // 获取用户信息失败，清除认证状态
           logout();
         }
+      } else {
+        // 没有token，确保用户状态为null
+        console.log('Not authenticated, user set to null');
+        setUser(null);
       }
+      
       console.log('Setting isLoading to false');
       setIsLoading(false);
     };
@@ -149,12 +171,25 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
 
   const refreshUser = async () => {
     try {
+      // 先检查是否有token，没有token不调用API
+      const token = getAccessToken();
+      if (!token) {
+        console.log('No token found, skipping user refresh');
+        setUser(null);
+        return;
+      }
+
       const response = await userControllerGetProfile();
       if (response.data?.data) {
         setUser(response.data.data);
+      } else {
+        // API返回成功但没有数据，清除用户状态
+        setUser(null);
       }
     } catch (error) {
       console.error('Failed to refresh user:', error);
+      // 如果获取用户信息失败，清除用户状态
+      setUser(null);
       throw error;
     }
   };
