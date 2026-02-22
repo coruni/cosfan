@@ -6,6 +6,7 @@ import { API_BASE_URL, APP_NAME } from '@/config/constants';
 import { ArticleContent } from './ArticleContent';
 import { ArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo';
 import { initServerInterceptors } from '@/lib/server-init';
+import { truncateDescription, formatCanonicalUrl } from '@/lib/seo-utils';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -25,21 +26,28 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       return { title: '文章不存在' };
     }
 
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+    const articleUrl = formatCanonicalUrl(baseUrl, `/article/${id}`);
     const title = article.title;
-    const description = article.summary || `${article.title} - 高清图集`;
+    const rawDescription = article.summary || `${article.title} - 高清图集`;
+    const description = truncateDescription(rawDescription);
     const images = article.images?.slice(0, 1) || [];
     const coverImage = article.cover || images[0];
 
     return {
       title,
       description,
+      alternates: {
+        canonical: articleUrl,
+      },
       openGraph: {
         title,
         description,
         type: 'article',
+        url: articleUrl,
         publishedTime: article.createdAt,
         authors: article.author?.nickname ? [article.author.nickname] : undefined,
-        images: coverImage ? [{ url: coverImage, alt: title }] : undefined,
+        images: coverImage ? [{ url: coverImage, alt: title, width: 1200, height: 630 }] : undefined,
       },
       twitter: {
         card: 'summary_large_image',

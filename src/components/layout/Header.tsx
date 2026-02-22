@@ -25,13 +25,14 @@ export function Header() {
     return (
       <Link
         href={href}
+        aria-current={isActive ? 'page' : undefined}
         className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
           isActive
             ? 'bg-primary text-primary-foreground'
             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
         }`}
       >
-        <Icon className="h-4 w-4" />
+        <Icon className="h-4 w-4" aria-hidden="true" />
         {label}
       </Link>
     );
@@ -43,13 +44,14 @@ export function Header() {
       <Link
         href={href}
         onClick={() => setMobileMenuOpen(false)}
+        aria-current={isActive ? 'page' : undefined}
         className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors ${
           isActive
             ? 'bg-primary text-primary-foreground'
             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
         }`}
       >
-        <Icon className="h-5 w-5" />
+        <Icon className="h-5 w-5" aria-hidden="true" />
         {label}
       </Link>
     );
@@ -63,7 +65,7 @@ export function Header() {
             <span className="text-xl font-bold text-primary">PicArt</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden md:flex items-center gap-1" aria-label="主导航">
             {NAV_LINKS.map((link) => (
               <NavLink key={link.href} {...link} />
             ))}
@@ -81,13 +83,13 @@ export function Header() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-[300px] sm:w-[400px]" title="导航菜单">
-              <nav className="flex flex-col gap-2 mt-8">
+              <nav className="flex flex-col gap-2 mt-8" aria-label="移动端导航">
                 {NAV_LINKS.map((link) => (
                   <MobileNavLink key={link.href} {...link} />
                 ))}
                 {isAuthenticated && (
                   <>
-                    <div className="h-px bg-border my-2" />
+                    <div className="h-px bg-border my-2" role="separator" />
                     <MobileNavLink href={ROUTES.VIP} label="会员" icon={Crown} />
                     <MobileNavLink href={ROUTES.PROFILE} label="个人中心" icon={User} />
                     <MobileNavLink href={ROUTES.SETTINGS} label="设置" icon={Settings} />

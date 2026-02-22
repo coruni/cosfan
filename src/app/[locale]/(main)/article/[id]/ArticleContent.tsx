@@ -212,20 +212,20 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
   const hasImages = article.images && article.images.length > 0;
 
   return (
-    <div className="space-y-6">
+    <article className="space-y-6" itemScope itemType="https://schema.org/Article">
       <header className="space-y-4">
-        <h1 className="text-2xl font-bold">{article.title}</h1>
+        <h1 className="text-2xl font-bold" itemProp="headline">{article.title}</h1>
         
         <div className="flex items-center gap-4">
-          <Link href={`/profile/${article.author.id}`} className="flex items-center gap-2">
+          <Link href={`/profile/${article.author.id}`} className="flex items-center gap-2" itemProp="author" itemScope itemType="https://schema.org/Person">
             <Image
               src={article.author.avatar || '/default-avatar.png'}
-              alt={article.author.nickname}
+              alt={`${article.author.nickname}的头像`}
               width={40}
               height={40}
               className="rounded-full"
             />
-            <span className="font-medium">{article.author.nickname}</span>
+            <span className="font-medium" itemProp="name">{article.author.nickname}</span>
           </Link>
           <Link href={`/cosers/${article.category?.id}`}>
             <Badge variant="secondary">{article.category?.name || '未分类'}</Badge>
@@ -233,8 +233,8 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-2 text-sm">
-          <Button variant="ghost" size="sm" className="text-muted-foreground cursor-default">
-            <Eye className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" className="text-muted-foreground cursor-default" aria-label={`浏览量 ${article.views}`}>
+            <Eye className="h-4 w-4 mr-1" aria-hidden="true" />
             {article.views}
           </Button>
           <Button 
@@ -243,12 +243,14 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
             onClick={handleLike}
             disabled={likeMutation.isPending}
             className={isLiked ? 'text-red-500 border-red-500 hover:bg-red-50' : ''}
+            aria-label={isLiked ? '取消点赞' : '点赞'}
+            aria-pressed={isLiked}
           >
-            <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} />
+            <Heart className={`h-4 w-4 mr-1 ${isLiked ? 'fill-current' : ''}`} aria-hidden="true" />
             {article.likes}
           </Button>
-          <Button variant="ghost" size="sm" className="text-muted-foreground cursor-default">
-            <MessageCircle className="h-4 w-4 mr-1" />
+          <Button variant="ghost" size="sm" className="text-muted-foreground cursor-default" aria-label={`评论数 ${article.commentCount}`}>
+            <MessageCircle className="h-4 w-4 mr-1" aria-hidden="true" />
             {article.commentCount}
           </Button>
           <Button 
@@ -257,12 +259,14 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
             onClick={handleFavorite}
             disabled={favoriteMutation.isPending}
             className={isFavorited ? 'text-amber-500 border-amber-500 hover:bg-amber-50' : ''}
+            aria-label={isFavorited ? '取消收藏' : '收藏'}
+            aria-pressed={isFavorited}
           >
-            <Bookmark className={`h-4 w-4 mr-1 ${isFavorited ? 'fill-current' : ''}`} />
+            <Bookmark className={`h-4 w-4 mr-1 ${isFavorited ? 'fill-current' : ''}`} aria-hidden="true" />
             {isFavorited ? '已收藏' : '收藏'}
           </Button>
-          <Button variant="outline" size="sm" onClick={handleShare}>
-            <Share2 className="h-4 w-4 mr-1" />
+          <Button variant="outline" size="sm" onClick={handleShare} aria-label="分享文章">
+            <Share2 className="h-4 w-4 mr-1" aria-hidden="true" />
             分享
           </Button>
           {article.downloads && article.downloads.length > 0 && (
@@ -362,13 +366,18 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         </div>
 
         {article.summary && (
-          <p className="text-muted-foreground">{article.summary}</p>
+          <p className="text-muted-foreground" itemProp="description">{article.summary}</p>
         )}
       </header>
 
       {hasImages ? (
         <>
-          <ImageGallery images={article.images} />
+          <figure itemProp="image">
+            <ImageGallery images={article.images} />
+            {article.summary && (
+              <figcaption className="sr-only">{article.summary}</figcaption>
+            )}
+          </figure>
           
           {!canViewAllImages && remainingImages > 0 && (
             <div className="flex flex-col items-center justify-center py-10 space-y-4 border-t">
@@ -411,10 +420,10 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         </>
       ) : (
         <div className="flex flex-col items-center justify-center py-20 space-y-4">
-          <Lock className="h-16 w-16 text-muted-foreground" />
+          <Lock className="h-16 w-16 text-muted-foreground" aria-hidden="true" />
           <p className="text-lg font-medium">暂无图片内容</p>
         </div>
       )}
-    </div>
+    </article>
   );
 }

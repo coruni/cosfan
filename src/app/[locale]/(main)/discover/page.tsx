@@ -6,6 +6,9 @@ import { DiscoverPageContent } from './DiscoverPageContent';
 export const metadata: Metadata = {
   title: '发现',
   description: '发现更多精彩Cosplay图集',
+  alternates: {
+    canonical: '/discover',
+  },
   openGraph: {
     title: '发现 - PicArt',
     description: '发现更多精彩Cosplay图集',

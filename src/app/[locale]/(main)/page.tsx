@@ -26,6 +26,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteSubtitle = config?.site_subtitle || '';
   const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
   const keywords = config?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
 
   const fullTitle = siteSubtitle ? `${siteName} | ${siteSubtitle}` : siteName;
 
@@ -35,11 +36,15 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description,
     keywords: keywords.split(','),
+    alternates: {
+      canonical: baseUrl,
+    },
     openGraph: {
       title: fullTitle,
       description,
       type: 'website',
       locale: 'zh_CN',
+      url: baseUrl,
     },
   };
 }

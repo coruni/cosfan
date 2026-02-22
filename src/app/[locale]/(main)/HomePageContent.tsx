@@ -88,10 +88,12 @@ export function HomePageContent() {
   };
 
   return (
-    <div className="space-y-6">
-      <section>
+    <main className="space-y-6">
+      <h1 className="sr-only">PicArt - 专业的Cosplay图集展示平台</h1>
+      
+      <section aria-labelledby="latest-articles">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold">最新图集</h2>
+          <h2 id="latest-articles" className="text-xl font-bold">最新图集</h2>
           {total > 0 && (
             <span className="text-sm text-muted-foreground">
               共 {total} 套图集
@@ -164,6 +166,6 @@ export function HomePageContent() {
           </>
         )}
       </section>
-    </div>
+    </main>
   );
 }

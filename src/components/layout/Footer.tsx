@@ -21,7 +21,7 @@ const FOOTER_LINKS = {
 
 export function Footer() {
   return (
-    <footer className="border-t bg-muted/50">
+    <footer className="border-t bg-muted/50" role="contentinfo">
       <div className="container py-12">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
@@ -31,7 +31,7 @@ export function Footer() {
             </p>
           </div>
 
-          <div>
+          <nav aria-label="关于我们">
             <h4 className="font-semibold mb-4">关于我们</h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.about.map((link) => (
@@ -45,9 +45,9 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          <div>
+          <nav aria-label="帮助支持">
             <h4 className="font-semibold mb-4">帮助支持</h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.support.map((link) => (
@@ -61,9 +61,9 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          <div>
+          <nav aria-label="社交媒体">
             <h4 className="font-semibold mb-4">关注我们</h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.social.map((link) => (
@@ -77,7 +77,7 @@ export function Footer() {
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
         </div>
 
         <Separator className="my-8" />

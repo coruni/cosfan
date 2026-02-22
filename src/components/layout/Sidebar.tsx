@@ -27,13 +27,14 @@ export function Sidebar() {
       <Link
         href={href}
         onClick={onClick}
+        aria-current={isActive ? 'page' : undefined}
         className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
           isActive
             ? 'bg-primary text-primary-foreground'
             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
         }`}
       >
-        <Icon className="h-5 w-5" />
+        <Icon className="h-5 w-5" aria-hidden="true" />
         {label}
       </Link>
     );
@@ -47,7 +48,7 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1">
+      <nav className="flex-1 p-4 space-y-1" aria-label="主导航">
         {NAV_LINKS.map((link) => (
           <NavLink key={link.href} {...link} onClick={onClose} />
         ))}

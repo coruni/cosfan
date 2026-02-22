@@ -62,6 +62,9 @@ export async function generateMetadata(): Promise<Metadata> {
       icon: siteFavicon || '/favicon.ico',
       apple: siteLogo || '/apple-touch-icon.png',
     },
+    alternates: {
+      canonical: baseUrl,
+    },
     openGraph: {
       type: 'website',
       locale: 'zh_CN',
@@ -70,7 +73,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description,
       siteName,
       images: siteLogo
-        ? [{ url: siteLogo, alt: siteName }]
+        ? [{ url: siteLogo, alt: siteName, width: 1200, height: 630 }]
         : [
             {
               url: `${baseUrl}/og-image.png`,
@@ -130,6 +133,12 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        <a 
+          href="#main-content" 
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
+        >
+          跳转到主内容
+        </a>
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
@@ -139,7 +148,9 @@ export default async function RootLayout({
           >
             <QueryProvider>
               <AuthProvider>
-                {children}
+                <div id="main-content">
+                  {children}
+                </div>
                 <Toaster />
               </AuthProvider>
             </QueryProvider>

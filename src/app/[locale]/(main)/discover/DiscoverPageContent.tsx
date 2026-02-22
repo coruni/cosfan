@@ -111,11 +111,11 @@ export function DiscoverPageContent() {
   };
 
   return (
-    <div className="space-y-6">
+    <main className="space-y-6">
       <h1 className="text-2xl font-bold">发现</h1>
 
-      <section>
-        <h2 className="text-xl font-semibold mb-4">热门Coser</h2>
+      <section aria-labelledby="popular-cosers">
+        <h2 id="popular-cosers" className="text-xl font-semibold mb-4">热门Coser</h2>
         {isCategoriesLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -130,7 +130,7 @@ export function DiscoverPageContent() {
                   {category.cover || category.avatar ? (
                     <Image
                       src={category.cover || category.avatar || ''}
-                      alt={category.name}
+                      alt={`${category.name} - Cosplay作品集`}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 16vw, 12vw"
@@ -139,7 +139,7 @@ export function DiscoverPageContent() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-muted to-muted/50">
-                      <User className="h-12 w-12 text-muted-foreground/50" />
+                      <User className="h-12 w-12 text-muted-foreground/50" aria-hidden="true" />
                     </div>
                   )}
                   <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
@@ -156,9 +156,9 @@ export function DiscoverPageContent() {
         )}
       </section>
 
-      <section>
+      <section aria-labelledby="popular-articles">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-semibold">热门推荐</h2>
+          <h2 id="popular-articles" className="text-xl font-semibold">热门推荐</h2>
           {total > 0 && (
             <span className="text-sm text-muted-foreground">
               共 {total} 套图集
@@ -231,6 +231,6 @@ export function DiscoverPageContent() {
           </>
         )}
       </section>
-    </div>
+    </main>
   );
 }
