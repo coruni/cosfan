@@ -32,12 +32,12 @@ npm install @radix-ui/react-dialog @radix-ui/react-slot @radix-ui/react-dropdown
 已修复以下文件的导入：
 
 - ✅ `src/components/ui/avatar.tsx`
-- ✅ `src/components/ui/badge.tsx`
-- ✅ `src/components/ui/button.tsx`
+- ✅ `src/components/ui/badge.tsx` (包括 Slot.Root → Slot)
+- ✅ `src/components/ui/button.tsx` (包括 Slot.Root → Slot)
 - ✅ `src/components/ui/checkbox.tsx`
 - ✅ `src/components/ui/dialog.tsx`
 - ✅ `src/components/ui/dropdown-menu.tsx`
-- ✅ `src/components/ui/form.tsx`
+- ✅ `src/components/ui/form.tsx` (包括 Slot.Root → Slot)
 - ✅ `src/components/ui/label.tsx`
 - ✅ `src/components/ui/navigation-menu.tsx`
 - ✅ `src/components/ui/popover.tsx`
@@ -59,6 +59,20 @@ import { Dialog as DialogPrimitive } from "radix-ui"
 ```typescript
 import * as DialogPrimitive from "@radix-ui/react-dialog"
 ```
+
+### Slot 组件修复
+
+**修复前：**
+```typescript
+const Comp = asChild ? Slot.Root : "button"
+```
+
+**修复后：**
+```typescript
+const Comp = asChild ? Slot : "button"
+```
+
+> 注意：`@radix-ui/react-slot` 的 `Slot` 组件直接使用，不需要 `.Root` 属性。
 
 ## 📦 已安装的 Radix UI 包
 
