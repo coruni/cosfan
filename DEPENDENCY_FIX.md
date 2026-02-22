@@ -2,14 +2,16 @@
 
 ## 🐛 问题描述
 
-构建时出现错误：
+构建时出现多个错误：
 ```
 Module not found: Can't resolve '@radix-ui/react-dialog'
+Module not found: Can't resolve 'radix-ui'
 ```
 
 ## 🔍 问题原因
 
-项目中错误地安装了 `radix-ui` 包，这是一个不正确的包名。
+1. 项目中错误地安装了 `radix-ui` 包（不正确的包名）
+2. 多个 UI 组件使用了错误的导入语法：`from "radix-ui"`
 
 正确的包名应该是 `@radix-ui/react-*` 系列包（带有 `@` 前缀和具体的组件名）。
 
@@ -20,9 +22,42 @@ Module not found: Can't resolve '@radix-ui/react-dialog'
 npm uninstall radix-ui
 ```
 
-### 2. 安装正确的 Radix UI 包
+### 2. 安装所有需要的 Radix UI 包
 ```bash
-npm install @radix-ui/react-dialog @radix-ui/react-slot @radix-ui/react-dropdown-menu @radix-ui/react-popover @radix-ui/react-select @radix-ui/react-checkbox @radix-ui/react-label @radix-ui/react-scroll-area @radix-ui/react-separator @radix-ui/react-avatar @radix-ui/react-navigation-menu
+npm install @radix-ui/react-dialog @radix-ui/react-slot @radix-ui/react-dropdown-menu @radix-ui/react-popover @radix-ui/react-select @radix-ui/react-checkbox @radix-ui/react-label @radix-ui/react-scroll-area @radix-ui/react-separator @radix-ui/react-avatar @radix-ui/react-navigation-menu @radix-ui/react-switch @radix-ui/react-tabs
+```
+
+### 3. 修复所有组件的导入语句
+
+已修复以下文件的导入：
+
+- ✅ `src/components/ui/avatar.tsx`
+- ✅ `src/components/ui/badge.tsx`
+- ✅ `src/components/ui/button.tsx`
+- ✅ `src/components/ui/checkbox.tsx`
+- ✅ `src/components/ui/dialog.tsx`
+- ✅ `src/components/ui/dropdown-menu.tsx`
+- ✅ `src/components/ui/form.tsx`
+- ✅ `src/components/ui/label.tsx`
+- ✅ `src/components/ui/navigation-menu.tsx`
+- ✅ `src/components/ui/popover.tsx`
+- ✅ `src/components/ui/scroll-area.tsx`
+- ✅ `src/components/ui/select.tsx`
+- ✅ `src/components/ui/separator.tsx`
+- ✅ `src/components/ui/sheet.tsx`
+- ✅ `src/components/ui/switch.tsx`
+- ✅ `src/components/ui/tabs.tsx`
+
+### 导入修复示例
+
+**修复前：**
+```typescript
+import { Dialog as DialogPrimitive } from "radix-ui"
+```
+
+**修复后：**
+```typescript
+import * as DialogPrimitive from "@radix-ui/react-dialog"
 ```
 
 ## 📦 已安装的 Radix UI 包
@@ -40,24 +75,8 @@ npm install @radix-ui/react-dialog @radix-ui/react-slot @radix-ui/react-dropdown
 - `@radix-ui/react-select` - 选择器组件
 - `@radix-ui/react-separator` - 分隔符组件
 - `@radix-ui/react-slot` - 插槽组件（基础组件）
-
-## 🎯 使用说明
-
-### ImageGallery 组件
-该组件使用了 `@radix-ui/react-dialog` 来实现图片预览功能：
-
-```typescript
-import * as DialogPrimitive from '@radix-ui/react-dialog';
-```
-
-### 其他 UI 组件
-项目中的 shadcn/ui 组件也依赖这些 Radix UI 包：
-
-- `src/components/ui/dialog.tsx` - 使用 `@radix-ui/react-dialog`
-- `src/components/ui/dropdown-menu.tsx` - 使用 `@radix-ui/react-dropdown-menu`
-- `src/components/ui/select.tsx` - 使用 `@radix-ui/react-select`
-- `src/components/ui/checkbox.tsx` - 使用 `@radix-ui/react-checkbox`
-- 等等...
+- `@radix-ui/react-switch` - 开关组件
+- `@radix-ui/react-tabs` - 标签页组件
 
 ## 🔧 验证修复
 
@@ -87,13 +106,19 @@ shadcn/ui 基于 Radix UI 构建，提供了预设样式的组件。
 
 1. **包名格式**
    - ❌ 错误：`radix-ui`
+   - ❌ 错误：`from "radix-ui"`
    - ✅ 正确：`@radix-ui/react-dialog`
+   - ✅ 正确：`import * as DialogPrimitive from "@radix-ui/react-dialog"`
 
-2. **按需安装**
+2. **导入方式**
+   - 使用 `import * as ComponentPrimitive from "@radix-ui/react-component"`
+   - 不要使用 `import { Component } from "radix-ui"`
+
+3. **按需安装**
    - 只安装项目中实际使用的 Radix UI 组件
    - 避免安装不需要的包
 
-3. **版本兼容性**
+4. **版本兼容性**
    - 确保所有 `@radix-ui/*` 包版本兼容
    - 建议使用相近的版本号
 
@@ -105,4 +130,9 @@ shadcn/ui 基于 Radix UI 构建，提供了预设样式的组件。
 
 ## ✨ 总结
 
-问题已修复！现在项目包含了所有必需的 Radix UI 依赖，可以正常构建和运行。
+问题已完全修复！
+
+- ✅ 移除了错误的 `radix-ui` 包
+- ✅ 安装了所有必需的 `@radix-ui/react-*` 包
+- ✅ 修复了 16 个组件文件的导入语句
+- ✅ 项目现在可以正常构建和运行
