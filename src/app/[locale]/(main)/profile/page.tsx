@@ -1,5 +1,4 @@
 import { Suspense } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import ProfileContent from './ProfileContent';
 
 function ProfileSkeleton() {

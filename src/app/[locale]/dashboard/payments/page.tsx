@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import {
   paymentControllerFindUserPayments,
 } from '@/api/sdk.gen';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -25,7 +25,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
-import { Search, Eye, Loader2, ChevronLeft, ChevronRight, CreditCard } from 'lucide-react';
+import { Search, Eye, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Table as UITable, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 
 type Payment = {
@@ -53,6 +53,14 @@ type Payment = {
   };
 };
 
+type PaymentsResponse = {
+  data?: {
+    data?: Payment[];
+    meta?: { total?: number };
+  };
+  meta?: { total?: number };
+};
+
 export default function PaymentsPage() {
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
@@ -71,11 +79,11 @@ export default function PaymentsPage() {
           page,
           limit,
           userId: Number(search) || undefined,
-          status: statusFilter === 'all' ? undefined : statusFilter as any,
-          paymentMethod: methodFilter === 'all' ? undefined : methodFilter as any,
+          status: statusFilter === 'all' ? undefined : statusFilter,
+          paymentMethod: methodFilter === 'all' ? undefined : methodFilter,
         },
       });
-      return response.data;
+      return response.data as PaymentsResponse;
     },
   });
 
@@ -122,8 +130,8 @@ export default function PaymentsPage() {
     }
   };
 
-  const payments = ((paymentsData as any)?.data?.data || (paymentsData as any)?.data || []) as Payment[];
-  const total = (paymentsData as any)?.data?.meta?.total || (paymentsData as any)?.meta?.total || 0;
+  const payments = (paymentsData?.data?.data || paymentsData?.data || []) as Payment[];
+  const total = paymentsData?.data?.meta?.total || paymentsData?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
   return (

@@ -11,7 +11,7 @@ import {
   roleControllerAssignPermissions,
   permissionControllerFindAll,
 } from '@/api/sdk.gen';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -95,7 +95,7 @@ export default function RolesPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+    mutationFn: async ({ id, data }: { id: number; data: { name: string; displayName: string; description: string } }) => {
       const response = await roleControllerUpdate({
         path: { id: String(id) },
         body: data,
@@ -107,13 +107,14 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setEditDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '更新失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '更新失败');
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: { name: string; displayName: string; description: string }) => {
       const response = await roleControllerCreate({ body: data });
       return response.data;
     },
@@ -123,8 +124,9 @@ export default function RolesPage() {
       setCreateDialogOpen(false);
       setCreateForm({ name: '', displayName: '', description: '' });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '创建失败');
     },
   });
 
@@ -138,8 +140,9 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setDeleteDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '删除失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '删除失败');
     },
   });
 
@@ -155,8 +158,9 @@ export default function RolesPage() {
       toast.success('状态更新成功');
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '状态更新失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '状态更新失败');
     },
   });
 
@@ -173,8 +177,9 @@ export default function RolesPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
       setPermissionsDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '权限分配失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '权限分配失败');
     },
   });
 

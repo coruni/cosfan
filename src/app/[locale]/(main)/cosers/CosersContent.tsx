@@ -4,17 +4,7 @@ import { Link } from '@/i18n';
 import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { User } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { CategoryControllerFindAllResponse } from '@/api';
-
-interface Coser {
-  id: number;
-  name: string;
-  description?: string;
-  articleCount?: number;
-  avatar?: string;
-  cover?: string;
-}
 
 interface CosersContentProps {
   initialData: CategoryControllerFindAllResponse['data']['data'];
@@ -22,7 +12,6 @@ interface CosersContentProps {
 
 export function CosersContent({ initialData }: CosersContentProps) {
   const t = useTranslations('coser');
-  const tCommon = useTranslations('common');
   const cosers = initialData || [];
 
   return (

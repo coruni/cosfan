@@ -8,7 +8,7 @@ import {
   permissionControllerRemove,
   permissionControllerUpdate,
 } from '@/api/sdk.gen';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -22,7 +22,7 @@ import {
 } from '@/components/ui/dialog';
 import { Search, Plus, Pencil, Trash2, Loader2, Shield } from 'lucide-react';
 import { toast } from 'sonner';
-import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table';
+import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type Permission = {
   id: number;
@@ -60,7 +60,7 @@ export default function PermissionsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+    mutationFn: async ({ id, data }: { id: number; data: { name: string; description: string } }) => {
       const response = await permissionControllerUpdate({
         path: { id: String(id) },
         body: data,
@@ -72,13 +72,14 @@ export default function PermissionsPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-permissions'] });
       setEditDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '更新失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '更新失败');
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: { name: string; description: string }) => {
       const response = await permissionControllerCreate({ body: data });
       return response.data;
     },
@@ -88,8 +89,9 @@ export default function PermissionsPage() {
       setCreateDialogOpen(false);
       setCreateForm({ name: '', description: '' });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '创建失败');
     },
   });
 
@@ -103,8 +105,9 @@ export default function PermissionsPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-permissions'] });
       setDeleteDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '删除失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '删除失败');
     },
   });
 

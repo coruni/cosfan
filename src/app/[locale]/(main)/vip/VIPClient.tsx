@@ -100,8 +100,9 @@ export function VIPClient({ config }: VIPClientProps) {
         toast.error('订单创建失败，请重试');
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建订单失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '创建订单失败');
     },
   });
 
@@ -127,6 +128,7 @@ export function VIPClient({ config }: VIPClientProps) {
 
         if (!isStrict) {
           // 非严格浏览器，直接跳转
+          // eslint-disable-next-line react-hooks/immutability
           window.location.href = paymentUrl;
         } else {
           // 严格浏览器，显示提示对话框让用户确认
@@ -137,21 +139,15 @@ export function VIPClient({ config }: VIPClientProps) {
         toast.success('支付创建成功');
       }
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建支付失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '创建支付失败');
     },
   });
 
   // Safari/严格浏览器兼容：支付跳转相关状态
   const [paymentRedirectUrl, setPaymentRedirectUrl] = useState<string | null>(null);
   const [showRedirectDialog, setShowRedirectDialog] = useState(false);
-
-  // Safari/严格浏览器兼容：处理支付跳转
-  const handleRedirectToPayment = useCallback(() => {
-    if (paymentRedirectUrl) {
-      window.location.href = paymentRedirectUrl;
-    }
-  }, [paymentRedirectUrl]);
 
   // Safari/严格浏览器兼容：在新标签页打开
   const handleOpenInNewTab = useCallback(() => {
@@ -168,7 +164,7 @@ export function VIPClient({ config }: VIPClientProps) {
         await navigator.clipboard.writeText(paymentRedirectUrl);
         toast.success('支付链接已复制，请在浏览器中打开完成支付');
         setShowRedirectDialog(false);
-      } catch (e) {
+      } catch {
         toast.error('复制失败，请点击"在新标签页打开"');
       }
     }
