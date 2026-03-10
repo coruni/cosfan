@@ -41,7 +41,7 @@ export function generateStaticParams() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfig();
-  
+
   const siteName = config?.site_name || APP_NAME;
   const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
   const keywords = config?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';
@@ -50,6 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteFavicon = config?.site_favicon;
 
   return {
+    metadataBase: new URL(baseUrl),
     title: {
       default: siteName,
       template: `%s | ${siteName}`,
@@ -148,10 +149,10 @@ export default async function RootLayout({
           >
             <QueryProvider>
               <AuthProvider>
-                <div id="main-content">
-                  {children}
-                </div>
-                <Toaster />
+                  <div id="main-content">
+                    {children}
+                  </div>
+                  <Toaster />
               </AuthProvider>
             </QueryProvider>
           </ThemeProvider>

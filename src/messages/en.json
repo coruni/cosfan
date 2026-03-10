@@ -182,6 +182,10 @@
       "articles": "Article Management",
       "tags": "Tag Management",
       "orders": "Order Management",
+      "payments": "Payment Management",
+      "permissions": "Permission Management",
+      "roles": "Role Management",
+      "comments": "Comment Management",
       "settings": "System Settings",
       "backToFront": "Back to Frontend"
     }
@@ -761,15 +765,15 @@
   "legal": {
     "userAgreement": {
       "title": "User Agreement",
-      "description": "PicArt User Service Agreement",
+      "description": "User Service Agreement",
       "lastUpdated": "Last Updated: January 1, 2024",
       "section1": {
         "title": "1. Acceptance of Agreement",
-        "content": "Welcome to PicArt platform. Before using our services, please read and fully understand all contents of this agreement. By using our services, you indicate that you have read, understood, and agreed to accept all contents of this agreement. If you do not agree with any part of this agreement, please stop using our services immediately."
+        "content": "Welcome to our platform. Before using our services, please read and fully understand all contents of this agreement. By using our services, you indicate that you have read, understood, and agreed to accept all contents of this agreement. If you do not agree with any part of this agreement, please stop using our services immediately."
       },
       "section2": {
         "title": "2. Service Description",
-        "content": "PicArt is a professional Cosplay gallery platform that provides users with services such as browsing, uploading, and sharing galleries. We are committed to providing users with quality content and excellent user experience."
+        "content": "Our platform is a professional Cosplay gallery platform that provides users with services such as browsing, uploading, and sharing galleries. We are committed to providing users with quality content and excellent user experience."
       },
       "section3": {
         "title": "3. User Registration",
@@ -798,11 +802,11 @@
     },
     "privacyPolicy": {
       "title": "Privacy Policy",
-      "description": "PicArt Privacy Protection Policy",
+      "description": "Privacy Protection Policy",
       "lastUpdated": "Last Updated: January 1, 2024",
       "section1": {
         "title": "1. Introduction",
-        "content": "PicArt (hereinafter referred to as 'we') attaches great importance to user privacy protection. This Privacy Policy explains how we collect, use, store, and protect your personal information. Please read this policy carefully to understand how we handle your personal information."
+        "content": "We (hereinafter referred to as 'we') attach great importance to user privacy protection. This Privacy Policy explains how we collect, use, store, and protect your personal information. Please read this policy carefully to understand how we handle your personal information."
       },
       "section2": {
         "title": "2. Information We Collect",

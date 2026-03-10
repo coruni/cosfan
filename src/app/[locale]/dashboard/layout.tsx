@@ -5,17 +5,21 @@ import { useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n';
 import { useAuth } from '@/contexts/AuthContext';
-import { 
-  LayoutDashboard, 
-  Users, 
-  FileText, 
-  Tag, 
-  ShoppingCart, 
+import {
+  LayoutDashboard,
+  Users,
+  FileText,
+  Tag,
+  ShoppingCart,
   Settings,
   Menu,
   X,
   ChevronLeft,
-  Grid3X3
+  Grid3X3,
+  Shield,
+  ShieldCheck,
+  MessageSquare,
+  CreditCard
 } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -40,6 +44,10 @@ export default function DashboardLayout({
     { href: '/dashboard/articles', label: t('articles'), icon: FileText },
     { href: '/dashboard/tags', label: t('tags'), icon: Tag },
     { href: '/dashboard/orders', label: t('orders'), icon: ShoppingCart },
+    { href: '/dashboard/payments', label: t('payments'), icon: CreditCard },
+    { href: '/dashboard/permissions', label: t('permissions'), icon: Shield },
+    { href: '/dashboard/roles', label: t('roles'), icon: ShieldCheck },
+    { href: '/dashboard/comments', label: t('comments'), icon: MessageSquare },
     { href: '/dashboard/settings', label: t('settings'), icon: Settings },
   ];
 
@@ -88,7 +96,7 @@ export default function DashboardLayout({
             : 'text-muted-foreground hover:text-foreground hover:bg-muted'
         )}
       >
-        <Icon className="h-5 w-5 flex-shrink-0" />
+        <Icon className="h-5 w-5 shrink-0" />
         <span className={cn(!sidebarOpen && 'hidden')}>{label}</span>
       </Link>
     );

@@ -5,11 +5,11 @@ import { orderControllerCreateMembershipOrder, paymentControllerCreatePayment } 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Check, Crown, Zap, Star, Loader2, CreditCard, CheckCircle } from 'lucide-react';
+import { Check, Crown, Zap, Star, Loader2, CreditCard, CheckCircle, ExternalLink, Copy } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from '@/i18n';
 import { toast } from 'sonner';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import {
   Dialog,
@@ -26,6 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { isStrictBrowser, getBrowserName } from '@/hooks/useSafePaymentRedirect';
 
 const VIP_FEATURES = [
   '无限浏览所有内容',
@@ -118,8 +119,20 @@ export function VIPClient({ config }: VIPClientProps) {
     },
     onSuccess: (data) => {
       setShowPaymentDialog(false);
-      if (data?.data?.data?.paymentUrl) {
-        window.location.href = data.data.data.paymentUrl;
+      const paymentUrl = data?.data?.data?.paymentUrl;
+
+      if (paymentUrl) {
+        // 检测是否为严格浏览器（Safari、iOS等）
+        const isStrict = isStrictBrowser();
+
+        if (!isStrict) {
+          // 非严格浏览器，直接跳转
+          window.location.href = paymentUrl;
+        } else {
+          // 严格浏览器，显示提示对话框让用户确认
+          setPaymentRedirectUrl(paymentUrl);
+          setShowRedirectDialog(true);
+        }
       } else {
         toast.success('支付创建成功');
       }
@@ -128,6 +141,38 @@ export function VIPClient({ config }: VIPClientProps) {
       toast.error(error?.message || '创建支付失败');
     },
   });
+
+  // Safari/严格浏览器兼容：支付跳转相关状态
+  const [paymentRedirectUrl, setPaymentRedirectUrl] = useState<string | null>(null);
+  const [showRedirectDialog, setShowRedirectDialog] = useState(false);
+
+  // Safari/严格浏览器兼容：处理支付跳转
+  const handleRedirectToPayment = useCallback(() => {
+    if (paymentRedirectUrl) {
+      window.location.href = paymentRedirectUrl;
+    }
+  }, [paymentRedirectUrl]);
+
+  // Safari/严格浏览器兼容：在新标签页打开
+  const handleOpenInNewTab = useCallback(() => {
+    if (paymentRedirectUrl) {
+      window.open(paymentRedirectUrl, '_blank', 'noopener,noreferrer');
+      setShowRedirectDialog(false);
+    }
+  }, [paymentRedirectUrl]);
+
+  // Safari/严格浏览器兼容：复制链接
+  const handleCopyPaymentLink = useCallback(async () => {
+    if (paymentRedirectUrl) {
+      try {
+        await navigator.clipboard.writeText(paymentRedirectUrl);
+        toast.success('支付链接已复制，请在浏览器中打开完成支付');
+        setShowRedirectDialog(false);
+      } catch (e) {
+        toast.error('复制失败，请点击"在新标签页打开"');
+      }
+    }
+  }, [paymentRedirectUrl]);
 
   const handlePurchase = (plan: VipPlan) => {
     if (!isAuthenticated) {
@@ -307,6 +352,45 @@ export function VIPClient({ config }: VIPClientProps) {
             <Link href="/profile" className="w-full sm:w-auto">
               <Button className="w-full">查看会员状态</Button>
             </Link>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Safari/严格浏览器兼容：支付跳转提示对话框 */}
+      <Dialog open={showRedirectDialog} onOpenChange={setShowRedirectDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <ExternalLink className="h-5 w-5" />
+              跳转到支付页面
+            </DialogTitle>
+            <DialogDescription className="pt-2">
+              您正在使用 {getBrowserName()} 浏览器，部分浏览器可能阻止自动跳转。
+              <br />
+              请选择以下方式完成支付：
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-3">
+            <p className="text-sm text-muted-foreground">
+              支付链接：<code className="text-xs bg-muted px-1 py-0.5 rounded">{paymentRedirectUrl?.substring(0, 50)}...</code>
+            </p>
+          </div>
+          <DialogFooter className="flex-col gap-2 sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={handleCopyPaymentLink}
+              className="w-full sm:w-auto"
+            >
+              <Copy className="h-4 w-4 mr-2" />
+              复制链接
+            </Button>
+            <Button
+              onClick={handleOpenInNewTab}
+              className="w-full sm:w-auto"
+            >
+              <ExternalLink className="h-4 w-4 mr-2" />
+              在新标签页打开
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
