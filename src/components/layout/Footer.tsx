@@ -1,25 +1,28 @@
 import { Link } from '@/i18n';
+import { useTranslations } from 'next-intl';
 import { Separator } from '@/components/ui/separator';
 
-const FOOTER_LINKS = {
-  about: [
-    { label: '关于我们', href: '/about' },
-    { label: '联系我们', href: '/contact' },
-    { label: '加入我们', href: '/jobs' },
-  ],
-  support: [
-    { label: '帮助中心', href: '/help' },
-    { label: '隐私政策', href: '/privacy' },
-    { label: '服务条款', href: '/terms' },
-  ],
-  social: [
-    { label: '微博', href: '#' },
-    { label: '微信公众号', href: '#' },
-    { label: 'QQ群', href: '#' },
-  ],
-};
-
 export function Footer() {
+  const t = useTranslations('component.footer');
+
+  const FOOTER_LINKS = {
+    about: [
+      { label: t('aboutUs'), href: '/about' },
+      { label: t('contactUs'), href: '/contact' },
+      { label: t('joinUs'), href: '/jobs' },
+    ],
+    support: [
+      { label: t('helpCenter'), href: '/help' },
+      { label: t('privacyPolicy'), href: '/privacy' },
+      { label: t('termsOfService'), href: '/terms' },
+    ],
+    social: [
+      { label: t('weibo'), href: '#' },
+      { label: t('wechat'), href: '#' },
+      { label: t('qqGroup'), href: '#' },
+    ],
+  };
+
   return (
     <footer className="border-t bg-muted/50" role="contentinfo">
       <div className="container py-12">
@@ -27,12 +30,12 @@ export function Footer() {
           <div className="space-y-4">
             <h3 className="text-lg font-bold text-primary">PicArt</h3>
             <p className="text-sm text-muted-foreground">
-              专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品，为用户提供最佳的浏览体验。
+              {t('description')}
             </p>
           </div>
 
-          <nav aria-label="关于我们">
-            <h4 className="font-semibold mb-4">关于我们</h4>
+          <nav aria-label={t('aboutUs')}>
+            <h4 className="font-semibold mb-4">{t('aboutUs')}</h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.about.map((link) => (
                 <li key={link.href}>
@@ -47,8 +50,8 @@ export function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="帮助支持">
-            <h4 className="font-semibold mb-4">帮助支持</h4>
+          <nav aria-label={t('helpCenter')}>
+            <h4 className="font-semibold mb-4">{t('helpCenter')}</h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.support.map((link) => (
                 <li key={link.href}>
@@ -63,8 +66,8 @@ export function Footer() {
             </ul>
           </nav>
 
-          <nav aria-label="社交媒体">
-            <h4 className="font-semibold mb-4">关注我们</h4>
+          <nav aria-label={t('followUs')}>
+            <h4 className="font-semibold mb-4">{t('followUs')}</h4>
             <ul className="space-y-2">
               {FOOTER_LINKS.social.map((link) => (
                 <li key={link.label}>
@@ -88,10 +91,10 @@ export function Footer() {
           </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link href="/privacy" className="hover:text-foreground transition-colors">
-              隐私政策
+              {t('privacyPolicy')}
             </Link>
             <Link href="/terms" className="hover:text-foreground transition-colors">
-              服务条款
+              {t('termsOfService')}
             </Link>
           </div>
         </div>

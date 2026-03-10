@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { ArticleGrid } from '@/components/article/ArticleGrid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -11,13 +12,8 @@ import { Search } from 'lucide-react';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious } from '@/components/ui/pagination';
 import { ArticleControllerFindAllResponse, articleControllerSearch } from '@/api';
 
-const SORT_OPTIONS = [
-  { value: 'latest', label: '最新发布' },
-  { value: 'popular', label: '最多浏览' },
-  { value: 'likes', label: '最多点赞' },
-];
-
 export function SearchContent() {
+  const t = useTranslations('search');
   const router = useRouter();
   const searchParams = useSearchParams();
   const keyword = searchParams.get('q') || '';
@@ -25,6 +21,12 @@ export function SearchContent() {
   const page = parseInt(searchParams.get('page') || '1', 10);
 
   const [searchInput, setSearchInput] = useState(keyword);
+
+  const SORT_OPTIONS = [
+    { value: 'latest', label: t('sort.latest') },
+    { value: 'popular', label: t('sort.popular') },
+    { value: 'likes', label: t('sort.likes') },
+  ];
 
   const { data, isLoading } = useQuery({
     queryKey: ['search', keyword, sort, page],
@@ -62,7 +64,7 @@ export function SearchContent() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               type="search"
-              placeholder="搜索图集..."
+              placeholder={t('placeholder')}
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               className="pl-10"
@@ -84,20 +86,20 @@ export function SearchContent() {
               ))}
             </SelectContent>
           </Select>
-          <Button type="submit">搜索</Button>
+          <Button type="submit">{t('search')}</Button>
         </div>
       </form>
 
       {keyword && (
         <p className="text-muted-foreground">
-          搜索 &quot;{keyword}&quot; 找到 {total} 个结果
+          {t('resultInfo', { keyword, total })}
         </p>
       )}
 
       {!keyword ? (
         <div className="text-center py-20 text-muted-foreground">
           <Search className="h-16 w-16 mx-auto mb-4 opacity-50" />
-          <p>输入关键词开始搜索</p>
+          <p>{t('enterKeyword')}</p>
         </div>
       ) : (
         <>

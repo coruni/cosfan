@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import type { Metadata } from 'next';
+import { getTranslations } from 'next-intl/server';
 import { Skeleton } from '@/components/ui/skeleton';
 import { HomePageContent } from './HomePageContent';
 import { OrganizationJsonLd, WebSiteJsonLd } from '@/components/seo';
@@ -22,10 +23,11 @@ async function getSiteConfig() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfig();
+  const t = await getTranslations('home');
   const siteName = config?.site_name || APP_NAME;
   const siteSubtitle = config?.site_subtitle || '';
-  const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
-  const keywords = config?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';
+  const description = config?.site_description || t('siteDescription') || 'Professional Cosplay gallery platform';
+  const keywords = config?.site_keywords || 'cosplay,gallery,2d,anime,cosplayer';
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
 
   const fullTitle = siteSubtitle ? `${siteName} | ${siteSubtitle}` : siteName;
@@ -71,9 +73,10 @@ function HomeSkeleton() {
 }
 
 export default async function HomePage() {
+  const t = await getTranslations('home');
   const config = await getSiteConfig();
   const siteName = config?.site_name || APP_NAME;
-  const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
+  const description = config?.site_description || t('siteDescription') || 'Professional Cosplay gallery platform';
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
 
   return (

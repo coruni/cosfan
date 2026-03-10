@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { useSearchParams, usePathname } from 'next/navigation';
 import { articleControllerFindAll, categoryControllerFindAll } from '@/api/sdk.gen';
@@ -38,6 +39,8 @@ function CategoryCardSkeleton() {
 }
 
 export function DiscoverPageContent() {
+  const t = useTranslations('discover');
+  const tPagination = useTranslations('pagination');
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -112,10 +115,10 @@ export function DiscoverPageContent() {
 
   return (
     <main className="space-y-6">
-      <h1 className="text-2xl font-bold">发现</h1>
+      <h1 className="text-2xl font-bold">{t('title')}</h1>
 
       <section aria-labelledby="popular-cosers">
-        <h2 id="popular-cosers" className="text-xl font-semibold mb-4">热门Coser</h2>
+        <h2 id="popular-cosers" className="text-xl font-semibold mb-4">{t('popularCosers')}</h2>
         {isCategoriesLoading ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {Array.from({ length: 6 }).map((_, i) => (
@@ -130,7 +133,7 @@ export function DiscoverPageContent() {
                   {category.cover || category.avatar ? (
                     <Image
                       src={category.cover || category.avatar || ''}
-                      alt={`${category.name} - Cosplay作品集`}
+                      alt={t('coserWorks', { name: category.name })}
                       fill
                       className="object-cover group-hover:scale-105 transition-transform duration-300"
                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 16vw, 12vw"
@@ -146,7 +149,7 @@ export function DiscoverPageContent() {
                   <div className="absolute bottom-0 left-0 right-0 p-2">
                     <h3 className="font-medium text-sm text-white truncate">{category.name}</h3>
                     {category.articleCount !== undefined && (
-                      <p className="text-xs text-white/80 mt-0.5">{category.articleCount} 套</p>
+                      <p className="text-xs text-white/80 mt-0.5">{t('articlesCount', { count: category.articleCount })}</p>
                     )}
                   </div>
                 </div>
@@ -158,10 +161,10 @@ export function DiscoverPageContent() {
 
       <section aria-labelledby="popular-articles">
         <div className="flex items-center justify-between mb-4">
-          <h2 id="popular-articles" className="text-xl font-semibold">热门推荐</h2>
+          <h2 id="popular-articles" className="text-xl font-semibold">{t('popularArticles')}</h2>
           {total > 0 && (
             <span className="text-sm text-muted-foreground">
-              共 {total} 套图集
+              {t('totalArticles', { total })}
             </span>
           )}
         </div>
@@ -174,7 +177,7 @@ export function DiscoverPageContent() {
           </div>
         ) : articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <p className="text-lg">暂无内容</p>
+            <p className="text-lg">{t('empty')}</p>
           </div>
         ) : (
           <>
@@ -224,7 +227,7 @@ export function DiscoverPageContent() {
                 </Pagination>
                 
                 <p className="text-sm text-muted-foreground">
-                  第 {currentPage} / {totalPages} 页
+                  {tPagination('pageInfo', { page: currentPage, total: totalPages })}
                 </p>
               </div>
             )}

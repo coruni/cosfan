@@ -1,12 +1,15 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { userControllerFindAll, articleControllerFindAll, tagControllerFindAll, orderControllerGetAllOrders, categoryControllerFindAll } from '@/api/sdk.gen';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Users, FileText, Tag, ShoppingCart, TrendingUp, Eye, Heart, DollarSign } from 'lucide-react';
 import { Link } from '@/i18n';
 
 export default function DashboardPage() {
+  const t = useTranslations('dashboard');
+  const tCommon = useTranslations('common');
   const { data: usersData } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
@@ -49,34 +52,34 @@ export default function DashboardPage() {
 
   const stats = [
     {
-      title: '用户总数',
+      title: t('stats.totalUsers'),
       value: (usersData as any)?.total || 0,
       icon: Users,
-      description: '平台注册用户',
+      description: t('stats.totalUsersDesc'),
       color: 'text-blue-600',
       bgColor: 'bg-blue-100 dark:bg-blue-900/30',
     },
     {
-      title: '文章总数',
+      title: t('stats.totalArticles'),
       value: (articlesData as any)?.total || 0,
       icon: FileText,
-      description: '已发布文章',
+      description: t('stats.totalArticlesDesc'),
       color: 'text-green-600',
       bgColor: 'bg-green-100 dark:bg-green-900/30',
     },
     {
-      title: '标签总数',
+      title: t('stats.totalTags'),
       value: (tagsData as any)?.total || 0,
       icon: Tag,
-      description: '内容标签',
+      description: t('stats.totalTagsDesc'),
       color: 'text-purple-600',
       bgColor: 'bg-purple-100 dark:bg-purple-900/30',
     },
     {
-      title: '订单总数',
+      title: t('stats.totalOrders'),
       value: (ordersData as any)?.total || 0,
       icon: ShoppingCart,
-      description: '交易订单',
+      description: t('stats.totalOrdersDesc'),
       color: 'text-orange-600',
       bgColor: 'bg-orange-100 dark:bg-orange-900/30',
     },
@@ -85,8 +88,8 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">控制台概览</h1>
-        <p className="text-muted-foreground">欢迎来到管理后台</p>
+        <h1 className="text-3xl font-bold">{t('overview.title')}</h1>
+        <p className="text-muted-foreground">{t('overview.welcome')}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -111,29 +114,29 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>快速操作</CardTitle>
-            <CardDescription>常用管理功能入口</CardDescription>
+            <CardTitle>{t('quickActions.title')}</CardTitle>
+            <CardDescription>{t('quickActions.description')}</CardDescription>
           </CardHeader>
           <CardContent className="grid gap-2">
             <Link href="/dashboard/users" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
               <Users className="h-5 w-5 text-blue-600" />
               <div>
-                <p className="font-medium">用户管理</p>
-                <p className="text-sm text-muted-foreground">管理平台用户</p>
+                <p className="font-medium">{t('quickActions.userManagement')}</p>
+                <p className="text-sm text-muted-foreground">{t('quickActions.userManagementDesc')}</p>
               </div>
             </Link>
             <Link href="/dashboard/articles" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
               <FileText className="h-5 w-5 text-green-600" />
               <div>
-                <p className="font-medium">文章管理</p>
-                <p className="text-sm text-muted-foreground">审核和管理文章内容</p>
+                <p className="font-medium">{t('quickActions.articleManagement')}</p>
+                <p className="text-sm text-muted-foreground">{t('quickActions.articleManagementDesc')}</p>
               </div>
             </Link>
             <Link href="/dashboard/orders" className="flex items-center gap-3 p-3 rounded-lg hover:bg-muted transition-colors">
               <ShoppingCart className="h-5 w-5 text-orange-600" />
               <div>
-                <p className="font-medium">订单管理</p>
-                <p className="text-sm text-muted-foreground">查看和处理订单</p>
+                <p className="font-medium">{t('quickActions.orderManagement')}</p>
+                <p className="text-sm text-muted-foreground">{t('quickActions.orderManagementDesc')}</p>
               </div>
             </Link>
           </CardContent>
@@ -141,19 +144,19 @@ export default function DashboardPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>分类统计</CardTitle>
-            <CardDescription>文章分类分布</CardDescription>
+            <CardTitle>{t('categoryStats.title')}</CardTitle>
+            <CardDescription>{t('categoryStats.description')}</CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
               {categoriesData?.data?.data.slice(0, 5).map((category: any) => (
                 <div key={category.id} className="flex items-center justify-between">
                   <span className="text-sm">{category.name}</span>
-                  <span className="text-sm text-muted-foreground">{category._count?.articles || 0} 篇</span>
+                  <span className="text-sm text-muted-foreground">{category._count?.articles || 0} {tCommon('articlesCount')}</span>
                 </div>
               ))}
               {(!categoriesData?.data || categoriesData.data?.data.length === 0) && (
-                <p className="text-sm text-muted-foreground text-center py-4">暂无分类数据</p>
+                <p className="text-sm text-muted-foreground text-center py-4">{t('categoryStats.empty')}</p>
               )}
             </div>
           </CardContent>

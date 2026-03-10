@@ -2,6 +2,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react';
 import AvatarEditor from 'react-avatar-editor';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -29,14 +30,16 @@ interface ImageCropDialogProps {
 export function ImageCropDialog({
   open,
   onOpenChange,
-  title = '裁剪图片',
-  description = '拖拽调整位置，滚轮或双指缩放',
+  title,
+  description,
   aspectRatio = 1,
   width = 200,
   height = 200,
   onConfirm,
   initialImage,
 }: ImageCropDialogProps) {
+  const t = useTranslations('imageCrop');
+  const tComponent = useTranslations('component.imageCropDialog');
   const [image, setImage] = useState<string | null>(initialImage || null);
   const [scale, setScale] = useState(1);
   const [rotation, setRotation] = useState(0);
@@ -45,6 +48,9 @@ export function ImageCropDialog({
   const editorRef = useRef<AvatarEditor>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  const dialogTitle = title || t('title');
+  const dialogDescription = description || t('description');
 
   useEffect(() => {
     if (initialImage) {
@@ -56,7 +62,7 @@ export function ImageCropDialog({
     const file = e.target.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        toast.error('请选择图片文件');
+        toast.error(t('selectImage'));
         return;
       }
       const reader = new FileReader();
@@ -67,7 +73,7 @@ export function ImageCropDialog({
       };
       reader.readAsDataURL(file);
     }
-  }, []);
+  }, [t]);
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -76,7 +82,7 @@ export function ImageCropDialog({
     const file = e.dataTransfer.files?.[0];
     if (file) {
       if (!file.type.startsWith('image/')) {
-        toast.error('请选择图片文件');
+        toast.error(t('selectImage'));
         return;
       }
       const reader = new FileReader();
@@ -87,7 +93,7 @@ export function ImageCropDialog({
       };
       reader.readAsDataURL(file);
     }
-  }, []);
+  }, [t]);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -156,26 +162,26 @@ export function ImageCropDialog({
 
   const handleConfirm = async () => {
     if (!editorRef.current || !image) {
-      toast.error('请先选择图片');
+      toast.error(t('selectImageFirst'));
       return;
     }
 
     const canvas = editorRef.current.getImageScaledToCanvas();
-    
+
     canvas.toBlob(async (blob) => {
       if (!blob) {
-        toast.error('图片处理失败');
+        toast.error(t('processFailed'));
         return;
       }
 
       const file = new File([blob], 'cropped-image.png', { type: 'image/png' });
-      
+
       setIsLoading(true);
       try {
         await onConfirm(file);
         handleClose();
       } catch (error: any) {
-        toast.error(error?.message || '上传失败');
+        toast.error(error?.message || tComponent('uploadFailed'));
       } finally {
         setIsLoading(false);
       }
@@ -201,8 +207,8 @@ export function ImageCropDialog({
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>{title}</DialogTitle>
-          <DialogDescription>{description}</DialogDescription>
+          <DialogTitle>{dialogTitle}</DialogTitle>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
@@ -220,15 +226,15 @@ export function ImageCropDialog({
             >
               <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">
-                点击或拖拽图片到此处上传
+                {t('uploadHint')}
               </p>
               <p className="text-xs text-muted-foreground mt-1">
-                支持 JPG、PNG、GIF 格式
+                {t('supportedFormats')}
               </p>
             </div>
           ) : (
             <div className="space-y-4">
-              <div 
+              <div
                 ref={containerRef}
                 className="flex justify-center bg-muted rounded-lg p-2 touch-none select-none"
               >
@@ -252,7 +258,7 @@ export function ImageCropDialog({
                   onClick={handleRotateLeft}
                 >
                   <RotateCw className="h-4 w-4 mr-1" />
-                  向左旋转
+                  {t('rotateLeft')}
                 </Button>
                 <Button
                   variant="outline"
@@ -260,12 +266,12 @@ export function ImageCropDialog({
                   onClick={handleRotateRight}
                 >
                   <RotateCw className="h-4 w-4 mr-1 scale-x-[-1]" />
-                  向右旋转
+                  {t('rotateRight')}
                 </Button>
               </div>
 
               <p className="text-xs text-center text-muted-foreground">
-                滚轮或双指缩放 · 拖拽调整位置
+                {t('zoomHint')}
               </p>
 
               <Button
@@ -274,7 +280,7 @@ export function ImageCropDialog({
                 className="w-full"
                 onClick={() => fileInputRef.current?.click()}
               >
-                重新选择图片
+                {t('reselectImage')}
               </Button>
             </div>
           )}
@@ -290,14 +296,14 @@ export function ImageCropDialog({
 
         <DialogFooter>
           <Button variant="outline" onClick={handleClose}>
-            取消
+            {tComponent('cancel')}
           </Button>
           <Button
             onClick={handleConfirm}
             disabled={!image || isLoading}
           >
             {isLoading && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-            确认
+            {tComponent('confirm')}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,6 +1,7 @@
 'use client';
 
 import { Link } from '@/i18n';
+import { useTranslations } from 'next-intl';
 import Image from 'next/image';
 import { User } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -20,11 +21,13 @@ interface CosersContentProps {
 }
 
 export function CosersContent({ initialData }: CosersContentProps) {
+  const t = useTranslations('coser');
+  const tCommon = useTranslations('common');
   const cosers = initialData || [];
 
   return (
     <div className="space-y-6">
-      <h1 className="text-2xl font-bold">Coser列表</h1>
+      <h1 className="text-2xl font-bold">{t('list')}</h1>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
         {cosers.map((coser, index) => (
           <Link key={coser.id} href={`/cosers/${coser.id}`}>
@@ -48,7 +51,7 @@ export function CosersContent({ initialData }: CosersContentProps) {
               <div className="absolute bottom-0 left-0 right-0 p-3">
                 <h3 className="font-medium text-white truncate">{coser.name}</h3>
                 {coser.articleCount !== undefined && (
-                  <p className="text-xs text-white/80 mt-1">{coser.articleCount} 套图集</p>
+                  <p className="text-xs text-white/80 mt-1">{t('articlesCount', { count: coser.articleCount })}</p>
                 )}
               </div>
             </div>

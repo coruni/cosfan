@@ -1,4 +1,5 @@
 import { Link } from '@/i18n';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -9,7 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { ROUTES } from '@/config/constants';
-import { User, Settings, LogOut, Crown } from 'lucide-react';
+import { User, Settings, LogOut, Crown, LayoutDashboard } from 'lucide-react';
 import type { UserData } from '@/lib/auth';
 
 interface UserDropdownProps {
@@ -21,16 +22,18 @@ interface UserDropdownProps {
 }
 
 export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogout, onClose }: UserDropdownProps) {
+  const t = useTranslations('component.userDropdown');
+
   if (!isAuthenticated || !user) {
     return (
       <div className={variant === 'sidebar' ? 'space-y-2' : 'flex items-center gap-2'}>
         <Link href={ROUTES.LOGIN} onClick={onClose}>
           <Button variant="ghost" size="sm" className={variant === 'sidebar' ? 'w-full' : ''}>
-            登录
+            {t('login')}
           </Button>
         </Link>
         <Link href={ROUTES.REGISTER} onClick={onClose}>
-          <Button size="sm" className={variant === 'sidebar' ? 'w-full' : ''}>注册</Button>
+          <Button size="sm" className={variant === 'sidebar' ? 'w-full' : ''}>{t('register')}</Button>
         </Link>
       </div>
     );
@@ -47,7 +50,7 @@ export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogo
                 {user.nickname?.[0] || user.username?.[0] || 'U'}
               </AvatarFallback>
             </Avatar>
-            <span className="truncate">{user.nickname || user.username || '用户'}</span>
+            <span className="truncate">{user.nickname || user.username || t('user')}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent className="w-56" align="start">
@@ -65,25 +68,33 @@ export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogo
           <DropdownMenuItem asChild>
             <Link href={ROUTES.VIP} className="cursor-pointer" onClick={onClose}>
               <Crown className="mr-2 h-4 w-4" />
-              会员
+              {t('vip')}
             </Link>
           </DropdownMenuItem>
+          {user.roles?.some((role) => (role.name === 'admin' || role.name === 'super-admin') && role.isActive !== false) && (
+            <DropdownMenuItem asChild>
+              <Link href="/dashboard" className="cursor-pointer" onClick={onClose}>
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                {t('enterDashboard')}
+              </Link>
+            </DropdownMenuItem>
+          )}
           <DropdownMenuItem asChild>
             <Link href={ROUTES.PROFILE} className="cursor-pointer" onClick={onClose}>
               <User className="mr-2 h-4 w-4" />
-              个人中心
+              {t('profile')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuItem asChild>
             <Link href={ROUTES.SETTINGS} className="cursor-pointer" onClick={onClose}>
               <Settings className="mr-2 h-4 w-4" />
-              设置
+              {t('settings')}
             </Link>
           </DropdownMenuItem>
           <DropdownMenuSeparator />
           <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive">
             <LogOut className="mr-2 h-4 w-4" />
-            退出登录
+            {t('logout')}
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
@@ -115,25 +126,33 @@ export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogo
         <DropdownMenuItem asChild>
           <Link href={ROUTES.VIP} className="cursor-pointer">
             <Crown className="mr-2 h-4 w-4" />
-            会员
+            {t('vip')}
           </Link>
         </DropdownMenuItem>
+        {user.roles?.some((role) => (role.name === 'admin' || role.name === 'super-admin') && role.isActive !== false) && (
+          <DropdownMenuItem asChild>
+            <Link href="/dashboard" className="cursor-pointer">
+              <LayoutDashboard className="mr-2 h-4 w-4" />
+              {t('enterDashboard')}
+            </Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem asChild>
           <Link href={ROUTES.PROFILE} className="cursor-pointer">
             <User className="mr-2 h-4 w-4" />
-            个人中心
+            {t('profile')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <Link href={ROUTES.SETTINGS} className="cursor-pointer">
             <Settings className="mr-2 h-4 w-4" />
-            设置
+            {t('settings')}
           </Link>
         </DropdownMenuItem>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={onLogout} className="cursor-pointer text-destructive">
           <LogOut className="mr-2 h-4 w-4" />
-          退出登录
+          {t('logout')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

@@ -157,7 +157,11 @@
     "enterPasswordAgain": "Please enter password again",
     "registering": "Registering...",
     "hasAccount": "Already have an account?",
-    "loginNow": "Login now"
+    "loginNow": "Login now",
+    "inviteCode": "Invite Code",
+    "enterInviteCode": "Please enter invite code",
+    "registrationClosed": "Registration is currently closed. Please try again later.",
+    "emailCodeRequired": "Please enter the 6-digit email verification code"
   },
   "nav": {
     "home": "Home",
@@ -167,8 +171,10 @@
     "wallet": "Wallet",
     "profile": "Profile",
     "settings": "Settings",
+    "discover": "Discover",
     "openMenu": "Open Menu",
     "menu": "Navigation Menu",
+    "language": "Language",
     "dashboard": {
       "overview": "Overview",
       "users": "User Management",
@@ -183,7 +189,8 @@
   "home": {
     "latestArticles": "Latest Galleries",
     "totalArticles": "Total {total} galleries",
-    "empty": "No content"
+    "empty": "No content",
+    "siteDescription": "Professional Cosplay gallery platform with high-quality cosplay works"
   },
   "search": {
     "placeholder": "Search galleries...",
@@ -260,6 +267,12 @@
     "confirmNewPassword": "Confirm New Password",
     "enterNewPasswordAgain": "Enter new password again",
     "confirmChange": "Confirm Change",
+    "edit": "Edit",
+    "bind": "Bind",
+    "change": "Change",
+    "nav": {
+      "language": "Language"
+    },
     "description": "Manage system configuration",
     "addConfig": "Add Config",
     "empty": "No configuration data",
@@ -642,5 +655,191 @@
     "rotateRight": "Rotate Right",
     "zoomHint": "Scroll or pinch to zoom · Drag to adjust position",
     "reselectImage": "Reselect Image"
+  },
+  "coser": {
+    "list": "Coser List",
+    "listDesc": "Browse all Cosers and discover amazing Cosplay collections",
+    "articlesCount": "{count} galleries",
+    "viewWorks": "View {name}'s Cosplay collection"
+  },
+  "discover": {
+    "title": "Discover",
+    "popularCosers": "Popular Cosers",
+    "popularArticles": "Popular Recommendations",
+    "articlesCount": "{count} sets",
+    "totalArticles": "Total {total} galleries",
+    "empty": "No content",
+    "coserWorks": "{name} - Cosplay Collection"
+  },
+  "article": {
+    "notFound": "Article not found or has been deleted",
+    "backToHome": "Back to Home",
+    "uncategorized": "Uncategorized",
+    "liked": "Liked",
+    "unliked": "Unliked",
+    "favorited": "Favorited",
+    "unfavorited": "Unfavorited",
+    "operationFailed": "Operation failed",
+    "linkCopied": "Link copied to clipboard",
+    "favoriteAction": "Favorite",
+    "favorited": "Favorited",
+    "share": "Share",
+    "downloadResources": "Download Resources",
+    "downloadCount": "Download ({count})",
+    "resourcesCount": "{count} download resources",
+    "password": "Password",
+    "extractionCode": "Extraction Code",
+    "passwordCopied": "Password copied",
+    "extractionCodeCopied": "Extraction code copied",
+    "remainingImages": "{count} more images locked",
+    "payToView": "Pay ¥{price} to view full content",
+    "vipCanViewAll": "VIP members can view all",
+    "loginToViewMore": "Login to view more content",
+    "loginToView": "Login to View More",
+    "openVip": "Open VIP",
+    "payToUnlock": "Pay ¥{price} to Unlock",
+    "noImages": "No images available",
+    "downloadType": {
+      "baidu": "Baidu Netdisk",
+      "quark": "Quark",
+      "aliyun": "Aliyun Drive",
+      "onedrive": "OneDrive",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "lanzou": "Lanzou",
+      "mega": "Mega",
+      "direct": "Direct Download",
+      "other": "Other",
+      "unknown": "Unknown"
+    }
+  },
+  "component": {
+    "article": {
+      "noImage": "No Image",
+      "cover": "{title} - {coser} Gallery Cover",
+      "avatar": "{name}'s avatar",
+      "download": "Download",
+      "imageCount": "{count}P"
+    },
+    "articleGrid": {
+      "empty": "No content"
+    },
+    "imageGallery": {
+      "preview": "Image Preview",
+      "reset": "Reset",
+      "requireMembership": "Member Only"
+    },
+    "userDropdown": {
+      "login": "Login",
+      "register": "Register",
+      "user": "User",
+      "vip": "VIP",
+      "enterDashboard": "Enter Dashboard",
+      "profile": "Profile",
+      "settings": "Settings",
+      "logout": "Logout"
+    },
+    "footer": {
+      "aboutUs": "About Us",
+      "contactUs": "Contact Us",
+      "joinUs": "Join Us",
+      "helpCenter": "Help Center",
+      "privacyPolicy": "Privacy Policy",
+      "termsOfService": "Terms of Service",
+      "weibo": "Weibo",
+      "wechat": "WeChat",
+      "qqGroup": "QQ Group",
+      "description": "Professional Cosplay gallery display platform,汇聚海量优质Cosplay作品，为用户提供最佳的浏览体验。",
+      "followUs": "Follow Us"
+    },
+    "imageCropDialog": {
+      "uploadFailed": "Upload failed",
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
+  },
+  "legal": {
+    "userAgreement": {
+      "title": "User Agreement",
+      "description": "PicArt User Service Agreement",
+      "lastUpdated": "Last Updated: January 1, 2024",
+      "section1": {
+        "title": "1. Acceptance of Agreement",
+        "content": "Welcome to PicArt platform. Before using our services, please read and fully understand all contents of this agreement. By using our services, you indicate that you have read, understood, and agreed to accept all contents of this agreement. If you do not agree with any part of this agreement, please stop using our services immediately."
+      },
+      "section2": {
+        "title": "2. Service Description",
+        "content": "PicArt is a professional Cosplay gallery platform that provides users with services such as browsing, uploading, and sharing galleries. We are committed to providing users with quality content and excellent user experience."
+      },
+      "section3": {
+        "title": "3. User Registration",
+        "content": "You need to register as a user to access certain services. During registration, you should provide true, accurate, and complete personal information and update it promptly. You are responsible for your account and password, and all activities under your account."
+      },
+      "section4": {
+        "title": "4. User Conduct",
+        "content": "When using our services, you must comply with relevant laws and regulations of the People's Republic of China and must not use our platform for illegal activities. You must not upload or publish content containing illegal, violent, pornographic, or infringing materials. We reserve the right to remove violating content and penalize violating users."
+      },
+      "section5": {
+        "title": "5. Intellectual Property",
+        "content": "All content on this platform, including but not limited to text, images, videos, audio, software, programs, and layout designs, is protected by copyright law, trademark law, and other laws and regulations. Without authorization, no one may copy, distribute, display, mirror, upload, or download content from this platform."
+      },
+      "section6": {
+        "title": "6. Privacy Protection",
+        "content": "We value user privacy protection and will collect, use, store, and protect your personal information in accordance with our Privacy Policy. Please read our Privacy Policy carefully."
+      },
+      "section7": {
+        "title": "7. Disclaimer",
+        "content": "This platform does not undertake the obligation to review user-uploaded content. User-uploaded content represents only the user's personal views and is not related to this platform. Users are solely responsible for any disputes arising from uploaded content. This platform is not liable for service interruptions or other defects caused by force majeure or other reasons beyond our control."
+      },
+      "section8": {
+        "title": "8. Agreement Modification and Termination",
+        "content": "We reserve the right to modify this agreement as needed. The modified agreement will be published on this platform. If you do not agree with the modified agreement, you may stop using our services. Your continued use of our services will be deemed as acceptance of the modified agreement."
+      }
+    },
+    "privacyPolicy": {
+      "title": "Privacy Policy",
+      "description": "PicArt Privacy Protection Policy",
+      "lastUpdated": "Last Updated: January 1, 2024",
+      "section1": {
+        "title": "1. Introduction",
+        "content": "PicArt (hereinafter referred to as 'we') attaches great importance to user privacy protection. This Privacy Policy explains how we collect, use, store, and protect your personal information. Please read this policy carefully to understand how we handle your personal information."
+      },
+      "section2": {
+        "title": "2. Information We Collect",
+        "content": "To provide you with services, we may collect the following information:",
+        "item1": "Account Information: username, email, phone number, password, etc.",
+        "item2": "Profile Information: nickname, avatar, bio, etc.",
+        "item3": "Usage Information: browsing history, search history, likes and favorites, etc.",
+        "item4": "Device Information: device model, operating system, IP address, etc."
+      },
+      "section3": {
+        "title": "3. Use of Information",
+        "content": "The information we collect will be used for the following purposes:",
+        "item1": "Provide, maintain, and improve our services",
+        "item2": "Process your requests and transactions",
+        "item3": "Send you service notifications and updates",
+        "item4": "Analyze user behavior and optimize user experience"
+      },
+      "section4": {
+        "title": "4. Information Sharing",
+        "content": "We will not sell, rent, or otherwise disclose your personal information to third parties, unless: (1) we have obtained your explicit consent; (2) required by laws and regulations; (3) necessary to protect our or others' legitimate rights and interests."
+      },
+      "section5": {
+        "title": "5. Information Security",
+        "content": "We take reasonable security measures to protect your personal information, including encrypted storage and access control. However, please note that no security measure is absolutely secure, and we cannot guarantee absolute security of information."
+      },
+      "section6": {
+        "title": "6. Your Rights",
+        "content": "You have the right to access, correct, and delete your personal information. You can manage your information through the account settings page or contact our customer service team."
+      },
+      "section7": {
+        "title": "7. Cookies and Similar Technologies",
+        "content": "We use cookies and similar technologies to improve user experience and analyze website traffic. You can manage cookies through your browser settings, but this may affect the use of certain features."
+      },
+      "section8": {
+        "title": "8. Policy Updates",
+        "content": "We may update this Privacy Policy from time to time. The updated policy will be published on this platform and will take effect immediately upon publication. We recommend that you review this policy regularly to stay informed of the latest information."
+      }
+    }
   }
 }

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useQuery, useMutation } from '@tanstack/react-query';
-import { articleControllerGetUserBrowseHistory, articleControllerGetLikedArticles, articleControllerGetFavoritedArticles, userControllerUpdate } from '@/api/sdk.gen';
+import { articleControllerGetUserBrowseHistory, articleControllerGetLikedArticles, articleControllerGetFavoritedArticles, userControllerUpdate, uploadControllerUploadFile } from '@/api/sdk.gen';
 import type { ArticleControllerFindAllResponse, UserControllerGetProfileResponse } from '@/api/types.gen';
 import { ArticleGrid } from '@/components/article/ArticleGrid';
 import { Link, useRouter, usePathname } from '@/i18n';
@@ -166,20 +166,19 @@ export default function ProfileContent() {
     const file = e.target.files?.[0];
     if (!file) return;
     
-    const formData = new FormData();
-    formData.append('file', file);
-    
     try {
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        body: formData,
+      const response = await uploadControllerUploadFile({
+        body: { file },
       });
-      const data = await response.json();
-      if (data.url) {
-        setEditForm(prev => ({ ...prev, avatar: data.url }));
+      
+      const uploadedFile = response.data?.data?.[0];
+      if (uploadedFile?.url) {
+        setEditForm(prev => ({ ...prev, avatar: uploadedFile.url || '' }));
+      } else {
+        throw new Error('上传失败');
       }
-    } catch (error) {
-      toast.error('头像上传失败');
+    } catch (error: any) {
+      toast.error(error?.message || '头像上传失败');
     }
   };
 

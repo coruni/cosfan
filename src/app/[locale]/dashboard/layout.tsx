@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/i18n';
 import { useAuth } from '@/contexts/AuthContext';
 import { 
@@ -20,26 +21,27 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
-const ADMIN_NAV_LINKS = [
-  { href: '/dashboard', label: '概览', icon: LayoutDashboard },
-  { href: '/dashboard/users', label: '用户管理', icon: Users },
-  { href: '/dashboard/cosers', label: 'Coser管理', icon: Grid3X3 },
-  { href: '/dashboard/articles', label: '文章管理', icon: FileText },
-  { href: '/dashboard/tags', label: '标签管理', icon: Tag },
-  { href: '/dashboard/orders', label: '订单管理', icon: ShoppingCart },
-  { href: '/dashboard/settings', label: '系统设置', icon: Settings },
-];
-
 export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const t = useTranslations('nav.dashboard');
   const { user, isAuthenticated, isLoading } = useAuth();
   const router = useRouter();
   const pathname = usePathname();
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const ADMIN_NAV_LINKS = [
+    { href: '/dashboard', label: t('overview'), icon: LayoutDashboard },
+    { href: '/dashboard/users', label: t('users'), icon: Users },
+    { href: '/dashboard/cosers', label: t('cosers'), icon: Grid3X3 },
+    { href: '/dashboard/articles', label: t('articles'), icon: FileText },
+    { href: '/dashboard/tags', label: t('tags'), icon: Tag },
+    { href: '/dashboard/orders', label: t('orders'), icon: ShoppingCart },
+    { href: '/dashboard/settings', label: t('settings'), icon: Settings },
+  ];
 
   useEffect(() => {
     console.log('Dashboard auth state:', { isLoading, isAuthenticated, user: user?.username });
@@ -129,7 +131,7 @@ export default function DashboardLayout({
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           >
             <X className="h-5 w-5 flex-shrink-0" />
-            {sidebarOpen && <span>返回前台</span>}
+            {sidebarOpen && <span>{t('backToFront')}</span>}
           </Link>
         </div>
       </aside>
@@ -179,7 +181,7 @@ export default function DashboardLayout({
                 className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 <X className="h-5 w-5" />
-                <span>返回前台</span>
+                <span>{t('backToFront')}</span>
               </Link>
             </div>
           </aside>

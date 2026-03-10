@@ -1,0 +1,112 @@
+{
+  "zh": {
+    "discover": {
+      "title": "发现",
+      "popularCosers": "热门Coser",
+      "popularArticles": "热门推荐",
+      "articlesCount": "{count} 套",
+      "totalArticles": "共 {total} 套图集",
+      "empty": "暂无内容",
+      "coserWorks": "{name} - Cosplay作品集"
+    },
+    "profile": {
+      "title": "个人中心",
+      "pleaseLogin": "请先登录",
+      "loginToViewProfile": "登录后查看个人中心",
+      "goLogin": "去登录",
+      "settings": "设置",
+      "editProfile": "编辑资料",
+      "editProfileDesc": "修改您的个人信息",
+      "changeAvatar": "更换头像",
+      "vipMember": "VIP会员",
+      "standardMember": "标准会员",
+      "validUntil": "有效期至",
+      "expired": "已过期",
+      "expireTomorrow": "明天到期",
+      "expireInDays": "{days}天后到期",
+      "renewMembership": "续费会员",
+      "openVip": "开通VIP会员",
+      "openVipDesc": "解锁高清原图下载、无广告体验等专属权益",
+      "openNow": "立即开通",
+      "stats": {
+        "posts": "发布",
+        "followers": "粉丝",
+        "following": "关注",
+        "points": "积分"
+      },
+      "tabs": {
+        "history": "浏览历史",
+        "likes": "我的点赞",
+        "favorites": "我的收藏"
+      },
+      "historyDesc": "最近浏览的图集",
+      "likesDesc": "点赞过的图集",
+      "favoritesDesc": "收藏的图集",
+      "form": {
+        "nickname": "昵称",
+        "nicknamePlaceholder": "输入昵称",
+        "bio": "个人介绍",
+        "bioPlaceholder": "介绍一下自己..."
+      },
+      "profileUpdateSuccess": "资料更新成功",
+      "updateFailed": "更新失败",
+      "avatarUploadFailed": "头像上传失败",
+      "pageInfo": "第 {page} / {total} 页"
+    }
+  },
+  "en": {
+    "discover": {
+      "title": "Discover",
+      "popularCosers": "Popular Cosers",
+      "popularArticles": "Popular Recommendations",
+      "articlesCount": "{count} sets",
+      "totalArticles": "Total {total} galleries",
+      "empty": "No content",
+      "coserWorks": "{name} - Cosplay Collection"
+    },
+    "profile": {
+      "title": "Profile",
+      "pleaseLogin": "Please login first",
+      "loginToViewProfile": "Login to view profile",
+      "goLogin": "Go to Login",
+      "settings": "Settings",
+      "editProfile": "Edit Profile",
+      "editProfileDesc": "Modify your personal information",
+      "changeAvatar": "Change Avatar",
+      "vipMember": "VIP Member",
+      "standardMember": "Standard Member",
+      "validUntil": "Valid until",
+      "expired": "Expired",
+      "expireTomorrow": "Expires tomorrow",
+      "expireInDays": "Expires in {days} days",
+      "renewMembership": "Renew Membership",
+      "openVip": "Open VIP Membership",
+      "openVipDesc": "Unlock HD downloads, ad-free experience and more exclusive benefits",
+      "openNow": "Open Now",
+      "stats": {
+        "posts": "Posts",
+        "followers": "Followers",
+        "following": "Following",
+        "points": "Points"
+      },
+      "tabs": {
+        "history": "History",
+        "likes": "Likes",
+        "favorites": "Favorites"
+      },
+      "historyDesc": "Recently viewed galleries",
+      "likesDesc": "Liked galleries",
+      "favoritesDesc": "Favorite galleries",
+      "form": {
+        "nickname": "Nickname",
+        "nicknamePlaceholder": "Enter nickname",
+        "bio": "Bio",
+        "bioPlaceholder": "Tell us about yourself..."
+      },
+      "profileUpdateSuccess": "Profile updated successfully",
+      "updateFailed": "Update failed",
+      "avatarUploadFailed": "Avatar upload failed",
+      "pageInfo": "Page {page} / {total}"
+    }
+  }
+}

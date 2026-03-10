@@ -1,6 +1,7 @@
 'use client';
 
-import { 
+import { useTranslations } from 'next-intl';
+import {
   ArticleControllerFindAllResponse,
   ArticleControllerFindOneResponse,
   ArticleControllerGetLikedArticlesResponse,
@@ -35,6 +36,8 @@ function ArticleCardSkeleton() {
 }
 
 export function ArticleGrid({ articles, isLoading = false, priority = false }: ArticleGridProps) {
+  const t = useTranslations('component.articleGrid');
+
   if (isLoading) {
     return (
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
@@ -48,7 +51,7 @@ export function ArticleGrid({ articles, isLoading = false, priority = false }: A
   if (!articles || articles.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-        <p className="text-lg">暂无内容</p>
+        <p className="text-lg">{t('empty')}</p>
       </div>
     );
   }

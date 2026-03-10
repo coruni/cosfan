@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useParams, usePathname } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import { articleControllerFindOne, articleControllerLike, articleControllerFavoriteArticle } from '@/api/sdk.gen';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Badge } from '@/components/ui/badge';
@@ -63,6 +64,8 @@ interface ArticleContentProps {
 }
 
 export function ArticleContent({ initialData }: ArticleContentProps) {
+  const t = useTranslations('article');
+  const tAuth = useTranslations('auth');
   const params = useParams();
   const pathname = usePathname();
   const id = params.id as string;
@@ -89,14 +92,14 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     },
     onSuccess: () => {
       const newIsLiked = !isLiked;
-      toast.success(newIsLiked ? '点赞成功' : '取消点赞');
+      toast.success(newIsLiked ? t('liked') : t('unliked'));
       queryClient.setQueryData(['article', id], (old: Article | undefined) => {
         if (!old) return old;
         return { ...old, isLiked: newIsLiked, likes: newIsLiked ? old.likes + 1 : Math.max(0, old.likes - 1) };
       });
     },
     onError: () => {
-      toast.error('操作失败');
+      toast.error(t('operationFailed'));
     },
   });
 
@@ -108,20 +111,20 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     },
     onSuccess: () => {
       const newIsFavorited = !isFavorited;
-      toast.success(newIsFavorited ? '收藏成功' : '取消收藏');
+      toast.success(newIsFavorited ? t('favorited') : t('unfavorited'));
       queryClient.setQueryData(['article', id], (old: Article | undefined) => {
         if (!old) return old;
         return { ...old, isFavorited: newIsFavorited };
       });
     },
     onError: () => {
-      toast.error('操作失败');
+      toast.error(t('operationFailed'));
     },
   });
 
   const handleLike = () => {
     if (!isAuthenticated) {
-      toast.error('请先登录');
+      toast.error(tAuth('pleaseLogin'));
       return;
     }
     likeMutation.mutate();
@@ -129,7 +132,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
 
   const handleFavorite = () => {
     if (!isAuthenticated) {
-      toast.error('请先登录');
+      toast.error(tAuth('pleaseLogin'));
       return;
     }
     favoriteMutation.mutate();
@@ -147,24 +150,13 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
       }
     } else {
       await navigator.clipboard.writeText(window.location.href);
-      toast.success('链接已复制到剪贴板');
+      toast.success(t('linkCopied'));
     }
   };
 
   const getDownloadTypeLabel = (type?: string) => {
-    const labels: Record<string, string> = {
-      baidu: '百度网盘',
-      quark: '夸克网盘',
-      aliyun: '阿里云盘',
-      onedrive: 'OneDrive',
-      google: 'Google Drive',
-      dropbox: 'Dropbox',
-      lanzou: '蓝奏云',
-      mega: 'Mega',
-      direct: '直链下载',
-      other: '其他',
-    };
-    return labels[type || ''] || '未知';
+    const typeKey = type || 'unknown';
+    return t(`downloadType.${typeKey}` as any);
   };
 
   if (isLoading && !initialData) {
@@ -187,9 +179,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
   if (!article) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-lg text-muted-foreground">文章不存在或已被删除</p>
+        <p className="text-lg text-muted-foreground">{t('notFound')}</p>
         <Link href="/">
-          <Button className="mt-4">返回首页</Button>
+          <Button className="mt-4">{t('backToHome')}</Button>
         </Link>
       </div>
     );

@@ -8,20 +8,22 @@ import { UserDropdown } from '@/components/layout/UserDropdown';
 import { ROUTES } from '@/config/constants';
 import { Home, Grid3X3, Search, Compass, Menu } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslations } from 'next-intl';
 
 const NAV_LINKS = [
-  { href: ROUTES.HOME, label: '首页', icon: Home },
-  { href: '/discover', label: '发现', icon: Compass },
-  { href: '/cosers', label: 'Coser', icon: Grid3X3 },
-  { href: ROUTES.SEARCH, label: '搜索', icon: Search },
+  { href: ROUTES.HOME, labelKey: 'home', icon: Home },
+  { href: '/discover', labelKey: 'discover', icon: Compass },
+  { href: '/cosers', labelKey: 'coser', icon: Grid3X3 },
+  { href: ROUTES.SEARCH, labelKey: 'search', icon: Search },
 ];
 
 export function Sidebar() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const tNav = useTranslations('nav');
 
-  const NavLink = ({ href, label, icon: Icon, onClick }: { href: string; label: string; icon: React.ElementType; onClick?: () => void }) => {
+  const NavLink = ({ href, labelKey, icon: Icon, onClick }: { href: string; labelKey: string; icon: React.ElementType; onClick?: () => void }) => {
     const isActive = pathname === href;
     return (
       <Link
@@ -35,7 +37,7 @@ export function Sidebar() {
         }`}
       >
         <Icon className="h-5 w-5" aria-hidden="true" />
-        {label}
+        {tNav(labelKey as any)}
       </Link>
     );
   };
@@ -48,7 +50,7 @@ export function Sidebar() {
         </Link>
       </div>
 
-      <nav className="flex-1 p-4 space-y-1" aria-label="主导航">
+      <nav className="flex-1 p-4 space-y-1" aria-label={tNav('menu')}>
         {NAV_LINKS.map((link) => (
           <NavLink key={link.href} {...link} onClick={onClose} />
         ))}
@@ -75,7 +77,7 @@ export function Sidebar() {
               <Menu className="h-5 w-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-64" title="侧边栏菜单">
+          <SheetContent side="left" className="p-0 w-64" title={tNav('menu')}>
             <div className="flex flex-col h-full">
               <SidebarContent onClose={() => setMobileOpen(false)} />
             </div>

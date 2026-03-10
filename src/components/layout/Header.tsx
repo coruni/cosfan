@@ -8,19 +8,21 @@ import { UserDropdown } from '@/components/layout/UserDropdown';
 import { ROUTES } from '@/config/constants';
 import { Menu, Search, User, Crown, Home, Grid3X3, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTranslations } from 'next-intl';
 
 const NAV_LINKS = [
-  { href: ROUTES.HOME, label: '首页', icon: Home },
-  { href: '/cosers', label: 'Coser', icon: Grid3X3 },
-  { href: ROUTES.SEARCH, label: '搜索', icon: Search },
+  { href: ROUTES.HOME, labelKey: 'home', icon: Home },
+  { href: '/cosers', labelKey: 'coser', icon: Grid3X3 },
+  { href: ROUTES.SEARCH, labelKey: 'search', icon: Search },
 ];
 
 export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const tNav = useTranslations('nav');
 
-  const NavLink = ({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) => {
+  const NavLink = ({ href, labelKey, icon: Icon }: { href: string; labelKey: string; icon: React.ElementType }) => {
     const isActive = pathname === href;
     return (
       <Link
@@ -33,12 +35,12 @@ export function Header() {
         }`}
       >
         <Icon className="h-4 w-4" aria-hidden="true" />
-        {label}
+        {tNav(labelKey as any)}
       </Link>
     );
   };
 
-  const MobileNavLink = ({ href, label, icon: Icon }: { href: string; label: string; icon: React.ElementType }) => {
+  const MobileNavLink = ({ href, labelKey, icon: Icon }: { href: string; labelKey: string; icon: React.ElementType }) => {
     const isActive = pathname === href;
     return (
       <Link
@@ -52,7 +54,7 @@ export function Header() {
         }`}
       >
         <Icon className="h-5 w-5" aria-hidden="true" />
-        {label}
+        {tNav(labelKey as any)}
       </Link>
     );
   };
@@ -65,7 +67,7 @@ export function Header() {
             <span className="text-xl font-bold text-primary">PicArt</span>
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1" aria-label="主导航">
+          <nav className="hidden md:flex items-center gap-1" aria-label={tNav('menu')}>
             {NAV_LINKS.map((link) => (
               <NavLink key={link.href} {...link} />
             ))}
@@ -79,20 +81,20 @@ export function Header() {
             <SheetTrigger asChild className="md:hidden">
               <Button variant="ghost" size="icon">
                 <Menu className="h-5 w-5" />
-                <span className="sr-only">打开菜单</span>
+                <span className="sr-only">{tNav('openMenu')}</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="w-[300px] sm:w-[400px]" title="导航菜单">
-              <nav className="flex flex-col gap-2 mt-8" aria-label="移动端导航">
+            <SheetContent side="right" className="w-[300px] sm:w-[400px]" title={tNav('menu')}>
+              <nav className="flex flex-col gap-2 mt-8" aria-label={tNav('menu')}>
                 {NAV_LINKS.map((link) => (
                   <MobileNavLink key={link.href} {...link} />
                 ))}
                 {isAuthenticated && (
                   <>
                     <div className="h-px bg-border my-2" role="separator" />
-                    <MobileNavLink href={ROUTES.VIP} label="会员" icon={Crown} />
-                    <MobileNavLink href={ROUTES.PROFILE} label="个人中心" icon={User} />
-                    <MobileNavLink href={ROUTES.SETTINGS} label="设置" icon={Settings} />
+                    <MobileNavLink href={ROUTES.VIP} labelKey="vip" icon={Crown} />
+                    <MobileNavLink href={ROUTES.PROFILE} labelKey="profile" icon={User} />
+                    <MobileNavLink href={ROUTES.SETTINGS} labelKey="settings" icon={Settings} />
                   </>
                 )}
               </nav>

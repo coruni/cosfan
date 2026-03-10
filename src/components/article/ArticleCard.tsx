@@ -2,6 +2,7 @@
 
 import Image from 'next/image';
 import { Link } from '@/i18n';
+import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -16,6 +17,7 @@ interface ArticleCardProps {
 }
 
 export function ArticleCard({ article, priority = false }: ArticleCardProps) {
+  const t = useTranslations('component.article');
   const coverImage = article.cover  || article.images?.[0];
   const coser = article.category;
   const imageCount = article.imageCount || 0;
@@ -28,7 +30,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
             {coverImage ? (
               <Image
                 src={coverImage}
-                alt={`${article.title || '文章'} - ${coser?.name || 'Cosplay'} 高清图集封面`}
+                alt={t('cover', { title: article.title || t('noImage'), coser: coser?.name || 'Cosplay' })}
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
@@ -37,27 +39,27 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               />
             ) : (
               <div className="flex items-center justify-center h-full text-muted-foreground">
-                No Image
+                {t('noImage')}
               </div>
             )}
-            
+
             <figcaption className="absolute bottom-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
-              {imageCount}P
+              {t('imageCount', { count: imageCount })}
             </figcaption>
           </figure>
-        
+
           <CardContent className="p-3">
             <h3 className="font-medium text-sm line-clamp-2 mb-1 group-hover:text-primary transition-colors">
               {article.title}
             </h3>
           </CardContent>
-        
+
           <CardFooter className="p-3 pt-0 flex items-center justify-between">
             <div className="flex items-center gap-2">
               {coser && (
                 <>
                   <Avatar className="h-5 w-5">
-                    <AvatarImage src={coser.avatar} alt={`${coser.name}的头像`} />
+                    <AvatarImage src={coser.avatar} alt={t('avatar', { name: coser.name })} />
                     <AvatarFallback className="text-xs">
                       {coser.name?.[0] || 'C'}
                     </AvatarFallback>
@@ -68,7 +70,7 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
                 </>
               )}
             </div>
-            <button className="text-muted-foreground hover:text-primary transition-colors" aria-label="下载">
+            <button className="text-muted-foreground hover:text-primary transition-colors" aria-label={t('download')}>
               <Download className="h-4 w-4" aria-hidden="true" />
             </button>
           </CardFooter>

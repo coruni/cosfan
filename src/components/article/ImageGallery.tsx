@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 import { Dialog, DialogTitle } from '@/components/ui/dialog';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
 import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Move } from 'lucide-react';
@@ -16,6 +17,7 @@ interface ImageGalleryProps {
 }
 
 export function ImageGallery({ images, initialIndex = 0, requireMembership = false, imageCount }: ImageGalleryProps) {
+  const t = useTranslations('component.imageGallery');
   const [isOpen, setIsOpen] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomLevel, setZoomLevel] = useState(1);
@@ -222,7 +224,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
             onKeyDown={handleKeyDown}
           >
             <VisuallyHidden>
-              <DialogTitle>图片预览</DialogTitle>
+              <DialogTitle>{t('preview')}</DialogTitle>
             </VisuallyHidden>
             <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
               <Button
@@ -315,16 +317,16 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
                       size="icon"
                       className="text-white hover:bg-white/20 h-8 w-8 cursor-pointer"
                       onClick={resetZoom}
-                      title="重置"
+                      title={t('reset')}
                     >
                       <Move className="h-4 w-4" />
                     </Button>
                   )}
                 </div>
-                
+
                 {requireMembership && (
                   <div className="text-white text-sm bg-amber-500/80 px-3 py-1 rounded-full">
-                    需要会员
+                    {t('requireMembership')}
                   </div>
                 )}
                 <div className="text-white text-sm bg-black/50 px-3 py-1 rounded-full">

@@ -157,7 +157,11 @@
     "enterPasswordAgain": "请再次输入密码",
     "registering": "注册中...",
     "hasAccount": "已有账号？",
-    "loginNow": "立即登录"
+    "loginNow": "立即登录",
+    "inviteCode": "邀请码",
+    "enterInviteCode": "请输入邀请码",
+    "registrationClosed": "当前站点已关闭注册，请稍后再试。",
+    "emailCodeRequired": "请输入6位邮箱验证码"
   },
   "nav": {
     "home": "首页",
@@ -167,8 +171,10 @@
     "wallet": "钱包",
     "profile": "个人中心",
     "settings": "设置",
+    "discover": "发现",
     "openMenu": "打开菜单",
     "menu": "导航菜单",
+    "language": "语言",
     "dashboard": {
       "overview": "概览",
       "users": "用户管理",
@@ -183,7 +189,8 @@
   "home": {
     "latestArticles": "最新图集",
     "totalArticles": "共 {total} 套图集",
-    "empty": "暂无内容"
+    "empty": "暂无内容",
+    "siteDescription": "专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品"
   },
   "search": {
     "placeholder": "搜索图集...",
@@ -260,6 +267,12 @@
     "confirmNewPassword": "确认新密码",
     "enterNewPasswordAgain": "再次输入新密码",
     "confirmChange": "确认修改",
+    "edit": "编辑",
+    "bind": "绑定",
+    "change": "更换",
+    "nav": {
+      "language": "语言"
+    },
     "description": "管理平台系统配置",
     "addConfig": "添加配置",
     "empty": "暂无配置数据",
@@ -642,5 +655,191 @@
     "rotateRight": "向右旋转",
     "zoomHint": "滚轮或双指缩放 · 拖拽调整位置",
     "reselectImage": "重新选择图片"
+  },
+  "coser": {
+    "list": "Coser列表",
+    "listDesc": "浏览所有Coser，发现精彩的Cosplay作品集",
+    "articlesCount": "{count} 套图集",
+    "viewWorks": "查看 {name} 的Cosplay作品集"
+  },
+  "discover": {
+    "title": "发现",
+    "popularCosers": "热门Coser",
+    "popularArticles": "热门推荐",
+    "articlesCount": "{count} 套",
+    "totalArticles": "共 {total} 套图集",
+    "empty": "暂无内容",
+    "coserWorks": "{name} - Cosplay作品集"
+  },
+  "article": {
+    "notFound": "文章不存在或已被删除",
+    "backToHome": "返回首页",
+    "uncategorized": "未分类",
+    "liked": "点赞成功",
+    "unliked": "取消点赞",
+    "favorited": "收藏成功",
+    "unfavorited": "取消收藏",
+    "operationFailed": "操作失败",
+    "linkCopied": "链接已复制到剪贴板",
+    "favoriteAction": "收藏",
+    "favorited": "已收藏",
+    "share": "分享",
+    "downloadResources": "下载资源",
+    "downloadCount": "下载 ({count})",
+    "resourcesCount": "共 {count} 个下载资源",
+    "password": "密码",
+    "extractionCode": "提取码",
+    "passwordCopied": "密码已复制",
+    "extractionCodeCopied": "提取码已复制",
+    "remainingImages": "还有 {count} 张图片未解锁",
+    "payToView": "支付 {price} 元查看完整内容",
+    "vipCanViewAll": "VIP会员可查看全部",
+    "loginToViewMore": "登录后可查看更多内容",
+    "loginToView": "登录查看更多",
+    "openVip": "开通VIP",
+    "payToUnlock": "支付 {price} 元解锁",
+    "noImages": "暂无图片内容",
+    "downloadType": {
+      "baidu": "百度网盘",
+      "quark": "夸克网盘",
+      "aliyun": "阿里云盘",
+      "onedrive": "OneDrive",
+      "google": "Google Drive",
+      "dropbox": "Dropbox",
+      "lanzou": "蓝奏云",
+      "mega": "Mega",
+      "direct": "直链下载",
+      "other": "其他",
+      "unknown": "未知"
+    }
+  },
+  "component": {
+    "article": {
+      "noImage": "暂无图片",
+      "cover": "{title} - {coser} 高清图集封面",
+      "avatar": "{name}的头像",
+      "download": "下载",
+      "imageCount": "{count}P"
+    },
+    "articleGrid": {
+      "empty": "暂无内容"
+    },
+    "imageGallery": {
+      "preview": "图片预览",
+      "reset": "重置",
+      "requireMembership": "需要会员"
+    },
+    "userDropdown": {
+      "login": "登录",
+      "register": "注册",
+      "user": "用户",
+      "vip": "会员",
+      "enterDashboard": "进入后台",
+      "profile": "个人中心",
+      "settings": "设置",
+      "logout": "退出登录"
+    },
+    "footer": {
+      "aboutUs": "关于我们",
+      "contactUs": "联系我们",
+      "joinUs": "加入我们",
+      "helpCenter": "帮助中心",
+      "privacyPolicy": "隐私政策",
+      "termsOfService": "服务条款",
+      "weibo": "微博",
+      "wechat": "微信公众号",
+      "qqGroup": "QQ群",
+      "description": "专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品，为用户提供最佳的浏览体验。",
+      "followUs": "关注我们"
+    },
+    "imageCropDialog": {
+      "uploadFailed": "上传失败",
+      "cancel": "取消",
+      "confirm": "确认"
+    }
+  },
+  "legal": {
+    "userAgreement": {
+      "title": "用户协议",
+      "description": "PicArt 用户服务协议",
+      "lastUpdated": "最后更新：2024年1月1日",
+      "section1": {
+        "title": "1. 协议的接受",
+        "content": "欢迎使用 PicArt 平台。在使用本平台服务之前，请您仔细阅读并充分理解本协议的全部内容。您使用本平台服务即表示您已阅读、理解并同意接受本协议的全部内容。如果您不同意本协议的任何内容，请立即停止使用本平台服务。"
+      },
+      "section2": {
+        "title": "2. 服务说明",
+        "content": "PicArt 是一个专业的 Cosplay 图集展示平台，为用户提供图集浏览、上传、分享等服务。我们致力于为用户提供优质的内容和良好的使用体验。"
+      },
+      "section3": {
+        "title": "3. 用户注册",
+        "content": "您需要注册成为本平台用户才能使用部分服务。注册时，您应提供真实、准确、完整的个人信息，并及时更新。您应对您的账号和密码负责，因您的账号产生的所有行为由您承担责任。"
+      },
+      "section4": {
+        "title": "4. 用户行为规范",
+        "content": "您在使用本平台服务时，应遵守中华人民共和国相关法律法规，不得利用本平台从事违法违规活动。您不得上传、发布含有违法、暴力、色情、侵权等内容的信息。我们有权对违规内容进行删除，并对违规用户进行处罚。"
+      },
+      "section5": {
+        "title": "5. 知识产权",
+        "content": "本平台的所有内容，包括但不限于文字、图片、视频、音频、软件、程序、版面设计等，均受著作权法、商标法和其他法律法规的保护。未经授权，任何人不得复制、传播、展示、镜像、上传、下载使用本平台内容。"
+      },
+      "section6": {
+        "title": "6. 隐私保护",
+        "content": "我们重视用户隐私保护，将按照《隐私政策》的规定收集、使用、存储和保护您的个人信息。请您仔细阅读我们的隐私政策。"
+      },
+      "section7": {
+        "title": "7. 免责声明",
+        "content": "本平台对用户上传的内容不承担审查义务。用户上传的内容仅代表用户个人观点，与本平台无关。因用户上传内容引起的任何纠纷，由用户自行承担责任。本平台不对因不可抗力或其他本平台无法控制的原因造成的服务中断或其他缺陷承担责任。"
+      },
+      "section8": {
+        "title": "8. 协议的修改和终止",
+        "content": "我们有权根据需要修改本协议，修改后的协议将在本平台公布。如果您不同意修改后的协议，可以停止使用本平台服务。您继续使用本平台服务将被视为接受修改后的协议。"
+      }
+    },
+    "privacyPolicy": {
+      "title": "隐私政策",
+      "description": "PicArt 隐私保护政策",
+      "lastUpdated": "最后更新：2024年1月1日",
+      "section1": {
+        "title": "1. 引言",
+        "content": "PicArt（以下简称\"我们\"）非常重视用户的隐私保护。本隐私政策说明了我们如何收集、使用、存储和保护您的个人信息。请您仔细阅读本政策，以了解我们对您个人信息的处理方式。"
+      },
+      "section2": {
+        "title": "2. 我们收集的信息",
+        "content": "为了向您提供服务，我们可能会收集以下信息：",
+        "item1": "账户信息：用户名、邮箱、手机号码、密码等",
+        "item2": "个人资料：昵称、头像、个人简介等",
+        "item3": "使用信息：浏览记录、搜索记录、点赞收藏记录等",
+        "item4": "设备信息：设备型号、操作系统、IP地址等"
+      },
+      "section3": {
+        "title": "3. 信息的使用",
+        "content": "我们收集的信息将用于以下目的：",
+        "item1": "提供、维护和改进我们的服务",
+        "item2": "处理您的请求和交易",
+        "item3": "向您发送服务通知和更新",
+        "item4": "分析用户行为，优化用户体验"
+      },
+      "section4": {
+        "title": "4. 信息的共享",
+        "content": "我们不会向第三方出售、出租或以其他方式披露您的个人信息，除非：(1) 获得您的明确同意；(2) 法律法规要求；(3) 为保护我们或他人的合法权益所必需。"
+      },
+      "section5": {
+        "title": "5. 信息的安全",
+        "content": "我们采取合理的安全措施保护您的个人信息，包括加密存储、访问控制等。但请注意，没有任何安全措施是绝对安全的，我们无法保证信息的绝对安全。"
+      },
+      "section6": {
+        "title": "6. 您的权利",
+        "content": "您有权访问、更正、删除您的个人信息。您可以通过账户设置页面管理您的信息，或联系我们的客服团队。"
+      },
+      "section7": {
+        "title": "7. Cookie 和类似技术",
+        "content": "我们使用 Cookie 和类似技术来改善用户体验、分析网站流量。您可以通过浏览器设置管理 Cookie，但这可能影响某些功能的使用。"
+      },
+      "section8": {
+        "title": "8. 政策更新",
+        "content": "我们可能会不时更新本隐私政策。更新后的政策将在本平台公布，并在公布后立即生效。我们建议您定期查看本政策以了解最新信息。"
+      }
+    }
   }
 }

@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Link } from '@/i18n';
+import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -16,13 +17,15 @@ import { ROUTES } from '@/config/constants';
 import { toast } from 'sonner';
 
 const loginSchema = z.object({
-  account: z.string().min(1, '请输入用户名或邮箱'),
-  password: z.string().min(6, '密码至少6位'),
+  account: z.string().min(1, 'validation.enterUsernameOrEmail'),
+  password: z.string().min(6, 'validation.passwordMinLength'),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 function LoginForm() {
+  const t = useTranslations('auth');
+  const tToast = useTranslations('toast');
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, isAuthenticated, isLoading: isAuthLoading } = useAuth();
@@ -56,7 +59,7 @@ function LoginForm() {
       if (response.data?.data) {
         const { token, refreshToken } = response.data.data;
         await login(token, refreshToken);
-        toast.success('登录成功');
+        toast.success(tToast('loginSuccess'));
         const redirect = searchParams.get('redirect') || ROUTES.HOME;
         
         // 使用 window.location.href 刷新页面的原因：
@@ -66,11 +69,11 @@ function LoginForm() {
         // 4. 确保所有组件状态重置
         window.location.href = redirect;
       } else {
-        toast.error(response.data?.message || '登录失败');
+        toast.error(response.data?.message || tToast('loginFailed'));
       }
     } catch (error) {
       console.error('Login error:', error);
-      toast.error('登录失败，请检查账号密码');
+      toast.error(tToast('loginFailedCheck'));
     } finally {
       setIsLoading(false);
     }
@@ -79,7 +82,7 @@ function LoginForm() {
   if (isAuthLoading) {
     return (
       <div className="flex items-center justify-center min-h-[80vh]">
-        <div className="animate-pulse">加载中...</div>
+        <div className="animate-pulse">{t('loggingIn')}</div>
       </div>
     );
   }
@@ -91,9 +94,9 @@ function LoginForm() {
   return (
     <Card className="w-full max-w-md">
       <CardHeader className="space-y-1">
-        <CardTitle className="text-2xl font-bold text-center">登录</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">{t('login')}</CardTitle>
         <CardDescription className="text-center">
-          输入您的账号信息登录
+          {t('loginDesc')}
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -104,9 +107,9 @@ function LoginForm() {
               name="account"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>用户名/邮箱</FormLabel>
+                  <FormLabel>{t('usernameOrEmail')}</FormLabel>
                   <FormControl>
-                    <Input placeholder="请输入用户名或邮箱" {...field} />
+                    <Input placeholder={t('enterUsernameOrEmail')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -117,32 +120,32 @@ function LoginForm() {
               name="password"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>密码</FormLabel>
+                  <FormLabel>{t('password')}</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="请输入密码" {...field} />
+                    <Input type="password" placeholder={t('enterPassword')} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
             <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? '登录中...' : '登录'}
+              {isLoading ? t('loggingIn') : t('login')}
             </Button>
           </form>
         </Form>
       </CardContent>
       <CardFooter className="flex flex-col gap-4">
         <div className="text-sm text-muted-foreground text-center">
-          还没有账号？{' '}
+          {t('noAccount')}{' '}
           <Link href={ROUTES.REGISTER} className="text-primary hover:underline">
-            立即注册
+            {t('registerNow')}
           </Link>
         </div>
         <Link 
           href="/forgot-password" 
           className="text-sm text-muted-foreground hover:text-foreground text-center"
         >
-          忘记密码？
+          {t('forgotPassword')}
         </Link>
       </CardFooter>
     </Card>
@@ -150,9 +153,10 @@ function LoginForm() {
 }
 
 export default function LoginPage() {
+  const tCommon = useTranslations('common');
   return (
     <div className="flex items-center justify-center min-h-[80vh]">
-      <Suspense fallback={<div className="animate-pulse">加载中...</div>}>
+      <Suspense fallback={<div className="animate-pulse">{tCommon('loading')}</div>}>
         <LoginForm />
       </Suspense>
     </div>

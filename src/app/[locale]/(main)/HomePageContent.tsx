@@ -1,6 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { articleControllerFindAll } from '@/api/sdk.gen';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -25,6 +26,8 @@ function ArticleCardSkeleton() {
 }
 
 export function HomePageContent() {
+  const t = useTranslations('home');
+  const tPagination = useTranslations('pagination');
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
@@ -89,14 +92,14 @@ export function HomePageContent() {
 
   return (
     <main className="space-y-6">
-      <h1 className="sr-only">PicArt - 专业的Cosplay图集展示平台</h1>
+      <h1 className="sr-only">PicArt - {t('siteDescription')}</h1>
       
       <section aria-labelledby="latest-articles">
         <div className="flex items-center justify-between mb-4">
-          <h2 id="latest-articles" className="text-xl font-bold">最新图集</h2>
+          <h2 id="latest-articles" className="text-xl font-bold">{t('latestArticles')}</h2>
           {total > 0 && (
             <span className="text-sm text-muted-foreground">
-              共 {total} 套图集
+              {t('totalArticles', { total })}
             </span>
           )}
         </div>
@@ -109,7 +112,7 @@ export function HomePageContent() {
           </div>
         ) : articles.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-            <p className="text-lg">暂无内容</p>
+            <p className="text-lg">{t('empty')}</p>
           </div>
         ) : (
           <>
@@ -159,7 +162,7 @@ export function HomePageContent() {
                 </Pagination>
                 
                 <p className="text-sm text-muted-foreground">
-                  第 {currentPage} / {totalPages} 页
+                  {tPagination('pageInfo', { page: currentPage, total: totalPages })}
                 </p>
               </div>
             )}
