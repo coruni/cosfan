@@ -166,16 +166,38 @@ export default function CosersPage() {
 
   const handleImageCrop = async (file: File) => {
     if (!selectedCategory) return;
-    
+
     try {
       const response = await uploadControllerUploadFile({
         body: { file },
       });
-      
+
       const uploadedFile = response.data?.data?.[0];
       if (uploadedFile?.url) {
         setEditForm(prev => ({ ...prev, [imageCropField]: uploadedFile.url }));
         setImageCropDialogOpen(false);
+      } else {
+        throw new Error('上传失败');
+      }
+    } catch (error: any) {
+      toast.error(error?.message || '上传失败');
+    }
+  };
+
+  // 创建时的图片上传处理
+  const [createImageCropField, setCreateImageCropField] = useState<'avatar' | 'background' | 'cover'>('avatar');
+  const [createImageCropDialogOpen, setCreateImageCropDialogOpen] = useState(false);
+
+  const handleCreateImageCrop = async (file: File) => {
+    try {
+      const response = await uploadControllerUploadFile({
+        body: { file },
+      });
+
+      const uploadedFile = response.data?.data?.[0];
+      if (uploadedFile?.url) {
+        setCreateForm(prev => ({ ...prev, [createImageCropField]: uploadedFile.url }));
+        setCreateImageCropDialogOpen(false);
       } else {
         throw new Error('上传失败');
       }
@@ -319,28 +341,94 @@ export default function CosersPage() {
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-avatar">头像URL</Label>
-              <Input
-                id="create-avatar"
-                value={createForm.avatar}
-                onChange={(e) => setCreateForm({ ...createForm, avatar: e.target.value })}
-              />
+              <Label>头像</Label>
+              <div className="flex items-center gap-3">
+                {createForm.avatar ? (
+                  <img src={createForm.avatar} alt="头像" className="w-12 h-12 rounded-full object-cover" />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                    <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setCreateImageCropField('avatar'); setCreateImageCropDialogOpen(true); }}
+                >
+                  {createForm.avatar ? '更换' : '上传'}
+                </Button>
+                {createForm.avatar && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCreateForm({ ...createForm, avatar: '' })}
+                  >
+                    删除
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-background">背景图URL</Label>
-              <Input
-                id="create-background"
-                value={createForm.background}
-                onChange={(e) => setCreateForm({ ...createForm, background: e.target.value })}
-              />
+              <Label>背景图</Label>
+              <div className="flex items-center gap-3">
+                {createForm.background ? (
+                  <img src={createForm.background} alt="背景图" className="w-16 h-10 rounded object-cover" />
+                ) : (
+                  <div className="w-16 h-10 rounded bg-muted flex items-center justify-center">
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setCreateImageCropField('background'); setCreateImageCropDialogOpen(true); }}
+                >
+                  {createForm.background ? '更换' : '上传'}
+                </Button>
+                {createForm.background && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCreateForm({ ...createForm, background: '' })}
+                  >
+                    删除
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="create-cover">封面图URL</Label>
-              <Input
-                id="create-cover"
-                value={createForm.cover}
-                onChange={(e) => setCreateForm({ ...createForm, cover: e.target.value })}
-              />
+              <Label>封面图</Label>
+              <div className="flex items-center gap-3">
+                {createForm.cover ? (
+                  <img src={createForm.cover} alt="封面图" className="w-16 h-10 rounded object-cover" />
+                ) : (
+                  <div className="w-16 h-10 rounded bg-muted flex items-center justify-center">
+                    <ImageIcon className="h-4 w-4 text-muted-foreground" />
+                  </div>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => { setCreateImageCropField('cover'); setCreateImageCropDialogOpen(true); }}
+                >
+                  {createForm.cover ? '更换' : '上传'}
+                </Button>
+                {createForm.cover && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setCreateForm({ ...createForm, cover: '' })}
+                  >
+                    删除
+                  </Button>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
               <Label htmlFor="create-sort">排序</Label>
@@ -526,7 +614,7 @@ export default function CosersPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Image Crop Dialog */}
+      {/* Image Crop Dialog for Edit */}
       <ImageCropDialog
         open={imageCropDialogOpen}
         onOpenChange={setImageCropDialogOpen}
@@ -537,6 +625,19 @@ export default function CosersPage() {
         aspectRatio={imageCropField === 'avatar' ? 1 : 2}
         onConfirm={handleImageCrop}
         initialImage={editForm[imageCropField] || ''}
+      />
+
+      {/* Image Crop Dialog for Create */}
+      <ImageCropDialog
+        open={createImageCropDialogOpen}
+        onOpenChange={setCreateImageCropDialogOpen}
+        title={`上传${createImageCropField === 'avatar' ? '头像' : createImageCropField === 'background' ? '背景图' : '封面图'}`}
+        description="拖拽调整位置，滚轮或双指缩放"
+        width={createImageCropField === 'avatar' ? 200 : 400}
+        height={createImageCropField === 'avatar' ? 200 : 200}
+        aspectRatio={createImageCropField === 'avatar' ? 1 : 2}
+        onConfirm={handleCreateImageCrop}
+        initialImage={createForm[createImageCropField] || ''}
       />
     </div>
   );

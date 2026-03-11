@@ -10,6 +10,7 @@ import { Home, Grid3X3, Search, Compass, Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useSiteConfig } from "@/contexts/SiteConfigContext";
 import { useTranslations } from "next-intl";
+import { UserData } from "@/lib/auth";
 
 const NAV_LINKS = [
   { href: ROUTES.HOME, labelKey: "home", icon: Home },
@@ -48,7 +49,7 @@ function SidebarNavLink({ href, labelKey, icon: Icon, isActive, onClick, tNav }:
 interface SidebarContentProps {
   onClose?: () => void;
   pathname: string;
-  user: { id: number; username: string; avatar?: string; email?: string } | null;
+  user: UserData | null;
   isAuthenticated: boolean;
   logout: () => void;
   tNav: (key: string) => string;

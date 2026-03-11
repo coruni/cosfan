@@ -2,5 +2,24 @@
     "i18n-ally.localesPaths": [
         "src/i18n",
         "src/messages"
+    ],
+    "files.watcherExclude": {
+        // 忽略最常见的依赖和构建目录
+        "**/.next//*":true,
+        "**/.git/objects/**": true,
+        "**/.git/subtree-cache/**": true,
+        "**/node_modules/**": true,
+        "**/dist/**": true,
+        "**/target/**": true,  // Rust 或 Java 构建目录
+        "**/out/**": true,      // TypeScript 或 Java 构建目录
+        "**/build/**": true,    // 各类构建输出目录
+        // 如果项目在特殊文件系统上，可以忽略整个项目或特定子目录
+        // "**/fuse_mount_point/**": true, [citation:5]
+        // 避免监听整个系统根目录
+        // "/**": true 
+    },
+    "cSpell.words": [
+        "coser",
+        "cosers"
     ]
 }

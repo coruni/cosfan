@@ -13,6 +13,7 @@ import { client } from "@/api/client.gen";
 import { API_BASE_URL } from "@/config/constants";
 import { routing } from "@/i18n/routing";
 import { initServerInterceptors } from "@/lib/server-init";
+import { getServerUser } from "@/lib/auth";
 
 // 使用本地字体，避免 Google Fonts 在中国大陆无法访问的问题
 const geistSans = localFont({
@@ -60,39 +61,16 @@ const geistMono = localFont({
   fallback: ["Consolas", "Monaco", "Courier New", "monospace"],
 });
 
-// 缓存站点配置，避免多次 API 请求
-let cachedSiteConfig: Awaited<ReturnType<typeof configControllerGetPublicConfigs>>['data'] | null = null;
-let configFetchPromise: Promise<Awaited<ReturnType<typeof configControllerGetPublicConfigs>>['data'] | null> | null = null;
-
 async function getSiteConfig() {
-  // 返回缓存
-  if (cachedSiteConfig !== null) {
-    return cachedSiteConfig;
+  try {
+    initServerInterceptors();
+    client.setConfig({ baseUrl: API_BASE_URL });
+    const response = await configControllerGetPublicConfigs();
+    return response.data?.data;
+  } catch (error) {
+    console.error("Failed to fetch site config:", error);
+    return null;
   }
-
-  // 如果正在请求中，等待该请求完成
-  if (configFetchPromise) {
-    return configFetchPromise;
-  }
-
-  configFetchPromise = (async () => {
-    try {
-      initServerInterceptors();
-      client.setConfig({ baseUrl: API_BASE_URL });
-      const response = await configControllerGetPublicConfigs();
-      const data = response.data?.data;
-      cachedSiteConfig = data;
-      return data;
-    } catch (error) {
-      console.error("Failed to fetch site config:", error);
-      cachedSiteConfig = null;
-      return null;
-    } finally {
-      configFetchPromise = null;
-    }
-  })();
-
-  return configFetchPromise;
 }
 
 export function generateStaticParams() {
@@ -189,6 +167,7 @@ export default async function RootLayout({
   setRequestLocale(locale);
   const messages = await getMessages();
   const siteConfig = await getSiteConfig();
+  const serverUser = await getServerUser();
 
   return (
     <html lang={locale} suppressHydrationWarning>
@@ -204,7 +183,7 @@ export default async function RootLayout({
           >
             <QueryProvider>
               <SiteConfigProvider config={siteConfig ?? null}>
-                <AuthProvider>
+                <AuthProvider serverUser={serverUser}>
                   <div id="main-content">{children}</div>
                   <Toaster />
                 </AuthProvider>

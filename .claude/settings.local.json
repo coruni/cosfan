@@ -5,7 +5,12 @@
       "Bash(git add:*)",
       "Bash(git commit:*)",
       "Bash(npm run:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(pnpm add:*)",
+      "Bash(cp /home/coder/project/cosfan/node_modules/geist/dist/fonts/geist-sans/*.woff2 /home/coder/project/cosfan/public/fonts/ && cp /home/coder/project/cosfan/node_modules/geist/dist/fonts/geist-mono/*.woff2 /home/coder/project/cosfan/public/fonts/ && ls -la /home/coder/project/cosfan/public/fonts/)",
+      "Bash(pnpm lint:*)",
+      "Bash(git config:*)",
+      "Bash(git diff:*)"
     ]
   }
 }

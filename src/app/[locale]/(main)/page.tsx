@@ -3,7 +3,7 @@ import { HomePageContent } from "./HomePageContent";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo";
 import { configControllerGetPublicConfigs } from "@/api/sdk.gen";
 import { client } from "@/api/client.gen";
-import { API_BASE_URL, APP_NAME } from "@/config/constants";
+import { API_BASE_URL } from "@/config/constants";
 import { initServerInterceptors } from "@/lib/server-init";
 
 async function getSiteConfig() {
@@ -20,7 +20,7 @@ async function getSiteConfig() {
 
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfig();
-  const siteName = config?.site_name || APP_NAME;
+  const siteName = config?.site_name || "";
   const siteSubtitle = config?.site_subtitle || "";
   const description = config?.site_description || "";
   const keywords = config?.site_keywords || "";
@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   const config = await getSiteConfig();
-  const siteName = config?.site_name || APP_NAME;
+  const siteName = config?.site_name ||"";
   const description = config?.site_description || "";
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
 

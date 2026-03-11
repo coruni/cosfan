@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, type ReactNode } from 'react';
+import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import type { ConfigControllerGetPublicConfigsResponse } from '@/api/types.gen';
 
 type SiteConfigData = NonNullable<ConfigControllerGetPublicConfigsResponse['data']>;
@@ -18,10 +18,10 @@ interface SiteConfigProviderProps {
 }
 
 export function SiteConfigProvider({ children, config }: SiteConfigProviderProps) {
-  const value: SiteConfigContextType = {
+  const value = useMemo(() => ({
     config,
-    siteName: config?.site_name || 'PicArt',
-  };
+    siteName: config?.site_name || '',
+  }), [config]);
 
   return (
     <SiteConfigContext.Provider value={value}>

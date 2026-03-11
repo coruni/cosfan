@@ -92,7 +92,6 @@ export function HomePageContent() {
 
   return (
     <main className="space-y-6">
-      <h1 className="sr-only">PicArt - {t('siteDescription')}</h1>
       
       <section aria-labelledby="latest-articles">
         <div className="flex items-center justify-between mb-4">

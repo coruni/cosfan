@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { categoryControllerFindOne, configControllerGetPublicConfigs } from '@/api/sdk.gen';
 import { client } from '@/api/client.gen';
-import { API_BASE_URL, APP_NAME } from '@/config/constants';
+import { API_BASE_URL } from '@/config/constants';
 
 interface CoserLayoutProps {
   children: React.ReactNode;
@@ -37,7 +37,7 @@ export async function generateMetadata({ params }: CoserLayoutProps): Promise<Me
   const [coser, siteConfig] = await Promise.all([getCoser(id), getSiteConfig()]);
 
   const coserData = coser as { name?: string; description?: string } | null;
-  const siteName = siteConfig?.site_name || APP_NAME;
+  const siteName = siteConfig?.site_name || "";
   const title = coserData?.name || 'Coser';
   const description = coserData?.description || `查看 ${title} 的Cosplay作品集`;
   const keywords = siteConfig?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';

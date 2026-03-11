@@ -148,6 +148,12 @@ export function VIPClient({ config }: VIPClientProps) {
   // Safari/严格浏览器兼容：支付跳转相关状态
   const [paymentRedirectUrl, setPaymentRedirectUrl] = useState<string | null>(null);
   const [showRedirectDialog, setShowRedirectDialog] = useState(false);
+  const [browserName, setBrowserName] = useState('浏览器');
+
+  // 在客户端获取浏览器名称，避免 hydration 不匹配
+  useEffect(() => {
+    setBrowserName(getBrowserName());
+  }, []);
 
   // Safari/严格浏览器兼容：在新标签页打开
   const handleOpenInNewTab = useCallback(() => {
@@ -361,7 +367,7 @@ export function VIPClient({ config }: VIPClientProps) {
               跳转到支付页面
             </DialogTitle>
             <DialogDescription className="pt-2">
-              您正在使用 {getBrowserName()} 浏览器，部分浏览器可能阻止自动跳转。
+              您正在使用 {browserName} 浏览器，部分浏览器可能阻止自动跳转。
               <br />
               请选择以下方式完成支付：
             </DialogDescription>
