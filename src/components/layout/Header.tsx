@@ -8,6 +8,7 @@ import { UserDropdown } from '@/components/layout/UserDropdown';
 import { ROUTES } from '@/config/constants';
 import { Menu, Search, User, Crown, Home, Grid3X3, Settings } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
+import { useSiteConfig } from '@/contexts/SiteConfigContext';
 import { useTranslations } from 'next-intl';
 
 const NAV_LINKS = [
@@ -68,6 +69,7 @@ function MobileNavLink({ href, labelKey, icon: Icon, isActive, onClick, tNav }: 
 export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const { siteName } = useSiteConfig();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const tNav = useTranslations('nav');
 
@@ -76,7 +78,7 @@ export function Header() {
       <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6">
           <Link href={ROUTES.HOME} className="flex items-center gap-2">
-            <span className="text-xl font-bold text-primary">PicArt</span>
+            <span className="text-xl font-bold text-primary">{siteName}</span>
           </Link>
 
           <nav className="hidden md:flex items-center gap-1" aria-label={tNav('menu')}>

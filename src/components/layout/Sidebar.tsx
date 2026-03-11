@@ -8,6 +8,7 @@ import { UserDropdown } from "@/components/layout/UserDropdown";
 import { ROUTES } from "@/config/constants";
 import { Home, Grid3X3, Search, Compass, Menu } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSiteConfig } from "@/contexts/SiteConfigContext";
 import { useTranslations } from "next-intl";
 
 const NAV_LINKS = [
@@ -51,9 +52,10 @@ interface SidebarContentProps {
   isAuthenticated: boolean;
   logout: () => void;
   tNav: (key: string) => string;
+  siteName: string;
 }
 
-function SidebarContent({ onClose, pathname, user, isAuthenticated, logout, tNav }: SidebarContentProps) {
+function SidebarContent({ onClose, pathname, user, isAuthenticated, logout, tNav, siteName }: SidebarContentProps) {
   return (
     <>
       <div className="p-4 border-b">
@@ -62,7 +64,7 @@ function SidebarContent({ onClose, pathname, user, isAuthenticated, logout, tNav
           className="flex items-center gap-2"
           onClick={onClose}
         >
-          <span className="text-xl font-bold text-primary">PicArt</span>
+          <span className="text-xl font-bold text-primary">{siteName}</span>
         </Link>
       </div>
 
@@ -88,6 +90,7 @@ function SidebarContent({ onClose, pathname, user, isAuthenticated, logout, tNav
 export function Sidebar() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
+  const { siteName } = useSiteConfig();
   const [mobileOpen, setMobileOpen] = useState(false);
   const tNav = useTranslations("nav");
 
@@ -95,7 +98,7 @@ export function Sidebar() {
     <>
       {/* Desktop Sidebar */}
       <aside className="hidden md:flex fixed left-0 top-0 z-40 h-screen w-64 border-r bg-background flex-col">
-        <SidebarContent pathname={pathname} user={user} isAuthenticated={isAuthenticated} logout={logout} tNav={tNav} />
+        <SidebarContent pathname={pathname} user={user} isAuthenticated={isAuthenticated} logout={logout} tNav={tNav} siteName={siteName} />
       </aside>
 
       {/* Mobile Header */}
@@ -108,12 +111,12 @@ export function Sidebar() {
           </SheetTrigger>
           <SheetContent side="left" className="p-0 w-64" title={tNav("menu")}>
             <div className="flex flex-col h-full">
-              <SidebarContent onClose={() => setMobileOpen(false)} pathname={pathname} user={user} isAuthenticated={isAuthenticated} logout={logout} tNav={tNav} />
+              <SidebarContent onClose={() => setMobileOpen(false)} pathname={pathname} user={user} isAuthenticated={isAuthenticated} logout={logout} tNav={tNav} siteName={siteName} />
             </div>
           </SheetContent>
         </Sheet>
         <Link href={ROUTES.HOME}>
-          <span className="text-lg font-bold text-primary">PicArt</span>
+          <span className="text-lg font-bold text-primary">{siteName}</span>
         </Link>
         <div className="w-10" />
       </div>

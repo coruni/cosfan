@@ -1,26 +1,63 @@
-import type { Metadata, Viewport } from 'next';
-import { Geist, Geist_Mono } from 'next/font/google';
-import { NextIntlClientProvider } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
-import './globals.css';
-import { ThemeProvider } from '@/components/providers/ThemeProvider';
-import { QueryProvider } from '@/components/providers/QueryProvider';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { Toaster } from '@/components/ui/sonner';
-import { configControllerGetPublicConfigs } from '@/api/sdk.gen';
-import { client } from '@/api/client.gen';
-import { API_BASE_URL, APP_NAME } from '@/config/constants';
-import { routing } from '@/i18n/routing';
-import { initServerInterceptors } from '@/lib/server-init';
+import type { Metadata, Viewport } from "next";
+import localFont from "next/font/local";
+import { NextIntlClientProvider } from "next-intl";
+import { getMessages, setRequestLocale } from "next-intl/server";
+import "./globals.css";
+import { ThemeProvider } from "@/components/providers/ThemeProvider";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { SiteConfigProvider } from "@/contexts/SiteConfigContext";
+import { Toaster } from "@/components/ui/sonner";
+import { configControllerGetPublicConfigs } from "@/api/sdk.gen";
+import { client } from "@/api/client.gen";
+import { API_BASE_URL, APP_NAME } from "@/config/constants";
+import { routing } from "@/i18n/routing";
+import { initServerInterceptors } from "@/lib/server-init";
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
-  subsets: ['latin'],
+// 使用本地字体，避免 Google Fonts 在中国大陆无法访问的问题
+const geistSans = localFont({
+  src: [
+    {
+      path: "../../../public/fonts/Geist-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/Geist-Medium.woff2",
+      weight: "500",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/Geist-SemiBold.woff2",
+      weight: "600",
+      style: "normal",
+    },
+    {
+      path: "../../../public/fonts/Geist-Bold.woff2",
+      weight: "700",
+      style: "normal",
+    },
+  ],
+  variable: "--font-geist-sans",
+  fallback: [
+    "-apple-system",
+    "BlinkMacSystemFont",
+    "Segoe UI",
+    "Roboto",
+    "sans-serif",
+  ],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
-  subsets: ['latin'],
+const geistMono = localFont({
+  src: [
+    {
+      path: "../../../public/fonts/GeistMono-Regular.woff2",
+      weight: "400",
+      style: "normal",
+    },
+  ],
+  variable: "--font-geist-mono",
+  fallback: ["Consolas", "Monaco", "Courier New", "monospace"],
 });
 
 async function getSiteConfig() {
@@ -30,7 +67,7 @@ async function getSiteConfig() {
     const response = await configControllerGetPublicConfigs();
     return response.data?.data;
   } catch (error) {
-    console.error('Failed to fetch site config:', error);
+    console.error("Failed to fetch site config:", error);
     return null;
   }
 }
@@ -43,9 +80,9 @@ export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfig();
 
   const siteName = config?.site_name || APP_NAME;
-  const description = config?.site_description || '专业的Cosplay图集展示平台，汇聚海量优质Cosplay作品';
-  const keywords = config?.site_keywords || 'cosplay,图集,二次元,动漫,角色扮演';
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+  const description = config?.site_description || "";
+  const keywords = config?.site_keywords || "";
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
   const siteLogo = config?.site_logo;
   const siteFavicon = config?.site_favicon;
 
@@ -56,19 +93,19 @@ export async function generateMetadata(): Promise<Metadata> {
       template: `%s | ${siteName}`,
     },
     description,
-    keywords: keywords.split(','),
+    keywords: keywords.split(","),
     authors: [{ name: siteName }],
     creator: siteName,
     icons: {
-      icon: siteFavicon || '/favicon.ico',
-      apple: siteLogo || '/apple-touch-icon.png',
+      icon: siteFavicon || "/favicon.ico",
+      apple: siteLogo || "/apple-touch-icon.png",
     },
     alternates: {
       canonical: baseUrl,
     },
     openGraph: {
-      type: 'website',
-      locale: 'zh_CN',
+      type: "website",
+      locale: "zh_CN",
       url: baseUrl,
       title: siteName,
       description,
@@ -85,7 +122,7 @@ export async function generateMetadata(): Promise<Metadata> {
           ],
     },
     twitter: {
-      card: 'summary_large_image',
+      card: "summary_large_image",
       title: siteName,
       description,
       images: siteLogo ? [siteLogo] : [`${baseUrl}/og-image.png`],
@@ -96,9 +133,9 @@ export async function generateMetadata(): Promise<Metadata> {
       googleBot: {
         index: true,
         follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
+        "max-video-preview": -1,
+        "max-image-preview": "large",
+        "max-snippet": -1,
       },
     },
   };
@@ -106,10 +143,10 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: "(prefers-color-scheme: light)", color: "white" },
+    { media: "(prefers-color-scheme: dark)", color: "black" },
   ],
-  width: 'device-width',
+  width: "device-width",
   initialScale: 1,
 };
 
@@ -121,25 +158,26 @@ export default async function RootLayout({
   params: Promise<{ locale: string }>;
 }>) {
   const { locale } = await params;
-  
-  if (!locale || !routing.locales.includes(locale as any)) {
+
+  if (!locale || !routing.locales.includes(locale as "zh" | "en")) {
     return null;
   }
-  
+
   setRequestLocale(locale);
   const messages = await getMessages();
+  const siteConfig = await getSiteConfig();
 
   return (
     <html lang={locale} suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <a 
-          href="#main-content" 
+        {/* <a
+          href="#main-content"
           className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
         >
           跳转到主内容
-        </a>
+        </a> */}
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
@@ -148,12 +186,12 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <QueryProvider>
-              <AuthProvider>
-                  <div id="main-content">
-                    {children}
-                  </div>
+              <SiteConfigProvider config={siteConfig}>
+                <AuthProvider>
+                  <div id="main-content">{children}</div>
                   <Toaster />
-              </AuthProvider>
+                </AuthProvider>
+              </SiteConfigProvider>
             </QueryProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
