@@ -114,8 +114,6 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     }
   }, [zoomLevel, position, pinchStartDistance]);
 
-  const [pinchStartDistance, setPinchStartDistance] = useState(0);
-
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 1 && isDragging && zoomLevel > 1) {
       e.stopPropagation();

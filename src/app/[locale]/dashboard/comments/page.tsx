@@ -77,8 +77,7 @@ export default function CommentsPage() {
         query: {
           page,
           limit,
-          content: search || undefined,
-          status: statusFilter === 'all' ? undefined : statusFilter,
+          keyword: search || undefined,
         },
       });
       return response.data;
@@ -164,8 +163,8 @@ export default function CommentsPage() {
     }
   };
 
-  const comments = (commentsData?.data?.data || commentsData?.data || []) as Comment[];
-  const total = (commentsData?.data?.meta?.total || commentsData?.meta?.total || 0);
+  const comments = (commentsData?.data?.data||[]) as any;
+  const total = (commentsData?.data?.meta?.total || 0);
   const totalPages = Math.ceil(total / limit);
 
   return (

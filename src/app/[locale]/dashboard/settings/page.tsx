@@ -37,7 +37,8 @@ import {
   Plus, Pencil, Trash2, Loader2, Save,
   Settings, Globe, CreditCard, Bell,
   Megaphone, Smartphone, Percent, FileText,
-  Heart, UserPlus, Crown, Users, Image as ImageIcon
+  Heart, UserPlus, Crown, Users, Image as ImageIcon,
+  Send
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -66,6 +67,7 @@ const CONFIG_GROUPS = [
   { value: 'commission', label: '佣金设置', icon: Percent, description: '佣金分成比例配置' },
   { value: 'favorite', label: '收藏夹设置', icon: Heart, description: '收藏夹创建费用配置' },
   { value: 'system', label: '系统设置', icon: Settings, description: '系统维护模式配置' },
+  { value: 'telegram', label: 'Telegram设置', icon: Send, description: 'Telegram Bot 通知配置' },
 ];
 
 const CONFIG_DESCRIPTIONS: Record<string, string> = {
@@ -150,6 +152,10 @@ const CONFIG_DESCRIPTIONS: Record<string, string> = {
   maintenance_mode: '维护模式',
   user_email_verification: '邮箱验证',
   user_registration_enabled: '开放注册',
+  telegram_bot_token: 'Telegram Bot Token',
+  telegram_forward_chat_id: 'Telegram 转发目标聊天ID',
+  telegram_proxy_enabled: '启用Telegram代理',
+  telegram_proxy_url: 'Telegram 代理地址',
 };
 
 export default function SettingsPage() {
@@ -276,7 +282,8 @@ export default function SettingsPage() {
   const isBooleanConfig = (key: string) => {
     return key.includes('_enabled') || key.includes('_required') ||
       key.includes('maintenance_') || key.includes('app_force_update') ||
-      key.includes('user_email_verification') || key.includes('user_registration_enabled');
+      key.includes('user_email_verification') || key.includes('user_registration_enabled') ||
+      key.includes('telegram_proxy_enabled');
   };
 
   const isImageConfig = (key: string) => {
@@ -530,6 +537,7 @@ export default function SettingsPage() {
                   value={editForm.value}
                   onChange={(e) => setEditForm({ ...editForm, value: e.target.value })}
                   rows={4}
+                  className="break-all resize-none"
                 />
               </div>
             )}
@@ -580,6 +588,7 @@ export default function SettingsPage() {
                 onChange={(e) => setCreateForm({ ...createForm, value: e.target.value })}
                 rows={4}
                 placeholder="配置值"
+                className="break-all resize-none"
               />
             </div>
             <div className="space-y-2">

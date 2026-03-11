@@ -52,7 +52,7 @@ import { cn } from '@/lib/utils';
 type Category = NonNullable<CategoryControllerFindAllResponse['data']['data']>[number];
 type Tag = NonNullable<TagControllerFindAllResponse['data']['data']>[number];
 
-type DownloadType = 'baidu' | 'onedrive' | 'google' | 'quark' | 'aliyun' | 'dropbox' | 'direct' | 'lanzou' | 'mega' | 'other';
+type DownloadType = 'baidu' | 'onedrive' | 'google' | 'quark' | 'aliyun' | 'dropbox' | 'direct' | 'lanzou' | 'mega' | 'telegram' | 'other';
 
 type DownloadItem = {
   type: DownloadType;
@@ -71,6 +71,7 @@ const DOWNLOAD_TYPES: { value: DownloadType; label: string }[] = [
   { value: 'lanzou', label: '蓝奏云' },
   { value: 'mega', label: 'Mega' },
   { value: 'direct', label: '直链下载' },
+  { value: 'telegram', label: 'Telegram' },
   { value: 'other', label: '其他' },
 ];
 

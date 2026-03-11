@@ -1712,7 +1712,7 @@ export type RoleControllerFindAllResponses = {
             data: Array<{
                 id: number;
                 name: string;
-                displayName: unknown;
+                displayName: string;
                 description: string;
                 isActive: boolean;
                 isSystem: boolean;
@@ -1797,7 +1797,7 @@ export type RoleControllerFindOneResponses = {
         data: {
             id: number;
             name: string;
-            displayName: unknown;
+            displayName: string;
             description: string;
             isActive: boolean;
             isSystem: boolean;
@@ -1871,7 +1871,7 @@ export type RoleControllerFindWithPaginationResponses = {
             data: Array<{
                 id: number;
                 name: string;
-                displayName: unknown;
+                displayName: string;
                 description: string;
                 isActive: boolean;
                 isSystem: boolean;
@@ -1919,7 +1919,7 @@ export type RoleControllerGetActiveRolesResponses = {
             data: Array<{
                 id: number;
                 name: string;
-                displayName: unknown;
+                displayName: string;
                 description: string;
                 isActive: boolean;
                 isSystem: boolean;
@@ -5913,6 +5913,29 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
 
 export type ArticleControllerGetFavoritedArticlesResponse = ArticleControllerGetFavoritedArticlesResponses[keyof ArticleControllerGetFavoritedArticlesResponses];
 
+export type ArticleControllerDownloadIdLinkData = {
+    body?: never;
+    headers?: {
+        Authorization?: string;
+        'Device-Id'?: string;
+        'Device-Name'?: string;
+        'Device-Type'?: string;
+    };
+    path: {
+        id: string;
+    };
+    query?: never;
+    url: '/article/download/{id}/link';
+};
+
+export type ArticleControllerDownloadIdLinkResponses = {
+    200: {
+        [key: string]: unknown;
+    };
+};
+
+export type ArticleControllerDownloadIdLinkResponse = ArticleControllerDownloadIdLinkResponses[keyof ArticleControllerDownloadIdLinkResponses];
+
 export type ArticleControllerUpdateBrowseProgressData = {
     body: unknown;
     headers?: {
@@ -5933,7 +5956,7 @@ export type ArticleControllerUpdateBrowseProgressResponses = {
 };
 
 export type ArticleControllerLikeData = {
-    body: unknown;
+    body: ArticleLikeDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;
@@ -6602,7 +6625,7 @@ export type CommentControllerFindAllCommentsData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query: {
+    query?: {
         /**
          * 页码
          */
@@ -6611,9 +6634,9 @@ export type CommentControllerFindAllCommentsData = {
          * 每页数量
          */
         limit?: number;
-        articleId: string;
-        userId: string;
-        keyword: string;
+        articleId?: string;
+        userId?: string;
+        keyword?: string;
     };
     url: '/comment';
 };
@@ -6622,8 +6645,22 @@ export type CommentControllerFindAllCommentsResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<string>;
+            meta: {
+                total: number;
+                page: number;
+                limit: number;
+                totalPages: number;
+            };
+        };
+    };
 };
+
+export type CommentControllerFindAllCommentsResponse = CommentControllerFindAllCommentsResponses[keyof CommentControllerFindAllCommentsResponses];
 
 export type CommentControllerCreateData = {
     body: unknown;
@@ -7604,7 +7641,17 @@ export type PermissionControllerFindAllResponses = {
     /**
      * 获取成功
      */
-    200: Array<unknown>;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            data: Array<{
+                id: number;
+                name: string;
+                description: string;
+            }>;
+        };
+    };
 };
 
 export type PermissionControllerFindAllResponse = PermissionControllerFindAllResponses[keyof PermissionControllerFindAllResponses];
@@ -7715,8 +7762,18 @@ export type PermissionControllerFindOneResponses = {
     /**
      * 获取成功
      */
-    200: unknown;
+    200: {
+        code: number;
+        message: string;
+        data: {
+            id: number;
+            name: string;
+            description: string;
+        };
+    };
 };
+
+export type PermissionControllerFindOneResponse = PermissionControllerFindOneResponses[keyof PermissionControllerFindOneResponses];
 
 export type PermissionControllerUpdateData = {
     body: unknown;

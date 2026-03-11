@@ -212,7 +212,7 @@
                                 "type": "string"
                               },
                               "displayName": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
                                 "type": "string"
@@ -445,7 +445,7 @@
                           "type": "string"
                         },
                         "displayName": {
-                          "type": "null"
+                          "type": "string"
                         },
                         "description": {
                           "type": "string"
@@ -788,7 +788,7 @@
                                 "type": "string"
                               },
                               "displayName": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
                                 "type": "string"
@@ -967,7 +967,7 @@
                                 "type": "string"
                               },
                               "displayName": {
-                                "type": "null"
+                                "type": "string"
                               },
                               "description": {
                                 "type": "string"
@@ -14354,6 +14354,84 @@
         "security": []
       }
     },
+    "/article/download/{id}/link": {
+      "get": {
+        "summary": "获取Telegram文件下载地址",
+        "deprecated": false,
+        "description": "",
+        "operationId": "articleController_downloadIdLink",
+        "tags": [
+          "文章管理"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "Authorization",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "Bearer {{token}}",
+            "schema": {
+              "type": "string",
+              "default": "Bearer {{token}}"
+            }
+          },
+          {
+            "name": "Device-Id",
+            "in": "header",
+            "description": "",
+            "required": false,
+            "example": "{{deviceId}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceId}}"
+            }
+          },
+          {
+            "name": "Device-Name",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceName}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceName}}"
+            }
+          },
+          {
+            "name": "Device-Type",
+            "in": "header",
+            "description": "",
+            "example": "{{deviceType}}",
+            "schema": {
+              "type": "string",
+              "default": "{{deviceType}}"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {}
+                }
+              }
+            }
+          }
+        },
+        "security": []
+      }
+    },
     "/article/{id}/browse/progress": {
       "post": {
         "summary": "更新文章浏览进度",
@@ -14500,7 +14578,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/ArticleLikeDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -16832,7 +16913,7 @@
             "name": "articleId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -16841,7 +16922,7 @@
             "name": "userId",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -16850,7 +16931,7 @@
             "name": "keyword",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -16901,6 +16982,64 @@
         "responses": {
           "200": {
             "description": "获取成功",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          }
+                        },
+                        "meta": {
+                          "type": "object",
+                          "properties": {
+                            "total": {
+                              "type": "integer"
+                            },
+                            "page": {
+                              "type": "integer"
+                            },
+                            "limit": {
+                              "type": "integer"
+                            },
+                            "totalPages": {
+                              "type": "integer"
+                            }
+                          },
+                          "required": [
+                            "total",
+                            "page",
+                            "limit",
+                            "totalPages"
+                          ]
+                        }
+                      },
+                      "required": [
+                        "data",
+                        "meta"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
+              }
+            },
             "headers": {}
           }
         },
@@ -19955,8 +20094,50 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {}
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "name": {
+                                "type": "string"
+                              },
+                              "description": {
+                                "type": "string"
+                              }
+                            },
+                            "required": [
+                              "id",
+                              "name",
+                              "description"
+                            ]
+                          }
+                        }
+                      },
+                      "required": [
+                        "data"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
                 }
               }
             },
@@ -20127,7 +20308,41 @@
             "description": "获取成功",
             "content": {
               "application/json": {
-                "schema": {}
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "integer"
+                    },
+                    "message": {
+                      "type": "string"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "integer"
+                        },
+                        "name": {
+                          "type": "string"
+                        },
+                        "description": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "id",
+                        "name",
+                        "description"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message",
+                    "data"
+                  ]
+                }
               }
             },
             "headers": {}

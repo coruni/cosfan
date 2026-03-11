@@ -41,6 +41,7 @@ interface Article {
   category?: {
     id: number;
     name: string;
+    avatar: string;
   };
   requireLogin: boolean;
   requirePayment: boolean;
@@ -169,7 +170,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         </div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
           {Array.from({ length: 8 }).map((_, i) => (
-            <Skeleton key={i} className="aspect-[3/4] rounded-lg" />
+            <Skeleton key={i} className="aspect-3/4 rounded-lg" />
           ))}
         </div>
       </div>
@@ -195,13 +196,14 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
   const isFavorited = article.isFavorited ?? false;
   
   // 判断是否能看到全部图片：imageCount 和 images.length 相等
-  const canViewAllImages = article.imageCount === article.images.length;
-  const remainingImages = article.imageCount && article.images.length 
-    ? article.imageCount - article.images.length 
+  const imagesLength = article.images?.length ?? 0;
+  const canViewAllImages = article.imageCount === imagesLength;
+  const remainingImages = article.imageCount && imagesLength
+    ? article.imageCount - imagesLength
     : 0;
-  
+
   // 判断是否有图片可以显示
-  const hasImages = article.images && article.images.length > 0;
+  const hasImages = imagesLength > 0;
 
   return (
     <article className="space-y-6" itemScope itemType="https://schema.org/Article">
@@ -209,13 +211,13 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         <h1 className="text-2xl font-bold" itemProp="headline">{article.title}</h1>
         
         <div className="flex items-center gap-4">
-          <Link href={`/profile/${article.author.id}`} className="flex items-center gap-2" itemProp="author" itemScope itemType="https://schema.org/Person">
+          <Link href={`/cosers/${article.category?.id}`} className="flex items-center gap-2" itemProp="author" itemScope itemType="https://schema.org/Person">
             <Image
-              src={article.author.avatar || '/default-avatar.png'}
-              alt={`${article.author.nickname}的头像`}
+              src={article.category?.avatar || '/default-avatar.png'}
+              alt={`${article.category?.name || '未分类'}的头像`}
               width={40}
               height={40}
-              className="rounded-full"
+              className="rounded-full object-cover w-10 h-10"
             />
             <span className="font-medium" itemProp="name">{article.author.nickname}</span>
           </Link>
