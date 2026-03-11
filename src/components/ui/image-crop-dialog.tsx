@@ -130,10 +130,10 @@ export function ImageCropDialog({
       
       const container = containerRef.current;
       if (container) {
-        const lastDistance = (container as any)._lastTouchDistance || distance;
+        const lastDistance = (container as HTMLDivElement & { _lastTouchDistance?: number })._lastTouchDistance || distance;
         const delta = (distance - lastDistance) * 0.005;
         setScale((prev) => Math.max(1, Math.min(3, prev + delta)));
-        (container as any)._lastTouchDistance = distance;
+        (container as HTMLDivElement & { _lastTouchDistance?: number })._lastTouchDistance = distance;
       }
     }
   }, []);
@@ -141,7 +141,7 @@ export function ImageCropDialog({
   const handleTouchEnd = useCallback(() => {
     const container = containerRef.current;
     if (container) {
-      (container as any)._lastTouchDistance = null;
+      (container as HTMLDivElement & { _lastTouchDistance?: number })._lastTouchDistance = undefined;
     }
   }, []);
 
@@ -180,8 +180,9 @@ export function ImageCropDialog({
       try {
         await onConfirm(file);
         handleClose();
-      } catch (error: any) {
-        toast.error(error?.message || tComponent('uploadFailed'));
+      } catch (error) {
+        const message = error instanceof Error ? error.message : tComponent('uploadFailed');
+        toast.error(message);
       } finally {
         setIsLoading(false);
       }

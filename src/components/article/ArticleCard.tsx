@@ -4,10 +4,9 @@ import Image from 'next/image';
 import { Link } from '@/i18n';
 import { useTranslations } from 'next-intl';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Download } from 'lucide-react';
-import { ArticleControllerFindAllResponse, ArticleControllerFindOneResponse } from '@/api';
+import { ArticleControllerFindOneResponse } from '@/api';
 
 type ArticleItem = NonNullable<ArticleControllerFindOneResponse['data']>;
 
@@ -59,13 +58,13 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
               {coser && (
                 <>
                   <Avatar className="h-5 w-5">
-                    <AvatarImage src={coser.avatar} alt={t('avatar', { name: coser.name })} />
+                    <AvatarImage src={coser?.avatar} alt={t('avatar', { name: coser?.name })} />
                     <AvatarFallback className="text-xs">
-                      {coser.name?.[0] || 'C'}
+                      {coser?.name?.[0] || 'C'}
                     </AvatarFallback>
                   </Avatar>
                   <span className="text-xs text-muted-foreground">
-                    {coser.name || 'Unknown'}
+                    {coser?.name || 'Unknown'}
                   </span>
                 </>
               )}

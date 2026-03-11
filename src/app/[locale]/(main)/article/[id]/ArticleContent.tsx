@@ -156,7 +156,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
 
   const getDownloadTypeLabel = (type?: string) => {
     const typeKey = type || 'unknown';
-    return t(`downloadType.${typeKey}` as any);
+    return t(`downloadType.${typeKey}` as 'downloadType.original' | 'downloadType.preview' | 'downloadType.unknown');
   };
 
   if (isLoading && !initialData) {

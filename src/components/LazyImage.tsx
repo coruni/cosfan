@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import Image, { ImageProps } from 'next/image';
 import { cn } from '@/lib/utils';
 import { useNetwork, getRecommendedQuality } from '@/hooks/useNetwork';
@@ -72,11 +72,10 @@ export function LazyImage({
   });
   const [currentSrc, setCurrentSrc] = useState<string>(lowQualitySrc || src);
   const [retryCount, setRetryCount] = useState(0);
-  const imgRef = useRef<HTMLImageElement>(null);
   const maxRetries = 3;
 
   // 根据网络状况调整图片质量
-  const quality = getRecommendedQuality(effectiveType as any, saveData);
+  const quality = getRecommendedQuality(effectiveType as 'slow-2g' | '2g' | '3g' | '4g' | 'unknown', saveData);
 
   // 处理图片加载完成
   const handleLoad = useCallback(() => {
@@ -133,7 +132,7 @@ export function LazyImage({
       setCurrentSrc(src);
       setImageState(prev => ({ ...prev, isLoading: true }));
     }
-  }, [isOffline]);
+  }, [isOffline, imageState.hasError, retryCount, src]);
 
   // 清理
   useEffect(() => {

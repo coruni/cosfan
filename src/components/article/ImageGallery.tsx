@@ -24,6 +24,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const [pinchStartDistance, setPinchStartDistance] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
   
   const totalImages = imageCount || images.length;
@@ -35,17 +36,17 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     setIsOpen(true);
   };
 
-  const goToPrevious = () => {
+  const goToPrevious = useCallback(() => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
-  };
+  }, [images.length]);
 
-  const goToNext = () => {
+  const goToNext = useCallback(() => {
     setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
-  };
+  }, [images.length]);
 
   const zoomIn = () => {
     setZoomLevel((prev) => Math.min(prev + 0.5, 3));
@@ -111,7 +112,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
       );
       setPinchStartDistance(distance);
     }
-  }, [zoomLevel, position]);
+  }, [zoomLevel, position, pinchStartDistance]);
 
   const [pinchStartDistance, setPinchStartDistance] = useState(0);
 
@@ -178,7 +179,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     } else if (e.key === '0') {
       resetZoom();
     }
-  }, [zoomLevel, zoomOut]);
+  }, [zoomLevel, zoomOut, goToPrevious, goToNext]);
 
   useEffect(() => {
     const handleGlobalMouseUp = () => {

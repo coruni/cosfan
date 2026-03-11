@@ -50,16 +50,15 @@ export default function SettingsContent() {
   const locale = useLocale();
   const [mounted, setMounted] = useState(false);
 
+  // Initialize mounted state - this is a common pattern for client-side detection
   useEffect(() => {
-    setMounted(true);
+    // Using requestAnimationFrame to defer setState outside of effect
+    const frame = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(frame);
   }, []);
+
   const [showPasswordDialog, setShowPasswordDialog] = useState(false);
   const [passwordForm, setPasswordForm] = useState({ oldPassword: '', newPassword: '', confirmPassword: '' });
-  const [notificationSettings, setNotificationSettings] = useState<UserConfig>({
-    enableSystemNotification: true,
-    enableCommentNotification: true,
-    enableLikeNotification: true,
-  });
 
   const { data: userConfig } = useQuery({
     queryKey: ['user-config'],
@@ -70,14 +69,25 @@ export default function SettingsContent() {
     enabled: isAuthenticated,
   });
 
+  const [notificationSettings, setNotificationSettings] = useState<UserConfig>(() => ({
+    enableSystemNotification: userConfig?.enableSystemNotification ?? true,
+    enableCommentNotification: userConfig?.enableCommentNotification ?? true,
+    enableLikeNotification: userConfig?.enableLikeNotification ?? true,
+  }));
+
+  // Update notification settings when config loads
   useEffect(() => {
     if (userConfig) {
-      setNotificationSettings({
-        enableSystemNotification: userConfig.enableSystemNotification ?? true,
-        enableCommentNotification: userConfig.enableCommentNotification ?? true,
-        enableLikeNotification: userConfig.enableLikeNotification ?? true,
+      const frame = requestAnimationFrame(() => {
+        setNotificationSettings({
+          enableSystemNotification: userConfig.enableSystemNotification ?? true,
+          enableCommentNotification: userConfig.enableCommentNotification ?? true,
+          enableLikeNotification: userConfig.enableLikeNotification ?? true,
+        });
       });
+      return () => cancelAnimationFrame(frame);
     }
+    return undefined;
   }, [userConfig]);
 
   const updateConfigMutation = useMutation({
@@ -88,8 +98,9 @@ export default function SettingsContent() {
     onSuccess: () => {
       toast.success(tToast('settingsSaved'));
     },
-    onError: (error: any) => {
-      toast.error(error?.message || tToast('updateFailed'));
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : tToast('updateFailed');
+      toast.error(message);
     },
   });
 
@@ -103,8 +114,9 @@ export default function SettingsContent() {
       setShowPasswordDialog(false);
       setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || tToast('passwordChangeFailed'));
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : tToast('passwordChangeFailed');
+      toast.error(message);
     },
   });
 
@@ -295,7 +307,7 @@ export default function SettingsContent() {
             <Select
               value={locale}
               onValueChange={(value) => {
-                router.push(pathname, { locale: value as any });
+                router.push(pathname, { locale: value as 'zh' | 'en' });
               }}
             >
               <SelectTrigger className="w-[140px]">

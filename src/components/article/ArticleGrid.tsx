@@ -4,9 +4,6 @@ import { useTranslations } from 'next-intl';
 import {
   ArticleControllerFindAllResponse,
   ArticleControllerFindOneResponse,
-  ArticleControllerGetLikedArticlesResponse,
-  ArticleControllerGetFavoritedArticlesResponse,
-  ArticleControllerFindByAuthorResponse,
 } from '@/api';
 import { ArticleCard } from './ArticleCard';
 import { Skeleton } from '@/components/ui/skeleton';

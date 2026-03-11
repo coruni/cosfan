@@ -129,7 +129,7 @@ export default function ProfileContent() {
   const updateMutation = useMutation({
     mutationFn: async (data: { nickname?: string; bio?: string; avatar?: string }) => {
       const response = await userControllerUpdate({
-        path: { id: String(user?.id!) },
+        path: { id: String(user?.id ?? '') },
         body: data,
       });
       return response.data;
@@ -139,13 +139,14 @@ export default function ProfileContent() {
       setShowEditDialog(false);
       refreshUser();
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '更新失败');
+    onError: (error) => {
+      const message = error instanceof Error ? error.message : '更新失败';
+      toast.error(message);
     },
   });
 
   const handleEditClick = () => {
-    const userData = user as any;
+    const userData = user as UserControllerGetProfileResponse['data'];
     setEditForm({
       nickname: userData?.nickname || '',
       bio: userData?.bio || '',
@@ -177,8 +178,9 @@ export default function ProfileContent() {
       } else {
         throw new Error('上传失败');
       }
-    } catch (error: any) {
-      toast.error(error?.message || '头像上传失败');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '头像上传失败';
+      toast.error(message);
     }
   };
 
@@ -385,7 +387,7 @@ export default function ProfileContent() {
           <Card>
             <CardHeader><CardTitle>浏览历史</CardTitle><CardDescription>最近浏览的图集</CardDescription></CardHeader>
             <CardContent>
-              <ArticleGrid articles={browseHistory?.data?.map((item: any) => item.article) || []} />
+              <ArticleGrid articles={browseHistory?.data?.map((item: { article: NonNullable<ArticleControllerFindAllResponse['data']['data']>[number] }) => item.article) || []} />
               {renderPagination(browseHistory?.meta?.total || 0)}
             </CardContent>
           </Card>

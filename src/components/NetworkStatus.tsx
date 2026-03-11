@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNetwork } from '@/hooks/useNetwork';
 import { WifiOff, Wifi, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -22,11 +22,11 @@ export function OfflineIndicator() {
         setIsVisible(true);
       }, 2000);
       return () => clearTimeout(timer);
-    } else {
-      // Hide when network is restored
-      setIsVisible(false);
-      setIsDismissing(false);
     }
+    // Hide when network is restored
+    setIsVisible(false);
+    setIsDismissing(false);
+    return undefined;
   }, [isOffline]);
 
   if (!isVisible) return null;
@@ -34,10 +34,6 @@ export function OfflineIndicator() {
   const handleDismiss = () => {
     setIsDismissing(true);
     setTimeout(() => setIsVisible(false), 300);
-  };
-
-  const handleRetry = () => {
-    window.location.reload();
   };
 
   return (
@@ -113,9 +109,9 @@ export function SlowNetworkIndicator() {
     if (isSlow || saveData) {
       const timer = setTimeout(() => setIsVisible(true), 3000);
       return () => clearTimeout(timer);
-    } else {
-      setIsVisible(false);
     }
+    setIsVisible(false);
+    return undefined;
   }, [isSlow, saveData]);
 
   if (!isVisible) return null;
@@ -142,6 +138,14 @@ export function NetworkReconnectPrompt() {
   const [showPrompt, setShowPrompt] = useState(false);
   const [wasOffline, setWasOffline] = useState(false);
 
+  const handleRefresh = useCallback(() => {
+    window.location.reload();
+  }, []);
+
+  const handleLater = useCallback(() => {
+    setShowPrompt(false);
+  }, []);
+
   useEffect(() => {
     if (!isOnline) {
       setWasOffline(true);
@@ -166,10 +170,10 @@ export function NetworkReconnectPrompt() {
           Your network connection is back. Would you like to refresh to get the latest content?
         </p>
         <div className="flex gap-2 justify-center">
-          <Button variant="outline" onClick={() => setShowPrompt(false)}>
+          <Button variant="outline" onClick={handleLater}>
             Later
           </Button>
-          <Button onClick={() => window.location.reload()}>
+          <Button onClick={handleRefresh}>
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>

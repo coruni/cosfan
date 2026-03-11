@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
 import { userControllerGetProfile } from '@/api/sdk.gen';
 import type { UserControllerGetProfileResponse } from '@/api/types.gen';
 import { STORAGE_KEYS } from '@/config/constants';
@@ -85,72 +85,7 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
 
   const isAuthenticated = !!user;
 
-  useEffect(() => {
-    setupClientInterceptors();
-    
-    // 确保device_id在cookie和localStorage中同步
-    const deviceId = getDeviceId();
-    console.log('Device ID initialized:', deviceId);
-  }, []);
-
-  useEffect(() => {
-    console.log('AuthContext useEffect running, serverUser:', !!serverUser);
-    if (serverUser) {
-      setUser(serverUser);
-      setIsLoading(false);
-      return;
-    }
-
-    const initAuth = async () => {
-      console.log('initAuth started');
-      
-      // 先检查是否已登录
-      const isAuthenticated = isClientAuthenticated();
-      console.log('Init auth - is authenticated:', isAuthenticated);
-      
-      // 只有在已登录的情况下才尝试获取用户信息
-      if (isAuthenticated) {
-        const token = getAccessToken();
-        // 同步token到localStorage（如果还没有）
-        if (token && !localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) {
-          localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-        }
-        try {
-          await refreshUser();
-          console.log('Refresh user success');
-        } catch (error) {
-          console.error('Refresh user failed:', error);
-          // 获取用户信息失败，清除认证状态
-          logout();
-        }
-      } else {
-        // 没有token，确保用户状态为null
-        console.log('Not authenticated, user set to null');
-        setUser(null);
-      }
-      
-      console.log('Setting isLoading to false');
-      setIsLoading(false);
-    };
-
-    initAuth();
-  }, [serverUser]);
-
-  const login = async (token: string, refreshToken?: string) => {
-    document.cookie = `access_token=${token}; path=/; max-age=604800; SameSite=Lax`;
-    if (refreshToken) {
-      document.cookie = `refresh_token=${refreshToken}; path=/; max-age=2592000; SameSite=Lax`;
-    }
-    if (!isServer) {
-      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
-      if (refreshToken) {
-        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
-      }
-    }
-    await refreshUser();
-  };
-
-  const logout = () => {
+  const logout = useCallback(() => {
     document.cookie = 'access_token=; path=/; max-age=0';
     document.cookie = 'refresh_token=; path=/; max-age=0';
     if (!isServer) {
@@ -159,7 +94,7 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
       localStorage.removeItem(STORAGE_KEYS.USER_INFO);
     }
     setUser(null);
-    
+
     // 退出登录后刷新页面，原因：
     // 1. 清空所有认证状态和缓存
     // 2. 重新执行SSR，获取未认证状态的数据
@@ -167,9 +102,9 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
     if (!isServer) {
       window.location.href = '/';
     }
-  };
+  }, []);
 
-  const refreshUser = async () => {
+  const refreshUser = useCallback(async () => {
     try {
       // 先检查是否有token，没有token不调用API
       const token = getAccessToken();
@@ -192,7 +127,72 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
       setUser(null);
       throw error;
     }
-  };
+  }, []);
+
+  const login = useCallback(async (token: string, refreshToken?: string) => {
+    document.cookie = `access_token=${token}; path=/; max-age=604800; SameSite=Lax`;
+    if (refreshToken) {
+      document.cookie = `refresh_token=${refreshToken}; path=/; max-age=2592000; SameSite=Lax`;
+    }
+    if (!isServer) {
+      localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+      if (refreshToken) {
+        localStorage.setItem(STORAGE_KEYS.REFRESH_TOKEN, refreshToken);
+      }
+    }
+    await refreshUser();
+  }, [refreshUser]);
+
+  useEffect(() => {
+    setupClientInterceptors();
+
+    // 确保device_id在cookie和localStorage中同步
+    const deviceId = getDeviceId();
+    console.log('Device ID initialized:', deviceId);
+  }, []);
+
+  useEffect(() => {
+    console.log('AuthContext useEffect running, serverUser:', !!serverUser);
+    if (serverUser) {
+      setUser(serverUser);
+      setIsLoading(false);
+      return;
+    }
+
+    const initAuth = async () => {
+      console.log('initAuth started');
+
+      // 先检查是否已登录
+      const isAuthenticated = isClientAuthenticated();
+      console.log('Init auth - is authenticated:', isAuthenticated);
+
+      // 只有在已登录的情况下才尝试获取用户信息
+      if (isAuthenticated) {
+        const token = getAccessToken();
+        // 同步token到localStorage（如果还没有）
+        if (token && !localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) {
+          localStorage.setItem(STORAGE_KEYS.ACCESS_TOKEN, token);
+        }
+        try {
+          await refreshUser();
+          console.log('Refresh user success');
+        } catch (error) {
+          console.error('Refresh user failed:', error);
+          // 获取用户信息失败，清除认证状态
+          logout();
+        }
+      } else {
+        // 没有token，确保用户状态为null
+        console.log('Not authenticated, user set to null');
+        setUser(null);
+      }
+
+      console.log('Setting isLoading to false');
+      setIsLoading(false);
+    };
+
+    initAuth();
+  }, [serverUser, refreshUser, logout]);
 
   return (
     <AuthContext.Provider

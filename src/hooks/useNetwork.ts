@@ -12,6 +12,16 @@ interface UseNetworkReturn {
   saveData: boolean;
 }
 
+interface NetworkConnection {
+  type?: string;
+  effectiveType?: NetworkStatus;
+  downlink?: number;
+  rtt?: number;
+  saveData?: boolean;
+  addEventListener?: (event: string, callback: () => void) => void;
+  removeEventListener?: (event: string, callback: () => void) => void;
+}
+
 /**
  * 网络状态检测 Hook
  * 用于检测用户的网络状态，支持弱网优化
@@ -27,9 +37,21 @@ export function useNetwork(): UseNetworkReturn {
   });
 
   const updateNetworkState = useCallback(() => {
-    const connection = (navigator as any).connection ||
-                       (navigator as any).mozConnection ||
-                       (navigator as any).webkitConnection;
+    const connection = (navigator as Navigator & {
+      connection?: NetworkConnection;
+      mozConnection?: NetworkConnection;
+      webkitConnection?: NetworkConnection;
+    }).connection ||
+                       (navigator as Navigator & {
+                         connection?: NetworkConnection;
+                         mozConnection?: NetworkConnection;
+                         webkitConnection?: NetworkConnection;
+                       }).mozConnection ||
+                       (navigator as Navigator & {
+                         connection?: NetworkConnection;
+                         mozConnection?: NetworkConnection;
+                         webkitConnection?: NetworkConnection;
+                       }).webkitConnection;
 
     if (connection) {
       setNetworkState({
@@ -53,7 +75,32 @@ export function useNetwork(): UseNetworkReturn {
   }, []);
 
   useEffect(() => {
-    updateNetworkState();
+    // Initialize network state synchronously
+    const connection = (navigator as Navigator & {
+      connection?: NetworkConnection;
+      mozConnection?: NetworkConnection;
+      webkitConnection?: NetworkConnection;
+    }).connection;
+
+    if (connection) {
+      setNetworkState({
+        isOnline: navigator.onLine,
+        status: connection.type || 'unknown',
+        effectiveType: connection.effectiveType || 'unknown',
+        downlink: connection.downlink || 0,
+        rtt: connection.rtt || 0,
+        saveData: connection.saveData || false,
+      });
+    } else {
+      setNetworkState({
+        isOnline: navigator.onLine,
+        status: 'unknown',
+        effectiveType: 'unknown',
+        downlink: 0,
+        rtt: 0,
+        saveData: false,
+      });
+    }
 
     const handleOnline = () => {
       setNetworkState(prev => ({ ...prev, isOnline: true }));
@@ -68,15 +115,14 @@ export function useNetwork(): UseNetworkReturn {
     window.addEventListener('offline', handleOffline);
 
     // 监听网络连接变化
-    const connection = (navigator as any).connection;
-    if (connection) {
+    if (connection?.addEventListener) {
       connection.addEventListener('change', updateNetworkState);
     }
 
     return () => {
       window.removeEventListener('online', handleOnline);
       window.removeEventListener('offline', handleOffline);
-      if (connection) {
+      if (connection?.removeEventListener) {
         connection.removeEventListener('change', updateNetworkState);
       }
     };

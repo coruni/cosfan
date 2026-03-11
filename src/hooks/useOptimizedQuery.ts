@@ -1,6 +1,8 @@
 import { UseQueryOptions, useQuery, useMutation, UseMutationOptions } from '@tanstack/react-query';
 import { useNetwork, isSlowNetwork } from './useNetwork';
 
+type NetworkStatus = 'online' | 'offline' | 'slow-2g' | '2g' | '3g' | '4g' | 'unknown';
+
 /**
  * 弱网优化的查询配置
  */
@@ -28,10 +30,10 @@ export function useOptimizedQuery<TData = unknown, TError = unknown>(
     queryFn: (context: { signal: AbortSignal }) => Promise<TData>;
   }
 ) {
-  const { effectiveType, saveData, isOffline } = useNetwork();
+  const { effectiveType } = useNetwork();
 
   // 根据网络状况调整查询配置
-  const isSlow = isSlowNetwork(effectiveType as any);
+  const isSlow = isSlowNetwork(effectiveType as NetworkStatus);
 
   const finalOptions: UseQueryOptions<TData, TError> = {
     ...options,
@@ -71,8 +73,6 @@ export function useOptimizedMutation<TData = unknown, TError = unknown, TVariabl
     mutationFn: (variables: TVariables, context?: { signal: AbortSignal }) => Promise<TData>;
   }
 ) {
-  const { isOffline } = useNetwork();
-
   return useMutation({
     ...options,
     // 离线时不允许 mutations，但可以排队
@@ -88,28 +88,28 @@ export function withRetry<T>(
   options: {
     maxRetries?: number;
     retryDelay?: number;
-    retryCondition?: (error: any) => boolean;
+    retryCondition?: (error: Error) => boolean;
   } = {}
 ): (signal: AbortSignal) => Promise<T> {
   const { maxRetries = 3, retryDelay = 1000, retryCondition } = options;
 
   return async (signal: AbortSignal): Promise<T> => {
-    let lastError: any;
+    let lastError: Error | undefined;
 
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         return await fn(signal);
-      } catch (error: any) {
-        lastError = error;
+      } catch (error) {
+        lastError = error instanceof Error ? error : new Error(String(error));
 
         // 检查是否应该重试
-        if (retryCondition && !retryCondition(error)) {
-          throw error;
+        if (retryCondition && !retryCondition(lastError)) {
+          throw lastError;
         }
 
         // 检查是否已中止
         if (signal.aborted) {
-          throw error;
+          throw lastError;
         }
 
         // 如果还有重试次数，等待后重试

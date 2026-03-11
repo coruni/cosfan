@@ -103,7 +103,7 @@ export function useSafePaymentRedirect(options: UseSafePaymentRedirectOptions = 
         // 直接跳转
         window.location.href = url;
         return;
-      } catch (e) {
+      } catch {
         console.warn('Direct redirect failed, using fallback');
       }
     }
@@ -116,7 +116,7 @@ export function useSafePaymentRedirect(options: UseSafePaymentRedirectOptions = 
     const timeoutId = setTimeout(() => {
       try {
         window.location.href = url;
-      } catch (e) {
+      } catch {
         setError('跳转失败，请手动打开支付页面');
       }
     }, timeout);
@@ -145,7 +145,7 @@ export function useSafePaymentRedirect(options: UseSafePaymentRedirectOptions = 
         await navigator.clipboard.writeText(paymentUrl);
         setShowRedirectDialog(false);
         return true;
-      } catch (e) {
+      } catch {
         return false;
       }
     }

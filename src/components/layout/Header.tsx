@@ -16,48 +16,60 @@ const NAV_LINKS = [
   { href: ROUTES.SEARCH, labelKey: 'search', icon: Search },
 ];
 
+interface NavLinkProps {
+  href: string;
+  labelKey: string;
+  icon: React.ElementType;
+  isActive: boolean;
+  onClick?: () => void;
+  className?: string;
+  tNav: (key: string) => string;
+}
+
+function NavLink({ href, labelKey, icon: Icon, isActive, className, tNav }: NavLinkProps) {
+  return (
+    <Link
+      href={href}
+      aria-current={isActive ? 'page' : undefined}
+      className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+        isActive
+          ? 'bg-primary text-primary-foreground'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+      } ${className || ''}`}
+    >
+      <Icon className="h-4 w-4" aria-hidden="true" />
+      {tNav(labelKey)}
+    </Link>
+  );
+}
+
+interface MobileNavLinkProps extends NavLinkProps {
+  onClick?: () => void;
+}
+
+function MobileNavLink({ href, labelKey, icon: Icon, isActive, onClick, tNav }: MobileNavLinkProps) {
+  return (
+    <Link
+      href={href}
+      onClick={onClick}
+      aria-current={isActive ? 'page' : undefined}
+      className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors ${
+        isActive
+          ? 'bg-primary text-primary-foreground'
+          : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+      }`}
+    >
+      <Icon className="h-5 w-5" aria-hidden="true" />
+      {tNav(labelKey)}
+    </Link>
+  );
+}
+
 export function Header() {
   const pathname = usePathname();
   const { user, isAuthenticated, logout } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const tNav = useTranslations('nav');
-
-  const NavLink = ({ href, labelKey, icon: Icon }: { href: string; labelKey: string; icon: React.ElementType }) => {
-    const isActive = pathname === href;
-    return (
-      <Link
-        href={href}
-        aria-current={isActive ? 'page' : undefined}
-        className={`flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
-          isActive
-            ? 'bg-primary text-primary-foreground'
-            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-        }`}
-      >
-        <Icon className="h-4 w-4" aria-hidden="true" />
-        {tNav(labelKey as any)}
-      </Link>
-    );
-  };
-
-  const MobileNavLink = ({ href, labelKey, icon: Icon }: { href: string; labelKey: string; icon: React.ElementType }) => {
-    const isActive = pathname === href;
-    return (
-      <Link
-        href={href}
-        onClick={() => setMobileMenuOpen(false)}
-        aria-current={isActive ? 'page' : undefined}
-        className={`flex items-center gap-3 px-3 py-2 rounded-md text-base font-medium transition-colors ${
-          isActive
-            ? 'bg-primary text-primary-foreground'
-            : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-        }`}
-      >
-        <Icon className="h-5 w-5" aria-hidden="true" />
-        {tNav(labelKey as any)}
-      </Link>
-    );
-  };
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -69,7 +81,7 @@ export function Header() {
 
           <nav className="hidden md:flex items-center gap-1" aria-label={tNav('menu')}>
             {NAV_LINKS.map((link) => (
-              <NavLink key={link.href} {...link} />
+              <NavLink key={link.href} {...link} isActive={pathname === link.href} tNav={tNav} />
             ))}
           </nav>
         </div>
@@ -87,14 +99,14 @@ export function Header() {
             <SheetContent side="right" className="w-[300px] sm:w-[400px]" title={tNav('menu')}>
               <nav className="flex flex-col gap-2 mt-8" aria-label={tNav('menu')}>
                 {NAV_LINKS.map((link) => (
-                  <MobileNavLink key={link.href} {...link} />
+                  <MobileNavLink key={link.href} {...link} isActive={pathname === link.href} onClick={() => setMobileMenuOpen(false)} tNav={tNav} />
                 ))}
                 {isAuthenticated && (
                   <>
                     <div className="h-px bg-border my-2" role="separator" />
-                    <MobileNavLink href={ROUTES.VIP} labelKey="vip" icon={Crown} />
-                    <MobileNavLink href={ROUTES.PROFILE} labelKey="profile" icon={User} />
-                    <MobileNavLink href={ROUTES.SETTINGS} labelKey="settings" icon={Settings} />
+                    <MobileNavLink href={ROUTES.VIP} labelKey="vip" icon={Crown} isActive={pathname === ROUTES.VIP} onClick={() => setMobileMenuOpen(false)} tNav={tNav} />
+                    <MobileNavLink href={ROUTES.PROFILE} labelKey="profile" icon={User} isActive={pathname === ROUTES.PROFILE} onClick={() => setMobileMenuOpen(false)} tNav={tNav} />
+                    <MobileNavLink href={ROUTES.SETTINGS} labelKey="settings" icon={Settings} isActive={pathname === ROUTES.SETTINGS} onClick={() => setMobileMenuOpen(false)} tNav={tNav} />
                   </>
                 )}
               </nav>
