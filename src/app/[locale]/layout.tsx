@@ -10,7 +10,7 @@ import { SiteConfigProvider } from "@/contexts/SiteConfigContext";
 import { Toaster } from "@/components/ui/sonner";
 import { configControllerGetPublicConfigs } from "@/api/sdk.gen";
 import { client } from "@/api/client.gen";
-import { API_BASE_URL, APP_NAME } from "@/config/constants";
+import { API_BASE_URL } from "@/config/constants";
 import { routing } from "@/i18n/routing";
 import { initServerInterceptors } from "@/lib/server-init";
 
@@ -60,16 +60,39 @@ const geistMono = localFont({
   fallback: ["Consolas", "Monaco", "Courier New", "monospace"],
 });
 
+// 缓存站点配置，避免多次 API 请求
+let cachedSiteConfig: Awaited<ReturnType<typeof configControllerGetPublicConfigs>>['data'] | null = null;
+let configFetchPromise: Promise<Awaited<ReturnType<typeof configControllerGetPublicConfigs>>['data'] | null> | null = null;
+
 async function getSiteConfig() {
-  try {
-    initServerInterceptors();
-    client.setConfig({ baseUrl: API_BASE_URL });
-    const response = await configControllerGetPublicConfigs();
-    return response.data?.data;
-  } catch (error) {
-    console.error("Failed to fetch site config:", error);
-    return null;
+  // 返回缓存
+  if (cachedSiteConfig !== null) {
+    return cachedSiteConfig;
   }
+
+  // 如果正在请求中，等待该请求完成
+  if (configFetchPromise) {
+    return configFetchPromise;
+  }
+
+  configFetchPromise = (async () => {
+    try {
+      initServerInterceptors();
+      client.setConfig({ baseUrl: API_BASE_URL });
+      const response = await configControllerGetPublicConfigs();
+      const data = response.data?.data;
+      cachedSiteConfig = data;
+      return data;
+    } catch (error) {
+      console.error("Failed to fetch site config:", error);
+      cachedSiteConfig = null;
+      return null;
+    } finally {
+      configFetchPromise = null;
+    }
+  })();
+
+  return configFetchPromise;
 }
 
 export function generateStaticParams() {
@@ -79,7 +102,7 @@ export function generateStaticParams() {
 export async function generateMetadata(): Promise<Metadata> {
   const config = await getSiteConfig();
 
-  const siteName = config?.site_name || APP_NAME;
+  const siteName = config?.site_name || "";
   const description = config?.site_description || "";
   const keywords = config?.site_keywords || "";
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "";
@@ -172,12 +195,6 @@ export default async function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {/* <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md"
-        >
-          跳转到主内容
-        </a> */}
         <NextIntlClientProvider messages={messages}>
           <ThemeProvider
             attribute="class"
@@ -186,7 +203,7 @@ export default async function RootLayout({
             disableTransitionOnChange
           >
             <QueryProvider>
-              <SiteConfigProvider config={siteConfig}>
+              <SiteConfigProvider config={siteConfig ?? null}>
                 <AuthProvider>
                   <div id="main-content">{children}</div>
                   <Toaster />
