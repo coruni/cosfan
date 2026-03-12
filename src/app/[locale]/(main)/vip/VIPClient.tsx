@@ -95,6 +95,7 @@ export function VIPClient({ config }: VIPClientProps) {
     onSuccess: (data) => {
       const orderId = data?.data?.data?.id;
       if (orderId) {
+        toast.success('订单已创建，正在跳转支付...');
         createPaymentMutation.mutate({ orderId, paymentMethod, epayType });
       } else {
         toast.error('订单创建失败，请重试');
@@ -127,9 +128,8 @@ export function VIPClient({ config }: VIPClientProps) {
         const isStrict = isStrictBrowser();
 
         if (!isStrict) {
-          // 非严格浏览器，直接跳转
-          // eslint-disable-next-line react-hooks/immutability
-          window.location.href = paymentUrl;
+          // 非严格浏览器，在新标签页打开
+          window.open(paymentUrl, '_blank', 'noopener,noreferrer');
         } else {
           // 严格浏览器，显示提示对话框让用户确认
           setPaymentRedirectUrl(paymentUrl);
