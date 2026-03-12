@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "build:standalone": "next build && node scripts/copy-standalone-files.js",
     "start": "next start",
     "lint": "eslint",
     "generate:api": "openapi-ts -c openapi-ts.config.ts"
