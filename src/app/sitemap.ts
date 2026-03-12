@@ -93,7 +93,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const locale of locales) {
       const localePath = locale === defaultLocale ? '' : `/${locale}`;
 
-      articles.forEach((article: any) => {
+      type ArticleItem = { id: number; updatedAt?: string };
+type CategoryItem = { id: number };
+
+      articles.forEach((article: ArticleItem) => {
         if (article && article.id) {
           articlePages.push({
             url: `${baseUrl}${localePath}/article/${article.id}`,
@@ -113,7 +116,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
 
       // 生成分类页面的sitemap条目
-      categories.forEach((category: any) => {
+      categories.forEach((category: CategoryItem) => {
         if (category && category.id) {
           categoryPages.push({
             url: `${baseUrl}${localePath}/cosers/${category.id}`,

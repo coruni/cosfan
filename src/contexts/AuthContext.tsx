@@ -1,6 +1,6 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, type ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, useRef, type ReactNode } from 'react';
 import { userControllerGetProfile } from '@/api/sdk.gen';
 import type { UserControllerGetProfileResponse } from '@/api/types.gen';
 import { STORAGE_KEYS } from '@/config/constants';
@@ -29,7 +29,7 @@ const isServer = typeof window === 'undefined';
 
 function getCookie(name: string): string | null {
   if (isServer) return null;
-  
+
   const value = `; ${document.cookie}`;
   const parts = value.split(`; ${name}=`);
   if (parts.length === 2) return parts.pop()?.split(';').shift() || null;
@@ -38,10 +38,10 @@ function getCookie(name: string): string | null {
 
 function getAccessToken(): string | null {
   if (isServer) return null;
-  
+
   const cookieToken = getCookie('access_token');
   if (cookieToken) return cookieToken;
-  
+
   return localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN);
 }
 
@@ -57,7 +57,7 @@ function isClientAuthenticated(): boolean {
 
 function getDeviceId(): string {
   if (isServer) return 'ssr';
-  
+
   // 优先从cookie中读取device_id（由middleware设置）
   const cookieDeviceId = getCookie('device_id');
   if (cookieDeviceId) {
@@ -65,7 +65,7 @@ function getDeviceId(): string {
     localStorage.setItem(STORAGE_KEYS.DEVICE_ID, cookieDeviceId);
     return cookieDeviceId;
   }
-  
+
   // 如果cookie中没有，从localStorage读取
   let deviceId = localStorage.getItem(STORAGE_KEYS.DEVICE_ID);
   if (!deviceId) {
@@ -73,7 +73,7 @@ function getDeviceId(): string {
     deviceId = 'device_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
     localStorage.setItem(STORAGE_KEYS.DEVICE_ID, deviceId);
   }
-  
+
   // 同步到cookie
   document.cookie = `device_id=${deviceId}; path=/; max-age=31536000; SameSite=Lax`;
   return deviceId;
@@ -82,6 +82,7 @@ function getDeviceId(): string {
 export function AuthProvider({ children, serverUser }: AuthProviderProps) {
   const [user, setUser] = useState<UserData | null>(serverUser || null);
   const [isLoading, setIsLoading] = useState(!serverUser);
+  const initializedRef = useRef(false);
 
   const isAuthenticated = !!user;
 
@@ -152,10 +153,17 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
   }, []);
 
   useEffect(() => {
+    // Prevent double initialization in StrictMode
+    if (initializedRef.current) return;
+    initializedRef.current = true;
+
     console.log('AuthContext useEffect running, serverUser:', !!serverUser);
     if (serverUser) {
-      setUser(serverUser);
-      setIsLoading(false);
+      // Use RAF to avoid synchronous setState
+      requestAnimationFrame(() => {
+        setUser(serverUser);
+        setIsLoading(false);
+      });
       return;
     }
 
@@ -163,11 +171,11 @@ export function AuthProvider({ children, serverUser }: AuthProviderProps) {
       console.log('initAuth started');
 
       // 先检查是否已登录
-      const isAuthenticated = isClientAuthenticated();
-      console.log('Init auth - is authenticated:', isAuthenticated);
+      const isAuthenticatedCheck = isClientAuthenticated();
+      console.log('Init auth - is authenticated:', isAuthenticatedCheck);
 
       // 只有在已登录的情况下才尝试获取用户信息
-      if (isAuthenticated) {
+      if (isAuthenticatedCheck) {
         const token = getAccessToken();
         // 同步token到localStorage（如果还没有）
         if (token && !localStorage.getItem(STORAGE_KEYS.ACCESS_TOKEN)) {

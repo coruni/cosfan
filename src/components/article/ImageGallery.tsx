@@ -112,7 +112,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
       );
       setPinchStartDistance(distance);
     }
-  }, [zoomLevel, position, pinchStartDistance]);
+  }, [zoomLevel, position]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     if (e.touches.length === 1 && isDragging && zoomLevel > 1) {

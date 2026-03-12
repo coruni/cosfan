@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import {
   articleControllerCreate,
   categoryControllerFindAll,
@@ -40,9 +41,9 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { 
-  ArrowLeft, Loader2, ChevronLeft, ChevronRight, Plus, X, 
-  Image as ImageIcon, Upload, Check, Download, Link as LinkIcon, Key, Lock
+import {
+  ArrowLeft, Loader2, ChevronLeft, ChevronRight, Plus, X,
+  Image as ImageIcon, Upload, Check, Download, Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from '@/i18n';
@@ -81,9 +82,11 @@ const naturalSort = (a: string, b: string) => {
 
 const uploadFiles = async (files: File[]): Promise<string[]> => {
   const response = await uploadControllerUploadFile({
-    body: files as any,
+    body: files as unknown as File[],
   });
-  return (response.data?.data || []).map((f: any) => f.url).filter(Boolean);
+  const data = response.data?.data;
+  if (!data) return [];
+  return data.map((f) => f.url).filter((url): url is string => Boolean(url));
 };
 
 export default function ArticleNewPage() {
@@ -131,7 +134,7 @@ export default function ArticleNewPage() {
     },
   });
 
-  const { data: tagsData, refetch: refetchTags } = useQuery({
+  const { data: tagsData } = useQuery({
     queryKey: ['tags', tagInput],
     queryFn: async () => {
       const response = await tagControllerFindAll({
@@ -142,7 +145,7 @@ export default function ArticleNewPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: typeof form) => {
       const response = await articleControllerCreate({ body: data });
       return response.data;
     },
@@ -151,13 +154,14 @@ export default function ArticleNewPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
       router.push('/dashboard/articles');
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '创建失败';
+      toast.error(message);
     },
   });
 
   const createCategoryMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: { name: string; description: string; status: string; sort: number }) => {
       const response = await categoryControllerCreate({ body: data });
       return response.data;
     },
@@ -167,8 +171,9 @@ export default function ArticleNewPage() {
       setCategoryDialogOpen(false);
       setNewCategoryForm({ name: '', description: '' });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '创建失败';
+      toast.error(message);
     },
   });
 
@@ -186,11 +191,12 @@ export default function ArticleNewPage() {
 
   const uploadFilesInOrder = async (files: File[]) => {
     const sortedFiles = [...files].sort((a, b) => naturalSort(a.name, b.name));
-    
+
     try {
       return await uploadFiles(sortedFiles);
-    } catch (error: any) {
-      toast.error(`上传失败: ${error?.message || '未知错误'}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '未知错误';
+      toast.error(`上传失败: ${message}`);
       return [];
     }
   };
@@ -263,8 +269,9 @@ export default function ArticleNewPage() {
           return { ...prev, images: newImages };
         });
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     } finally {
       setUploadingIndex(null);
     }
@@ -277,8 +284,9 @@ export default function ArticleNewPage() {
       if (urls[0]) {
         setForm(prev => ({ ...prev, cover: urls[0] }));
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     } finally {
       setIsUploadingCover(false);
     }
@@ -467,7 +475,7 @@ export default function ArticleNewPage() {
                 {form.images.map((img, idx) => (
                   <div key={idx} className="relative group aspect-square border rounded-lg overflow-hidden bg-muted">
                     {img ? (
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <Image src={img} alt="" fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" unoptimized />
                     ) : (
                       <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-muted/50">
                         <Upload className="h-6 w-6 text-muted-foreground mb-1" />
@@ -537,7 +545,7 @@ export default function ArticleNewPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>状态</Label>
-                <Select value={form.status} onValueChange={(v: any) => setForm({ ...form, status: v })}>
+                <Select value={form.status} onValueChange={(v: 'DRAFT' | 'PENDING' | 'PUBLISHED') => setForm({ ...form, status: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="DRAFT">草稿</SelectItem>
@@ -549,7 +557,7 @@ export default function ArticleNewPage() {
 
               <div className="space-y-2">
                 <Label>类型</Label>
-                <Select value={form.type} onValueChange={(v: any) => setForm({ ...form, type: v })}>
+                <Select value={form.type} onValueChange={(v: 'image' | 'mixed') => setForm({ ...form, type: v })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="image">图片</SelectItem>
@@ -563,7 +571,7 @@ export default function ArticleNewPage() {
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer relative group">
                     {form.cover ? (
-                      <img src={form.cover} alt="封面" className="w-20 h-14 rounded object-cover" />
+                      <Image src={form.cover} alt="封面" width={80} height={56} className="rounded object-cover" unoptimized />
                     ) : (
                       <div className="w-20 h-14 rounded bg-muted flex items-center justify-center group-hover:bg-muted/80">
                         {isUploadingCover ? (

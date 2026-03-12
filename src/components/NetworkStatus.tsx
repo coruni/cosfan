@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNetwork } from '@/hooks/useNetwork';
 import { WifiOff, Wifi, AlertCircle, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ export function OfflineIndicator() {
   const { isOffline } = useNetwork();
   const [isVisible, setIsVisible] = useState(false);
   const [isDismissing, setIsDismissing] = useState(false);
+  const prevIsOffline = useRef(isOffline);
 
   // Delay showing to let user see content first
   useEffect(() => {
@@ -23,9 +24,14 @@ export function OfflineIndicator() {
       }, 2000);
       return () => clearTimeout(timer);
     }
-    // Hide when network is restored
-    setIsVisible(false);
-    setIsDismissing(false);
+    // Hide when network is restored - use RAF to avoid synchronous setState
+    if (prevIsOffline.current) {
+      requestAnimationFrame(() => {
+        setIsVisible(false);
+        setIsDismissing(false);
+      });
+    }
+    prevIsOffline.current = isOffline;
     return undefined;
   }, [isOffline]);
 
@@ -104,13 +110,22 @@ export function SlowNetworkIndicator() {
   const [isVisible, setIsVisible] = useState(false);
 
   const isSlow = ['slow-2g', '2g', '3g'].includes(effectiveType || '');
+  const prevIsSlow = useRef(isSlow);
+  const prevSaveData = useRef(saveData);
 
   useEffect(() => {
     if (isSlow || saveData) {
       const timer = setTimeout(() => setIsVisible(true), 3000);
       return () => clearTimeout(timer);
     }
-    setIsVisible(false);
+    // Hide when network improves - use RAF to avoid synchronous setState
+    if (prevIsSlow.current !== isSlow || prevSaveData.current !== saveData) {
+      requestAnimationFrame(() => {
+        setIsVisible(false);
+      });
+    }
+    prevIsSlow.current = isSlow;
+    prevSaveData.current = saveData;
     return undefined;
   }, [isSlow, saveData]);
 
@@ -137,6 +152,7 @@ export function NetworkReconnectPrompt() {
   const { isOnline } = useNetwork();
   const [showPrompt, setShowPrompt] = useState(false);
   const [wasOffline, setWasOffline] = useState(false);
+  const prevIsOnline = useRef(isOnline);
 
   const handleRefresh = useCallback(() => {
     window.location.reload();
@@ -147,12 +163,18 @@ export function NetworkReconnectPrompt() {
   }, []);
 
   useEffect(() => {
+    // Use RAF to avoid synchronous setState in effect
     if (!isOnline) {
-      setWasOffline(true);
+      requestAnimationFrame(() => {
+        setWasOffline(true);
+      });
     } else if (wasOffline && isOnline) {
       // Network restored
-      setShowPrompt(true);
+      requestAnimationFrame(() => {
+        setShowPrompt(true);
+      });
     }
+    prevIsOnline.current = isOnline;
   }, [isOnline, wasOffline]);
 
   if (!showPrompt) return null;

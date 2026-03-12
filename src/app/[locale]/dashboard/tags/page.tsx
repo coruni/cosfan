@@ -71,7 +71,7 @@ export default function TagsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+    mutationFn: async ({ id, data }: { id: number; data: { name?: string; description?: string; avatar?: string; background?: string; cover?: string; sort?: number } }) => {
       const response = await tagControllerUpdate({
         path: { id: String(id) },
         body: data,
@@ -83,13 +83,14 @@ export default function TagsPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-tags'] });
       setEditDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '更新失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '更新失败';
+      toast.error(message);
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: { name: string; description?: string; avatar?: string; background?: string; cover?: string; sort?: number }) => {
       const response = await tagControllerCreate({ body: data });
       return response.data;
     },
@@ -99,8 +100,9 @@ export default function TagsPage() {
       setCreateDialogOpen(false);
       setCreateForm({ name: '', description: '', avatar: '', background: '', cover: '', sort: 0 });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '创建失败';
+      toast.error(message);
     },
   });
 
@@ -114,8 +116,9 @@ export default function TagsPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-tags'] });
       setDeleteDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '删除失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '删除失败';
+      toast.error(message);
     },
   });
 
@@ -175,8 +178,9 @@ export default function TagsPage() {
       } else {
         throw new Error('上传失败');
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     }
   };
 
@@ -537,7 +541,7 @@ export default function TagsPage() {
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
             <DialogDescription>
-              确定要删除标签 "{selectedTag?.name}" 吗？此操作不可撤销。
+              确定要删除标签 &quot;{selectedTag?.name}&quot; 吗？此操作不可撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

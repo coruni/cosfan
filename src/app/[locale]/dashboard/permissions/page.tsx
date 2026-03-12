@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   permissionControllerFindAll,
@@ -32,9 +32,6 @@ type Permission = {
 
 export default function PermissionsPage() {
   const queryClient = useQueryClient();
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
-  const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
@@ -49,15 +46,29 @@ export default function PermissionsPage() {
     description: '',
   });
 
+  // 获取全部权限数据（不分页）
   const { data: permissionsData, isLoading } = useQuery({
-    queryKey: ['admin-permissions', page, limit, search],
+    queryKey: ['admin-permissions'],
     queryFn: async () => {
-      const response = await permissionControllerFindAll({
-        query: { page, limit, name: search || undefined },
-      });
+      const response = await permissionControllerFindAll();
       return response.data;
     },
   });
+
+  // 前端过滤搜索
+  const allPermissions = useMemo(
+    () => (permissionsData?.data?.data || permissionsData?.data || []) as Permission[],
+    [permissionsData]
+  );
+  const permissions = useMemo(() => {
+    if (!searchInput.trim()) return allPermissions;
+    const keyword = searchInput.toLowerCase();
+    return allPermissions.filter(
+      (p) =>
+        p.name.toLowerCase().includes(keyword) ||
+        p.description?.toLowerCase().includes(keyword)
+    );
+  }, [allPermissions, searchInput]);
 
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: { name: string; description: string } }) => {
@@ -111,11 +122,6 @@ export default function PermissionsPage() {
     },
   });
 
-  const handleSearch = () => {
-    setSearch(searchInput);
-    setPage(1);
-  };
-
   const openEditDialog = (permission: Permission) => {
     setSelectedPermission(permission);
     setEditForm({
@@ -148,9 +154,6 @@ export default function PermissionsPage() {
     deleteMutation.mutate(selectedPermission.id);
   };
 
-  const permissions = (permissionsData?.data?.data || permissionsData?.data || []) as Permission[];
-  const total = (permissionsData?.data?.meta?.total || permissionsData?.meta?.total || 0);
-  const totalPages = Math.ceil(total / limit);
 
   return (
     <div className="space-y-6">
@@ -169,16 +172,19 @@ export default function PermissionsPage() {
         <CardHeader>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2 flex-1">
+              <Search className="h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="搜索权限名称..."
+                placeholder="搜索权限..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 className="max-w-sm"
               />
-              <Button variant="outline" onClick={handleSearch}>
-                <Search className="h-4 w-4" />
-              </Button>
+            </div>
+            <div className="text-sm text-muted-foreground">
+              共 {allPermissions.length} 条记录
+              {searchInput && permissions.length !== allPermissions.length && (
+                <span>，筛选后 {permissions.length} 条</span>
+              )}
             </div>
           </div>
         </CardHeader>
@@ -236,32 +242,6 @@ export default function PermissionsPage() {
                   </TableBody>
                 </UITable>
               </div>
-
-              {totalPages > 1 && (
-                <div className="flex items-center justify-between mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    共 {total} 条记录，第 {page} / {totalPages} 页
-                  </p>
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      disabled={page <= 1}
-                      onClick={() => setPage(page - 1)}
-                    >
-                      {'<'}
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      disabled={page >= totalPages}
-                      onClick={() => setPage(page + 1)}
-                    >
-                      {'>'}
-                    </Button>
-                  </div>
-                </div>
-              )}
             </>
           )}
         </CardContent>
@@ -347,7 +327,7 @@ export default function PermissionsPage() {
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
             <DialogDescription>
-              确定要删除权限 "{selectedPermission?.name}" 吗？此操作不可撤销。
+              确定要删除权限 &quot;{selectedPermission?.name}&quot; 吗？此操作不可撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

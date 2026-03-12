@@ -9,7 +9,7 @@ import {
   userControllerCreate,
   uploadControllerUploadFile,
 } from '@/api/sdk.gen';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -33,8 +33,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ImageCropDialog } from '@/components/ui/image-crop-dialog';
 import { Search, Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table';
-import { UserControllerFindAllResponse } from '@/api/types.gen';
+import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 type User = {
   id: number;
@@ -91,7 +90,7 @@ export default function UsersPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+    mutationFn: async ({ id, data }: { id: number; data: { username?: string; nickname?: string; email?: string; phone?: string; status?: string; membershipStatus?: string; avatar?: string } }) => {
       const response = await userControllerUpdate({
         path: { id: String(id) },
         body: data,
@@ -103,13 +102,14 @@ export default function UsersPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       setEditDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '更新失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '更新失败';
+      toast.error(message);
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: { username: string; password: string; nickname?: string; email?: string; phone?: string }) => {
       const response = await userControllerCreate({ body: data });
       return response.data;
     },
@@ -119,8 +119,9 @@ export default function UsersPage() {
       setCreateDialogOpen(false);
       setCreateForm({ username: '', password: '', nickname: '', email: '', phone: '' });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '创建失败';
+      toast.error(message);
     },
   });
 
@@ -134,8 +135,9 @@ export default function UsersPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-users'] });
       setDeleteDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '删除失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '删除失败';
+      toast.error(message);
     },
   });
 
@@ -182,11 +184,6 @@ export default function UsersPage() {
     deleteMutation.mutate(selectedUser.id);
   };
 
-  const openAvatarCropDialog = (user: User) => {
-    setSelectedUser(user);
-    setAvatarCropDialogOpen(true);
-  };
-
   const handleAvatarCrop = async (file: File) => {
     if (!selectedUser) return;
     
@@ -202,8 +199,9 @@ export default function UsersPage() {
       } else {
         throw new Error('上传失败');
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     }
   };
 
@@ -436,7 +434,7 @@ export default function UsersPage() {
               <Label htmlFor="edit-status">状态</Label>
               <Select
                 value={editForm.status}
-                onValueChange={(value: any) => setEditForm({ ...editForm, status: value })}
+                onValueChange={(value: string) => setEditForm({ ...editForm, status: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -452,7 +450,7 @@ export default function UsersPage() {
               <Label htmlFor="edit-membershipStatus">会员状态</Label>
               <Select
                 value={editForm.membershipStatus}
-                onValueChange={(value: any) => setEditForm({ ...editForm, membershipStatus: value })}
+                onValueChange={(value: string) => setEditForm({ ...editForm, membershipStatus: value })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -563,7 +561,7 @@ export default function UsersPage() {
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
             <DialogDescription>
-              确定要删除用户 "{selectedUser?.nickname || selectedUser?.username}" 吗？此操作不可撤销。
+              确定要删除用户 &quot;{selectedUser?.nickname || selectedUser?.username}&quot; 吗？此操作不可撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

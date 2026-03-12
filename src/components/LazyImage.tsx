@@ -54,7 +54,6 @@ export function LazyImage({
   src,
   alt,
   placeholder = 'blur',
-  progressiveLoading = true,
   lowQualitySrc,
   fallbackSrc,
   loadingText,
@@ -128,9 +127,11 @@ export function LazyImage({
   // 监听网络状态变化
   useEffect(() => {
     if (!isOffline && imageState.hasError && retryCount === 0) {
-      // 网络恢复时重试加载
-      setCurrentSrc(src);
-      setImageState(prev => ({ ...prev, isLoading: true }));
+      // 网络恢复时重试加载 - use RAF to avoid synchronous setState
+      requestAnimationFrame(() => {
+        setCurrentSrc(src);
+        setImageState(prev => ({ ...prev, isLoading: true }));
+      });
     }
   }, [isOffline, imageState.hasError, retryCount, src]);
 

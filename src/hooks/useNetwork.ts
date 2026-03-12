@@ -22,19 +22,55 @@ interface NetworkConnection {
   removeEventListener?: (event: string, callback: () => void) => void;
 }
 
+// Helper to get initial network state
+function getInitialNetworkState(): UseNetworkReturn {
+  if (typeof navigator === 'undefined') {
+    return {
+      isOnline: true,
+      isOffline: false,
+      status: 'unknown',
+      effectiveType: 'unknown',
+      downlink: 0,
+      rtt: 0,
+      saveData: false,
+    };
+  }
+
+  const connection = (navigator as Navigator & {
+    connection?: NetworkConnection;
+    mozConnection?: NetworkConnection;
+    webkitConnection?: NetworkConnection;
+  }).connection;
+
+  if (connection) {
+    return {
+      isOnline: navigator.onLine,
+      isOffline: !navigator.onLine,
+      status: connection.type || 'unknown',
+      effectiveType: connection.effectiveType || 'unknown',
+      downlink: connection.downlink || 0,
+      rtt: connection.rtt || 0,
+      saveData: connection.saveData || false,
+    };
+  }
+
+  return {
+    isOnline: navigator.onLine,
+    isOffline: !navigator.onLine,
+    status: 'unknown',
+    effectiveType: 'unknown',
+    downlink: 0,
+    rtt: 0,
+    saveData: false,
+  };
+}
+
 /**
  * 网络状态检测 Hook
  * 用于检测用户的网络状态，支持弱网优化
  */
 export function useNetwork(): UseNetworkReturn {
-  const [networkState, setNetworkState] = useState({
-    isOnline: true,
-    status: 'unknown' as NetworkStatus,
-    effectiveType: 'unknown' as NetworkStatus,
-    downlink: 0,
-    rtt: 0,
-    saveData: false,
-  });
+  const [networkState, setNetworkState] = useState<UseNetworkReturn>(getInitialNetworkState);
 
   const updateNetworkState = useCallback(() => {
     const connection = (navigator as Navigator & {
@@ -56,6 +92,7 @@ export function useNetwork(): UseNetworkReturn {
     if (connection) {
       setNetworkState({
         isOnline: navigator.onLine,
+        isOffline: !navigator.onLine,
         status: connection.type || 'unknown',
         effectiveType: connection.effectiveType || 'unknown',
         downlink: connection.downlink || 0,
@@ -65,6 +102,7 @@ export function useNetwork(): UseNetworkReturn {
     } else {
       setNetworkState({
         isOnline: navigator.onLine,
+        isOffline: !navigator.onLine,
         status: 'unknown',
         effectiveType: 'unknown',
         downlink: 0,
@@ -75,40 +113,19 @@ export function useNetwork(): UseNetworkReturn {
   }, []);
 
   useEffect(() => {
-    // Initialize network state synchronously
     const connection = (navigator as Navigator & {
       connection?: NetworkConnection;
       mozConnection?: NetworkConnection;
       webkitConnection?: NetworkConnection;
     }).connection;
 
-    if (connection) {
-      setNetworkState({
-        isOnline: navigator.onLine,
-        status: connection.type || 'unknown',
-        effectiveType: connection.effectiveType || 'unknown',
-        downlink: connection.downlink || 0,
-        rtt: connection.rtt || 0,
-        saveData: connection.saveData || false,
-      });
-    } else {
-      setNetworkState({
-        isOnline: navigator.onLine,
-        status: 'unknown',
-        effectiveType: 'unknown',
-        downlink: 0,
-        rtt: 0,
-        saveData: false,
-      });
-    }
-
     const handleOnline = () => {
-      setNetworkState(prev => ({ ...prev, isOnline: true }));
+      setNetworkState(prev => ({ ...prev, isOnline: true, isOffline: false }));
       updateNetworkState();
     };
 
     const handleOffline = () => {
-      setNetworkState(prev => ({ ...prev, isOnline: false }));
+      setNetworkState(prev => ({ ...prev, isOnline: false, isOffline: true }));
     };
 
     window.addEventListener('online', handleOnline);
@@ -128,10 +145,7 @@ export function useNetwork(): UseNetworkReturn {
     };
   }, [updateNetworkState]);
 
-  return {
-    ...networkState,
-    isOffline: !networkState.isOnline,
-  };
+  return networkState;
 }
 
 /**
