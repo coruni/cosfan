@@ -17,7 +17,8 @@
       "Bash(ls -la \"/home/coder/project/cosfan/src/app/[locale]/\\(main\\)/discover/\")",
       "Bash(ls -la \"/home/coder/project/cosfan/src/app/[locale]/\\(main\\)/\")",
       "Bash(pnpm eslint:*)",
-      "Bash(pnpm tsc:*)"
+      "Bash(pnpm tsc:*)",
+      "mcp__ide__getDiagnostics"
     ]
   }
 }

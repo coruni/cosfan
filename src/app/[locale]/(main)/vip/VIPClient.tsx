@@ -30,29 +30,29 @@ import {
 import { isStrictBrowser, getBrowserName } from '@/hooks/useSafePaymentRedirect';
 
 const VIP_FEATURES = [
-  '无限浏览所有内容',
-  '高清原图下载',
-  '专属VIP标识',
-  '优先客服支持',
-  '独家内容抢先看',
-  '无广告体验',
+  'features.unlimitedBrowse',
+  'features.hdDownload',
+  'features.vipBadge',
+  'features.prioritySupport',
+  'features.exclusiveContent',
+  'features.adFree',
 ];
 
 interface VipPlan {
   id: string;
-  name: string;
+  nameKey: 'monthly' | 'quarterly' | 'halfYear' | 'yearly' | 'lifetime';
   priceKey: 'membership_price_1m' | 'membership_price_3m' | 'membership_price_6m' | 'membership_price_12m' | 'membership_price_lifetime';
-  period: string;
+  periodKey: 'month' | 'quarter' | 'halfYear' | 'year' | 'lifetime';
   popular: boolean;
-  discount?: string;
+  discountKey?: 'lifetime';
 }
 
 const VIP_PLANS: VipPlan[] = [
-  { id: '1m', name: '月度会员', priceKey: 'membership_price_1m', period: '月', popular: false },
-  { id: '3m', name: '季度会员', priceKey: 'membership_price_3m', period: '季', popular: true, },
-  { id: '6m', name: '半年会员', priceKey: 'membership_price_6m', period: '半年', popular: false,},
-  { id: '12m', name: '年度会员', priceKey: 'membership_price_12m', period: '年', popular: false, },
-  { id: 'lifetime', name: '永久会员', priceKey: 'membership_price_lifetime', period: '永久', popular: false, discount: '一次付费永久享用' },
+  { id: '1m', nameKey: 'monthly', priceKey: 'membership_price_1m', periodKey: 'month', popular: false },
+  { id: '3m', nameKey: 'quarterly', priceKey: 'membership_price_3m', periodKey: 'quarter', popular: true, },
+  { id: '6m', nameKey: 'halfYear', priceKey: 'membership_price_6m', periodKey: 'halfYear', popular: false,},
+  { id: '12m', nameKey: 'yearly', priceKey: 'membership_price_12m', periodKey: 'year', popular: false, },
+  { id: 'lifetime', nameKey: 'lifetime', priceKey: 'membership_price_lifetime', periodKey: 'lifetime', popular: false, discountKey: 'lifetime' },
 ];
 
 interface PaymentMethod {
@@ -88,6 +88,20 @@ export function VIPClient({ config }: VIPClientProps) {
   const getPrice = useCallback((plan: VipPlan): number => {
     return (config[plan.priceKey] as number) || 0;
   }, [config]);
+
+  // 根据套餐数量动态计算 grid 列数（Tailwind 需要预定义类名）
+  const planGridCols = useMemo(() => {
+    const count = availablePlans.length;
+    // 预定义的 grid 类名映射
+    const gridMap: Record<number, string> = {
+      1: 'grid-cols-1 md:grid-cols-1 lg:grid-cols-1',
+      2: 'grid-cols-2 md:grid-cols-2 lg:grid-cols-2',
+      3: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-3',
+      4: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-4',
+      5: 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+    };
+    return gridMap[count] || 'grid-cols-2 md:grid-cols-3 lg:grid-cols-5';
+  }, [availablePlans.length]);
 
   // 从 config 中获取可用的支付方式
   const availablePaymentMethods = useMemo<PaymentMethod[]>(() => {
@@ -146,15 +160,15 @@ export function VIPClient({ config }: VIPClientProps) {
     onSuccess: (data) => {
       const orderId = data?.data?.data?.id;
       if (orderId) {
-        toast.success('订单已创建，正在跳转支付...');
+        toast.success(t('toast.orderCreating'));
         createPaymentMutation.mutate({ orderId, paymentMethod, epayType });
       } else {
-        toast.error('订单创建失败，请重试');
+        toast.error(t('toast.orderCreateFailed'));
       }
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '创建订单失败');
+      toast.error(err?.message || t('toast.createOrderFailed'));
     },
   });
 
@@ -187,19 +201,19 @@ export function VIPClient({ config }: VIPClientProps) {
           setShowRedirectDialog(true);
         }
       } else {
-        toast.success('支付创建成功');
+        toast.success(t('toast.paymentCreated'));
       }
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '创建支付失败');
+      toast.error(err?.message || t('toast.createPaymentFailed'));
     },
   });
 
   // Safari/严格浏览器兼容：支付跳转相关状态
   const [paymentRedirectUrl, setPaymentRedirectUrl] = useState<string | null>(null);
   const [showRedirectDialog, setShowRedirectDialog] = useState(false);
-  const [browserName, setBrowserName] = useState('浏览器');
+  const [browserName, setBrowserName] = useState('Browser');
 
   // 在客户端获取浏览器名称，避免 hydration 不匹配
   useEffect(() => {
@@ -219,17 +233,17 @@ export function VIPClient({ config }: VIPClientProps) {
     if (paymentRedirectUrl) {
       try {
         await navigator.clipboard.writeText(paymentRedirectUrl);
-        toast.success('支付链接已复制，请在浏览器中打开完成支付');
+        toast.success(t('toast.linkCopied'));
         setShowRedirectDialog(false);
       } catch {
-        toast.error('复制失败，请点击"在新标签页打开"');
+        toast.error(t('toast.copyFailed'));
       }
     }
   }, [paymentRedirectUrl]);
 
   const handlePurchase = (plan: VipPlan) => {
     if (!isAuthenticated) {
-      toast.error('请先登录');
+      toast.error(t('toast.pleaseLogin'));
       return;
     }
     setSelectedPlan(plan);
@@ -256,15 +270,15 @@ export function VIPClient({ config }: VIPClientProps) {
         <div className="text-center">
           <Badge variant="secondary" className="mb-4">
             <Crown className="h-3 w-3 mr-1" />
-            VIP会员
+            {t('title')}
           </Badge>
-          <h1 className="text-3xl md:text-4xl font-bold mb-4">解锁更多精彩内容</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">{t('unlockMore')}</h1>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            成为VIP会员，享受专属权益，畅享海量高清图集
+            {t('becomeVipDesc')}
           </p>
         </div>
 
-        <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+        <div className={`grid ${planGridCols} gap-4 max-w-6xl mx-auto`}>
           {availablePlans.map((plan) => {
             const price = getPrice(plan);
             return (
@@ -273,26 +287,26 @@ export function VIPClient({ config }: VIPClientProps) {
                   <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                     <Badge className="bg-primary">
                       <Star className="h-3 w-3 mr-1" />
-                      最受欢迎
+                      {t('popular')}
                     </Badge>
                   </div>
                 )}
                 <CardHeader className="text-center pb-2">
-                  <CardTitle className="text-lg">{plan.name}</CardTitle>
+                  <CardTitle className="text-lg">{t(`plans.${plan.nameKey}`)}</CardTitle>
                   <CardDescription>
-                    {plan.discount && <Badge variant="destructive" className="text-xs">{plan.discount}</Badge>}
+                    {plan.discountKey && <Badge variant="destructive" className="text-xs">{t(`discount.${plan.discountKey}`)}</Badge>}
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="text-center pb-2">
                   <div className="mb-4">
                     <span className="text-3xl font-bold">¥{price}</span>
-                    {plan.period !== '永久' && <span className="text-muted-foreground text-sm">/{plan.period}</span>}
+                    {plan.periodKey !== 'lifetime' && <span className="text-muted-foreground text-sm">/{t(`period.${plan.periodKey}`)}</span>}
                   </div>
                   <ul className="space-y-1 text-xs text-left">
                     {VIP_FEATURES.slice(0, 4).map((feature, i) => (
                       <li key={i} className="flex items-center gap-1">
                         <Check className="h-3 w-3 text-green-500 flex-shrink-0" />
-                        <span>{feature}</span>
+                        <span>{t(feature)}</span>
                       </li>
                     ))}
                   </ul>
@@ -300,11 +314,11 @@ export function VIPClient({ config }: VIPClientProps) {
                 <CardFooter className="pt-0">
                   {isAuthenticated ? (
                     <Button className="w-full" variant={plan.popular ? 'default' : 'outline'} size="sm" onClick={() => handlePurchase(plan)} disabled={isProcessing}>
-                      立即开通
+                      {t('openNow')}
                     </Button>
                   ) : (
                     <Link href="/login" className="w-full">
-                      <Button className="w-full" variant={plan.popular ? 'default' : 'outline'} size="sm">登录后开通</Button>
+                      <Button className="w-full" variant={plan.popular ? 'default' : 'outline'} size="sm">{t('loginToOpen')}</Button>
                     </Link>
                   )}
                 </CardFooter>
@@ -314,7 +328,7 @@ export function VIPClient({ config }: VIPClientProps) {
         </div>
 
         <div className="max-w-3xl mx-auto">
-          <h2 className="text-2xl font-bold text-center mb-6">会员权益</h2>
+          <h2 className="text-2xl font-bold text-center mb-6">{t('benefits')}</h2>
           <div className="grid sm:grid-cols-2 gap-4">
             {VIP_FEATURES.map((feature, i) => (
               <Card key={i}>
@@ -322,7 +336,7 @@ export function VIPClient({ config }: VIPClientProps) {
                   <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center">
                     <Zap className="h-5 w-5 text-primary" />
                   </div>
-                  <span className="font-medium">{feature}</span>
+                  <span className="font-medium">{t(feature)}</span>
                 </CardContent>
               </Card>
             ))}
@@ -336,19 +350,19 @@ export function VIPClient({ config }: VIPClientProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CreditCard className="h-5 w-5" />
-              选择支付方式
+              {t('selectPayment')}
             </DialogTitle>
             <DialogDescription>
               {selectedPlan && (
-                <span>您将开通 <strong>{selectedPlan.name}</strong>，需支付 <strong>¥{getPrice(selectedPlan)}</strong></span>
+                <span>{t('willOpenPlan', { plan: t(`plans.${selectedPlan.nameKey}`), price: getPrice(selectedPlan) })}</span>
               )}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             <div className="space-y-2">
-              <label className="text-sm font-medium">支付渠道</label>
+              <label className="text-sm font-medium">{t('paymentChannel')}</label>
               <Select value={paymentMethod} onValueChange={setPaymentMethod}>
-                <SelectTrigger><SelectValue placeholder="选择支付方式" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder={t('selectPaymentMethod')} /></SelectTrigger>
                 <SelectContent>
                   {availablePaymentMethods.map((method) => (
                     <SelectItem key={method.value} value={method.value}>
@@ -360,9 +374,9 @@ export function VIPClient({ config }: VIPClientProps) {
             </div>
             {paymentMethod === 'EPAY' && (
               <div className="space-y-2">
-                <label className="text-sm font-medium">支付类型</label>
+                <label className="text-sm font-medium">{t('paymentType')}</label>
                 <Select value={epayType} onValueChange={setEpayType}>
-                  <SelectTrigger><SelectValue placeholder="选择支付类型" /></SelectTrigger>
+                  <SelectTrigger><SelectValue placeholder={t('selectPaymentType')} /></SelectTrigger>
                   <SelectContent>
                     {availableEpayTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
@@ -375,10 +389,10 @@ export function VIPClient({ config }: VIPClientProps) {
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>取消</Button>
+            <Button variant="outline" onClick={() => setShowPaymentDialog(false)}>{t('cancel')}</Button>
             <Button onClick={confirmPurchase} disabled={isProcessing}>
               {isProcessing && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
-              确认支付
+              {t('confirmPayment')}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -390,10 +404,10 @@ export function VIPClient({ config }: VIPClientProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center justify-center gap-2 text-green-600">
               <CheckCircle className="h-8 w-8" />
-              支付成功
+              {t('paymentSuccess')}
             </DialogTitle>
             <DialogDescription className="text-center pt-4">
-              恭喜您已成为VIP会员，现在可以享受所有会员权益！
+              {t('paymentSuccessDesc')}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-center py-4">
@@ -403,10 +417,10 @@ export function VIPClient({ config }: VIPClientProps) {
           </div>
           <DialogFooter className="flex-col gap-2 sm:flex-row">
             <Link href="/" className="w-full sm:w-auto">
-              <Button variant="outline" className="w-full">返回首页</Button>
+              <Button variant="outline" className="w-full">{t('backToHome')}</Button>
             </Link>
             <Link href="/profile" className="w-full sm:w-auto">
-              <Button className="w-full">查看会员状态</Button>
+              <Button className="w-full">{t('viewStatus')}</Button>
             </Link>
           </DialogFooter>
         </DialogContent>
@@ -418,17 +432,15 @@ export function VIPClient({ config }: VIPClientProps) {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <ExternalLink className="h-5 w-5" />
-              跳转到支付页面
+              {t('redirectDialog.title')}
             </DialogTitle>
             <DialogDescription className="pt-2">
-              您正在使用 {browserName} 浏览器，部分浏览器可能阻止自动跳转。
-              <br />
-              请选择以下方式完成支付：
+              {t('redirectDialog.description', { browser: browserName })}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-3">
             <p className="text-sm text-muted-foreground">
-              支付链接：<code className="text-xs bg-muted px-1 py-0.5 rounded">{paymentRedirectUrl?.substring(0, 50)}...</code>
+              {t('redirectDialog.linkLabel')}：<code className="text-xs bg-muted px-1 py-0.5 rounded">{paymentRedirectUrl?.substring(0, 50)}...</code>
             </p>
           </div>
           <DialogFooter className="flex-col gap-2 sm:flex-row">
@@ -438,14 +450,14 @@ export function VIPClient({ config }: VIPClientProps) {
               className="w-full sm:w-auto"
             >
               <Copy className="h-4 w-4 mr-2" />
-              复制链接
+              {t('redirectDialog.copyLink')}
             </Button>
             <Button
               onClick={handleOpenInNewTab}
               className="w-full sm:w-auto"
             >
               <ExternalLink className="h-4 w-4 mr-2" />
-              在新标签页打开
+              {t('redirectDialog.openNewTab')}
             </Button>
           </DialogFooter>
         </DialogContent>

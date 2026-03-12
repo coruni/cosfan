@@ -412,6 +412,11 @@
   },
   "vip": {
     "title": "VIP Membership",
+    "seo": {
+      "title": "VIP Membership - {siteName}",
+      "description": "Become a VIP member and enjoy exclusive benefits and HD gallery downloads - {siteName}",
+      "keywords": "VIP,membership,HD,download"
+    },
     "expired": "Expired",
     "expireTomorrow": "Expires tomorrow",
     "expireInDays": "Expires in {days} days",
@@ -475,7 +480,25 @@
       "save15": "Save 15%",
       "save20": "Save 20%",
       "lifetime": "One-time payment, lifetime access"
-    }
+    },
+    "toast": {
+      "orderCreating": "Order created, redirecting to payment...",
+      "orderCreateFailed": "Order creation failed, please try again",
+      "createOrderFailed": "Failed to create order",
+      "paymentCreated": "Payment created successfully",
+      "createPaymentFailed": "Failed to create payment",
+      "pleaseLogin": "Please login first",
+      "linkCopied": "Payment link copied, please open in browser to complete payment",
+      "copyFailed": "Copy failed, please click 'Open in New Tab'"
+    },
+    "redirectDialog": {
+      "title": "Redirect to Payment Page",
+      "description": "You are using {browser} browser, some browsers may block automatic redirection. Please choose one of the following to complete payment:",
+      "copyLink": "Copy Link",
+      "openNewTab": "Open in New Tab",
+      "linkLabel": "Payment Link"
+    },
+    "cancel": "Cancel"
   },
   "dashboard": {
     "overview": {
