@@ -272,9 +272,9 @@ export default function SettingsPage() {
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: { key?: string; value?: string; description?: string } }) => {
+    mutationFn: async ({ id, key, value, description }: { id: number; key: string; value: string; description?: string }) => {
       const response = await configControllerUpdateAll({
-        body: [{  ...data }],
+        body: [{ id, key, value, description }],
       });
       return response.data;
     },
@@ -339,7 +339,12 @@ export default function SettingsPage() {
 
   const handleEditSubmit = () => {
     if (!selectedConfig) return;
-    updateMutation.mutate({ id: selectedConfig.id, data: editForm });
+    updateMutation.mutate({
+      id: selectedConfig.id,
+      key: editForm.key,
+      value: editForm.value,
+      description: editForm.description,
+    });
   };
 
   const handleCreateSubmit = () => {
@@ -357,7 +362,7 @@ export default function SettingsPage() {
 
   const handleToggle = (config: Config) => {
     const newValue = config.value === "true" ? "false" : "true";
-    updateMutation.mutate({ id: config.id, data: { value: newValue } });
+    updateMutation.mutate({ id: config.id, key: config.key, value: newValue });
   };
 
   const configs: Config[] = (configsData as { data?: { data?: Config[] } })?.data?.data || [];

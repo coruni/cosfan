@@ -69,7 +69,7 @@ export function LazyImage({
     isLoaded: false,
     hasError: false,
   });
-  const [currentSrc, setCurrentSrc] = useState<string>(lowQualitySrc || src);
+  const [currentSrc, setCurrentSrc] = useState<string>(lowQualitySrc || String(src));
   const [retryCount, setRetryCount] = useState(0);
   const maxRetries = 3;
 
@@ -85,8 +85,8 @@ export function LazyImage({
     });
 
     // 如果有低质量图且加载成功，切换到高质量图
-    if (lowQualitySrc && src !== lowQualitySrc && currentSrc !== src) {
-      setCurrentSrc(src);
+    if (lowQualitySrc && String(src) !== lowQualitySrc && currentSrc !== String(src)) {
+      setCurrentSrc(String(src));
     }
 
     onLoad?.();
@@ -99,8 +99,9 @@ export function LazyImage({
       setRetryCount(prev => prev + 1);
       setTimeout(() => {
         // 添加时间戳强制刷新
-        const separator = src.includes('?') ? '&' : '';
-        const newSrc = `${src}${separator}_t=${Date.now()}`;
+        const srcStr = String(src);
+        const separator = srcStr.includes('?') ? '&' : '';
+        const newSrc = `${srcStr}${separator}_t=${Date.now()}`;
         setCurrentSrc(newSrc);
       }, 1000 * (retryCount + 1));
     } else {
@@ -129,7 +130,7 @@ export function LazyImage({
     if (!isOffline && imageState.hasError && retryCount === 0) {
       // 网络恢复时重试加载 - use RAF to avoid synchronous setState
       requestAnimationFrame(() => {
-        setCurrentSrc(src);
+        setCurrentSrc(String(src));
         setImageState(prev => ({ ...prev, isLoading: true }));
       });
     }
@@ -200,7 +201,7 @@ export function LazyImage({
         quality={quality === 'low' ? 50 : quality === 'medium' ? 75 : 85}
         {...props}
         className={cn(
-          props.className,
+          className,
           imageState.isLoading && 'invisible'
         )}
       />

@@ -153,8 +153,8 @@ export default function UsersPage() {
       email: user.email || '',
       phone: user.phone || '',
       avatar: user.avatar || '',
-      status: user.status || 'ACTIVE',
-      membershipStatus: user.membershipStatus || 'INACTIVE',
+      status: (user.status || 'ACTIVE') as 'ACTIVE' | 'INACTIVE' | 'BANNED',
+      membershipStatus: (user.membershipStatus || 'INACTIVE') as 'ACTIVE' | 'INACTIVE',
       membershipExpiredAt: user.membershipExpiredAt || '',
       wallet: user.wallet || 0,
     });
@@ -434,7 +434,7 @@ export default function UsersPage() {
               <Label htmlFor="edit-status">状态</Label>
               <Select
                 value={editForm.status}
-                onValueChange={(value: string) => setEditForm({ ...editForm, status: value })}
+                onValueChange={(value) => setEditForm({ ...editForm, status: value as 'ACTIVE' | 'INACTIVE' | 'BANNED' })}
               >
                 <SelectTrigger>
                   <SelectValue />
@@ -450,7 +450,7 @@ export default function UsersPage() {
               <Label htmlFor="edit-membershipStatus">会员状态</Label>
               <Select
                 value={editForm.membershipStatus}
-                onValueChange={(value: string) => setEditForm({ ...editForm, membershipStatus: value })}
+                onValueChange={(value) => setEditForm({ ...editForm, membershipStatus: value as 'ACTIVE' | 'INACTIVE' })}
               >
                 <SelectTrigger>
                   <SelectValue />

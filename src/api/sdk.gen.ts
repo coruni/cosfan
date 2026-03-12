@@ -102,12 +102,12 @@ export const configControllerFindAll = <ThrowOnError extends boolean = false>(op
 /**
  * 更新所有配置
  */
-export const configControllerUpdateAll = <ThrowOnError extends boolean = false>(options: Options<ConfigControllerUpdateAllData, ThrowOnError>) => (options.client ?? client).patch<ConfigControllerUpdateAllResponses, ConfigControllerUpdateAllErrors, ThrowOnError>({
+export const configControllerUpdateAll = <ThrowOnError extends boolean = false>(options?: Options<ConfigControllerUpdateAllData, ThrowOnError>) => (options?.client ?? client).patch<ConfigControllerUpdateAllResponses, ConfigControllerUpdateAllErrors, ThrowOnError>({
     url: '/config',
     ...options,
     headers: {
         'Content-Type': 'application/json',
-        ...options.headers
+        ...options?.headers
     }
 });
 

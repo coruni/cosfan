@@ -46,7 +46,7 @@ function getInitialNetworkState(): UseNetworkReturn {
     return {
       isOnline: navigator.onLine,
       isOffline: !navigator.onLine,
-      status: connection.type || 'unknown',
+      status: connection.type as NetworkStatus || 'unknown',
       effectiveType: connection.effectiveType || 'unknown',
       downlink: connection.downlink || 0,
       rtt: connection.rtt || 0,
@@ -93,7 +93,7 @@ export function useNetwork(): UseNetworkReturn {
       setNetworkState({
         isOnline: navigator.onLine,
         isOffline: !navigator.onLine,
-        status: connection.type || 'unknown',
+        status: connection.type as NetworkStatus || 'unknown',
         effectiveType: connection.effectiveType || 'unknown',
         downlink: connection.downlink || 0,
         rtt: connection.rtt || 0,

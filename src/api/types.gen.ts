@@ -2053,7 +2053,17 @@ export type ConfigControllerFindAllResponses = {
 export type ConfigControllerFindAllResponse = ConfigControllerFindAllResponses[keyof ConfigControllerFindAllResponses];
 
 export type ConfigControllerUpdateAllData = {
-    body: Array<string>;
+    body?: Array<{
+        id: number;
+        key: string;
+        value: string;
+        description?: string;
+        type?: string;
+        group?: string;
+        public?: boolean;
+        createdAt?: string;
+        updatedAt?: string;
+    }>;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;

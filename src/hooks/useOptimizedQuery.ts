@@ -30,7 +30,7 @@ export function useOptimizedQuery<TData = unknown, TError = unknown>(
     queryFn: (context: { signal: AbortSignal }) => Promise<TData>;
   }
 ) {
-  const { effectiveType } = useNetwork();
+  const { effectiveType, isOffline } = useNetwork();
 
   // 根据网络状况调整查询配置
   const isSlow = isSlowNetwork(effectiveType as NetworkStatus);
@@ -39,8 +39,6 @@ export function useOptimizedQuery<TData = unknown, TError = unknown>(
     ...options,
     // 慢速网络下增加 staleTime，减少请求频率
     staleTime: isSlow ? (options.staleTime || 5 * 60 * 1000) : (options.staleTime || 60 * 1000),
-    // 慢速网络下禁用后台预获取
-    prefetch: isSlow ? false : options.prefetch,
     // 慢速网络下使用慢速网络特定配置
     ...(isSlow ? options.slowNetworkOptions : {}),
     // 离线时从缓存获取
@@ -70,13 +68,11 @@ export interface OptimizedMutationOptions<TData, TError, TVariables, TContext>
  */
 export function useOptimizedMutation<TData = unknown, TError = unknown, TVariables = void, TContext = unknown>(
   options: OptimizedMutationOptions<TData, TError, TVariables, TContext> & {
-    mutationFn: (variables: TVariables, context?: { signal: AbortSignal }) => Promise<TData>;
+    mutationFn: (variables: TVariables) => Promise<TData>;
   }
 ) {
   return useMutation({
     ...options,
-    // 离线时不允许 mutations，但可以排队
-    mutationKey: options.mutationKey,
   });
 }
 

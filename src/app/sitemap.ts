@@ -1,12 +1,16 @@
-import { MetadataRoute } from 'next';
-import { articleControllerGetPublishedArticleIds, categoryControllerFindAll } from '@/api/sdk.gen';
-import { client } from '@/api/client.gen';
-import { API_BASE_URL } from '@/config/constants';
-import { routing } from '@/i18n/routing';
-import { initServerInterceptors } from '@/lib/server-init';
+import { MetadataRoute } from "next";
+import {
+  articleControllerGetPublishedArticleIds,
+  categoryControllerFindAll,
+} from "@/api/sdk.gen";
+import { client } from "@/api/client.gen";
+import { API_BASE_URL } from "@/config/constants";
+import { routing } from "@/i18n/routing";
+import { initServerInterceptors } from "@/lib/server-init";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+  const baseUrl =
+    process.env.NEXT_PUBLIC_SITE_URL || "https://picart.example.com";
   const { locales, defaultLocale } = routing;
 
   // 初始化服务端拦截器
@@ -19,56 +23,59 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 生成静态页面的sitemap条目
   for (const locale of locales) {
-    const localePath = locale === defaultLocale ? '' : `/${locale}`;
-    
+    const localePath = locale === defaultLocale ? "" : `/${locale}`;
+
     staticPages.push(
       {
         url: `${baseUrl}${localePath}`,
         lastModified: new Date(),
-        changeFrequency: 'daily',
+        changeFrequency: "daily",
         priority: 1,
         alternates: {
           languages: Object.fromEntries(
-            locales.map((l) => [l, `${baseUrl}${l === defaultLocale ? '' : `/${l}`}`])
+            locales.map((l) => [
+              l,
+              `${baseUrl}${l === defaultLocale ? "" : `/${l}`}`,
+            ]),
           ),
         },
       },
       {
         url: `${baseUrl}${localePath}/login`,
         lastModified: new Date(),
-        changeFrequency: 'monthly',
+        changeFrequency: "monthly",
         priority: 0.5,
       },
       {
         url: `${baseUrl}${localePath}/register`,
         lastModified: new Date(),
-        changeFrequency: 'monthly',
+        changeFrequency: "monthly",
         priority: 0.5,
       },
       {
         url: `${baseUrl}${localePath}/cosers`,
         lastModified: new Date(),
-        changeFrequency: 'weekly',
+        changeFrequency: "weekly",
         priority: 0.8,
       },
       {
         url: `${baseUrl}${localePath}/search`,
         lastModified: new Date(),
-        changeFrequency: 'weekly',
+        changeFrequency: "weekly",
         priority: 0.7,
       },
       {
         url: `${baseUrl}${localePath}/vip`,
         lastModified: new Date(),
-        changeFrequency: 'monthly',
+        changeFrequency: "monthly",
         priority: 0.6,
       },
       {
         url: `${baseUrl}${localePath}/discover`,
         lastModified: new Date(),
-        changeFrequency: 'daily',
+        changeFrequency: "daily",
         priority: 0.9,
-      }
+      },
     );
   }
 
@@ -91,24 +98,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
     // 生成文章页面的sitemap条目
     for (const locale of locales) {
-      const localePath = locale === defaultLocale ? '' : `/${locale}`;
+      const localePath = locale === defaultLocale ? "" : `/${locale}`;
 
-      type ArticleItem = { id: number; updatedAt?: string };
-type CategoryItem = { id: number };
+      type ArticleItem = { id?: number; updatedAt?: string };
+      type CategoryItem = { id: number };
 
       articles.forEach((article: ArticleItem) => {
         if (article && article.id) {
           articlePages.push({
             url: `${baseUrl}${localePath}/article/${article.id}`,
-            lastModified: article.updatedAt ? new Date(article.updatedAt) : new Date(),
-            changeFrequency: 'weekly',
+            lastModified: article.updatedAt
+              ? new Date(article.updatedAt)
+              : new Date(),
+            changeFrequency: "weekly",
             priority: 0.8,
             alternates: {
               languages: Object.fromEntries(
                 locales.map((l) => [
                   l,
-                  `${baseUrl}${l === defaultLocale ? '' : `/${l}`}/article/${article.id}`,
-                ])
+                  `${baseUrl}${l === defaultLocale ? "" : `/${l}`}/article/${article.id}`,
+                ]),
               ),
             },
           });
@@ -121,14 +130,14 @@ type CategoryItem = { id: number };
           categoryPages.push({
             url: `${baseUrl}${localePath}/cosers/${category.id}`,
             lastModified: new Date(),
-            changeFrequency: 'weekly',
+            changeFrequency: "weekly",
             priority: 0.7,
             alternates: {
               languages: Object.fromEntries(
                 locales.map((l) => [
                   l,
-                  `${baseUrl}${l === defaultLocale ? '' : `/${l}`}/cosers/${category.id}`,
-                ])
+                  `${baseUrl}${l === defaultLocale ? "" : `/${l}`}/cosers/${category.id}`,
+                ]),
               ),
             },
           });
@@ -138,7 +147,7 @@ type CategoryItem = { id: number };
 
     return [...staticPages, ...articlePages, ...categoryPages];
   } catch (error) {
-    console.error('Failed to generate sitemap:', error);
+    console.error("Failed to generate sitemap:", error);
     // 如果API调用失败，至少返回静态页面
     return staticPages;
   }
