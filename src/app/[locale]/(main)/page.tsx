@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { HomePageContent } from "./HomePageContent";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/seo";
 import { configControllerGetPublicConfigs } from "@/api/sdk.gen";
@@ -70,7 +71,9 @@ export default async function HomePage() {
           queryInput: "required name=search_term_string",
         }}
       />
-      <HomePageContent />
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="animate-pulse">Loading...</div></div>}>
+        <HomePageContent />
+      </Suspense>
     </>
   );
 }
