@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const stats = [
     {
       title: t('stats.totalUsers'),
-      value: usersData?.total || 0,
+      value: usersData?.data.meta.total || 0,
       icon: Users,
       description: t('stats.totalUsersDesc'),
       color: 'text-blue-600',
@@ -61,7 +61,7 @@ export default function DashboardPage() {
     },
     {
       title: t('stats.totalArticles'),
-      value: articlesData?.total || 0,
+      value: articlesData?.data.meta.total || 0,
       icon: FileText,
       description: t('stats.totalArticlesDesc'),
       color: 'text-green-600',
@@ -69,7 +69,7 @@ export default function DashboardPage() {
     },
     {
       title: t('stats.totalTags'),
-      value: tagsData?.total || 0,
+      value: tagsData?.data.meta.total || 0,
       icon: Tag,
       description: t('stats.totalTagsDesc'),
       color: 'text-purple-600',
@@ -77,7 +77,7 @@ export default function DashboardPage() {
     },
     {
       title: t('stats.totalOrders'),
-      value: ordersData?.total || 0,
+      value: ordersData?.data.meta.total || 0,
       icon: ShoppingCart,
       description: t('stats.totalOrdersDesc'),
       color: 'text-orange-600',

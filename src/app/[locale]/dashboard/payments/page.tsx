@@ -78,7 +78,6 @@ export default function PaymentsPage() {
         query: {
           page,
           limit,
-          userId: Number(search) || undefined,
           status: statusFilter === 'all' ? undefined : statusFilter,
           paymentMethod: methodFilter === 'all' ? undefined : methodFilter,
         },
