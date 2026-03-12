@@ -438,6 +438,16 @@
     "unlockMore": "解锁更多精彩内容",
     "becomeVipDesc": "成为VIP会员，享受专属权益，畅享海量高清图集",
     "popular": "最受欢迎",
+    "paymentMethod": {
+      "alipay": "支付宝",
+      "wechat": "微信支付",
+      "epay": "易支付"
+    },
+    "epayType": {
+      "alipay": "支付宝",
+      "wxpay": "微信支付",
+      "usdt": "USDT"
+    },
     "features": {
       "unlimitedBrowse": "无限浏览所有内容",
       "hdDownload": "高清原图下载",

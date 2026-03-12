@@ -438,6 +438,16 @@
     "unlockMore": "Unlock More Content",
     "becomeVipDesc": "Become a VIP member, enjoy exclusive benefits and access to massive HD galleries",
     "popular": "Most Popular",
+    "paymentMethod": {
+      "alipay": "Alipay",
+      "wechat": "WeChat Pay",
+      "epay": "Epay"
+    },
+    "epayType": {
+      "alipay": "Alipay",
+      "wxpay": "WeChat Pay",
+      "usdt": "USDT"
+    },
     "features": {
       "unlimitedBrowse": "Unlimited access to all content",
       "hdDownload": "HD original image download",

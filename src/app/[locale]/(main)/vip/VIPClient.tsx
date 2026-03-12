@@ -9,8 +9,9 @@ import { Check, Crown, Zap, Star, Loader2, CreditCard, CheckCircle, ExternalLink
 import { useAuth } from '@/contexts/AuthContext';
 import { Link } from '@/i18n';
 import { toast } from 'sonner';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslations } from 'next-intl';
 import {
   Dialog,
   DialogContent,
@@ -48,23 +49,23 @@ interface VipPlan {
 
 const VIP_PLANS: VipPlan[] = [
   { id: '1m', name: '月度会员', priceKey: 'membership_price_1m', period: '月', popular: false },
-  { id: '3m', name: '季度会员', priceKey: 'membership_price_3m', period: '季', popular: true, discount: '省10%' },
-  { id: '6m', name: '半年会员', priceKey: 'membership_price_6m', period: '半年', popular: false, discount: '省15%' },
-  { id: '12m', name: '年度会员', priceKey: 'membership_price_12m', period: '年', popular: false, discount: '省20%' },
+  { id: '3m', name: '季度会员', priceKey: 'membership_price_3m', period: '季', popular: true, },
+  { id: '6m', name: '半年会员', priceKey: 'membership_price_6m', period: '半年', popular: false,},
+  { id: '12m', name: '年度会员', priceKey: 'membership_price_12m', period: '年', popular: false, },
   { id: 'lifetime', name: '永久会员', priceKey: 'membership_price_lifetime', period: '永久', popular: false, discount: '一次付费永久享用' },
 ];
 
-const PAYMENT_METHODS = [
-  { value: 'ALIPAY', label: '支付宝', icon: '💳' },
-  { value: 'WECHAT', label: '微信支付', icon: '💚' },
-  { value: 'EPAY', label: '易支付', icon: '🔐' },
-];
+interface PaymentMethod {
+  value: string;
+  label: string;
+  icon: string;
+}
 
-const EPAY_TYPES = [
-  { value: 'alipay', label: '支付宝', icon: '💳' },
-  { value: 'wxpay', label: '微信支付', icon: '💚' },
-  { value: 'usdt', label: 'USDT', icon: '💵' },
-];
+interface EpayType {
+  value: string;
+  label: string;
+  icon: string;
+}
 
 interface VIPClientProps {
   config: Record<string, unknown>;
@@ -73,11 +74,61 @@ interface VIPClientProps {
 export function VIPClient({ config }: VIPClientProps) {
   const { isAuthenticated, refreshUser } = useAuth();
   const searchParams = useSearchParams();
+  const t = useTranslations('vip');
   const [selectedPlan, setSelectedPlan] = useState<VipPlan | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<string>('ALIPAY');
-  const [epayType, setEpayType] = useState<string>('alipay');
   const [showPaymentDialog, setShowPaymentDialog] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+
+  // 过滤价格为0的套餐
+  const availablePlans = useMemo(() => {
+    return VIP_PLANS.filter(plan => ((config[plan.priceKey] as number) || 0) > 0);
+  }, [config]);
+
+  // 获取套餐价格
+  const getPrice = useCallback((plan: VipPlan): number => {
+    return (config[plan.priceKey] as number) || 0;
+  }, [config]);
+
+  // 从 config 中获取可用的支付方式
+  const availablePaymentMethods = useMemo<PaymentMethod[]>(() => {
+    const methods: PaymentMethod[] = [];
+
+    if (config.payment_alipay_enabled) {
+      methods.push({ value: 'ALIPAY', label: t('paymentMethod.alipay'), icon: '💳' });
+    }
+    if (config.payment_wechat_enabled) {
+      methods.push({ value: 'WECHAT', label: t('paymentMethod.wechat'), icon: '💚' });
+    }
+    if (config.payment_epay_enabled) {
+      methods.push({ value: 'EPAY', label: t('paymentMethod.epay'), icon: '🔐' });
+    }
+
+    return methods;
+  }, [config, t]);
+
+  // 从 config 中获取可用的易支付类型
+  const availableEpayTypes = useMemo<EpayType[]>(() => {
+    const types: EpayType[] = [];
+
+    if (config.payment_epay_alipay_enabled) {
+      types.push({ value: 'alipay', label: t('epayType.alipay'), icon: '💳' });
+    }
+    if (config.payment_epay_wxpay_enabled) {
+      types.push({ value: 'wxpay', label: t('epayType.wxpay'), icon: '💚' });
+    }
+    if (config.payment_epay_usdt_enabled) {
+      types.push({ value: 'usdt', label: t('epayType.usdt'), icon: '💵' });
+    }
+
+    return types;
+  }, [config, t]);
+
+  // 使用第一个可用的支付方式作为默认值
+  const defaultPaymentMethod = availablePaymentMethods[0]?.value || 'ALIPAY';
+  const defaultEpayType = availableEpayTypes[0]?.value || 'alipay';
+
+  const [paymentMethod, setPaymentMethod] = useState<string>(defaultPaymentMethod);
+  const [epayType, setEpayType] = useState<string>(defaultEpayType);
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
@@ -182,16 +233,19 @@ export function VIPClient({ config }: VIPClientProps) {
       return;
     }
     setSelectedPlan(plan);
+    // 每次打开对话框时，重置为第一个可用的支付方式
+    if (availablePaymentMethods.length > 0) {
+      setPaymentMethod(availablePaymentMethods[0].value);
+    }
+    if (availableEpayTypes.length > 0) {
+      setEpayType(availableEpayTypes[0].value);
+    }
     setShowPaymentDialog(true);
   };
 
   const confirmPurchase = () => {
     if (!selectedPlan) return;
     createOrderMutation.mutate(selectedPlan.id);
-  };
-
-  const getPrice = (plan: VipPlan): number => {
-    return (config[plan.priceKey] as number) || 0;
   };
 
   const isProcessing = createOrderMutation.isPending || createPaymentMutation.isPending;
@@ -211,7 +265,7 @@ export function VIPClient({ config }: VIPClientProps) {
         </div>
 
         <div className="grid md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
-          {VIP_PLANS.map((plan) => {
+          {availablePlans.map((plan) => {
             const price = getPrice(plan);
             return (
               <Card key={plan.id} className={`relative ${plan.popular ? 'border-primary shadow-lg' : ''}`}>
@@ -296,7 +350,7 @@ export function VIPClient({ config }: VIPClientProps) {
               <Select value={paymentMethod} onValueChange={setPaymentMethod}>
                 <SelectTrigger><SelectValue placeholder="选择支付方式" /></SelectTrigger>
                 <SelectContent>
-                  {PAYMENT_METHODS.map((method) => (
+                  {availablePaymentMethods.map((method) => (
                     <SelectItem key={method.value} value={method.value}>
                       <span className="flex items-center gap-2"><span>{method.icon}</span><span>{method.label}</span></span>
                     </SelectItem>
@@ -310,7 +364,7 @@ export function VIPClient({ config }: VIPClientProps) {
                 <Select value={epayType} onValueChange={setEpayType}>
                   <SelectTrigger><SelectValue placeholder="选择支付类型" /></SelectTrigger>
                   <SelectContent>
-                    {EPAY_TYPES.map((type) => (
+                    {availableEpayTypes.map((type) => (
                       <SelectItem key={type.value} value={type.value}>
                         <span className="flex items-center gap-2"><span>{type.icon}</span><span>{type.label}</span></span>
                       </SelectItem>
