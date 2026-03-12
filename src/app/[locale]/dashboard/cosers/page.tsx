@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   categoryControllerFindAll, 
@@ -9,7 +10,7 @@ import {
   categoryControllerRemove,
   uploadControllerUploadFile,
 } from '@/api/sdk.gen';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -25,9 +26,9 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageCropDialog } from '@/components/ui/image-crop-dialog';
-import { Search, Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Loader2, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { CategoryControllerFindAllResponse } from '@/api';
+import { CategoryControllerFindAllResponse, CreateCategoryDto, UpdateCategoryDto } from '@/api';
 
 type Category = NonNullable<CategoryControllerFindAllResponse['data']['data']>[number];
 
@@ -69,7 +70,7 @@ export default function CosersPage() {
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: CreateCategoryDto) => {
       const response = await categoryControllerCreate({ body: data });
       return response.data;
     },
@@ -79,13 +80,13 @@ export default function CosersPage() {
       setCreateDialogOpen(false);
       setCreateForm({ name: '', description: '', avatar: '', sort: 0,background:'',cover:'',status:'ACTIVE' });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error?.message || '创建失败');
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: any }) => {
+    mutationFn: async ({ id, data }: { id: number; data: UpdateCategoryDto }) => {
       const response = await categoryControllerUpdate({
         path: { id: String(id) },
         body: data,
@@ -97,7 +98,7 @@ export default function CosersPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
       setEditDialogOpen(false);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error?.message || '更新失败');
     },
   });
@@ -112,7 +113,7 @@ export default function CosersPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
       setDeleteDialogOpen(false);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error?.message || '删除失败');
     },
   });
@@ -158,12 +159,6 @@ export default function CosersPage() {
     deleteMutation.mutate(selectedCategory.id);
   };
 
-  const openImageCropDialog = (category: Category, field: 'avatar' | 'background' | 'cover') => {
-    setSelectedCategory(category);
-    setImageCropField(field);
-    setImageCropDialogOpen(true);
-  };
-
   const handleImageCrop = async (file: File) => {
     if (!selectedCategory) return;
 
@@ -179,8 +174,9 @@ export default function CosersPage() {
       } else {
         throw new Error('上传失败');
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     }
   };
 
@@ -201,8 +197,9 @@ export default function CosersPage() {
       } else {
         throw new Error('上传失败');
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     }
   };
 
@@ -272,7 +269,7 @@ export default function CosersPage() {
                     </TableCell>
                     <TableCell>
                       {category.avatar ? (
-                        <img src={category.avatar} alt={category.name} className="w-8 h-8 rounded-full object-cover" />
+                        <Image src={category.avatar} alt={category.name || ''} width={32} height={32} className="w-8 h-8 rounded-full object-cover" unoptimized />
                       ) : (
                         <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center">
                           <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -344,7 +341,7 @@ export default function CosersPage() {
               <Label>头像</Label>
               <div className="flex items-center gap-3">
                 {createForm.avatar ? (
-                  <img src={createForm.avatar} alt="头像" className="w-12 h-12 rounded-full object-cover" />
+                  <Image src={createForm.avatar} alt="头像" width={48} height={48} className="w-12 h-12 rounded-full object-cover" unoptimized />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                     <ImageIcon className="h-5 w-5 text-muted-foreground" />
@@ -374,7 +371,7 @@ export default function CosersPage() {
               <Label>背景图</Label>
               <div className="flex items-center gap-3">
                 {createForm.background ? (
-                  <img src={createForm.background} alt="背景图" className="w-16 h-10 rounded object-cover" />
+                  <Image src={createForm.background} alt="背景图" width={64} height={40} className="w-16 h-10 rounded object-cover" unoptimized />
                 ) : (
                   <div className="w-16 h-10 rounded bg-muted flex items-center justify-center">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -404,7 +401,7 @@ export default function CosersPage() {
               <Label>封面图</Label>
               <div className="flex items-center gap-3">
                 {createForm.cover ? (
-                  <img src={createForm.cover} alt="封面图" className="w-16 h-10 rounded object-cover" />
+                  <Image src={createForm.cover} alt="封面图" width={64} height={40} className="w-16 h-10 rounded object-cover" unoptimized />
                 ) : (
                   <div className="w-16 h-10 rounded bg-muted flex items-center justify-center">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -481,7 +478,7 @@ export default function CosersPage() {
               <Label>头像</Label>
               <div className="flex items-center gap-3">
                 {editForm.avatar ? (
-                  <img src={editForm.avatar} alt="头像" className="w-12 h-12 rounded-full object-cover" />
+                  <Image src={editForm.avatar} alt="头像" width={48} height={48} className="w-12 h-12 rounded-full object-cover" unoptimized />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
                     <ImageIcon className="h-5 w-5 text-muted-foreground" />
@@ -511,7 +508,7 @@ export default function CosersPage() {
               <Label>背景图</Label>
               <div className="flex items-center gap-3">
                 {editForm.background ? (
-                  <img src={editForm.background} alt="背景图" className="w-16 h-10 rounded object-cover" />
+                  <Image src={editForm.background} alt="背景图" width={64} height={40} className="w-16 h-10 rounded object-cover" unoptimized />
                 ) : (
                   <div className="w-16 h-10 rounded bg-muted flex items-center justify-center">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -541,7 +538,7 @@ export default function CosersPage() {
               <Label>封面图</Label>
               <div className="flex items-center gap-3">
                 {editForm.cover ? (
-                  <img src={editForm.cover} alt="封面图" className="w-16 h-10 rounded object-cover" />
+                  <Image src={editForm.cover} alt="封面图" width={64} height={40} className="w-16 h-10 rounded object-cover" unoptimized />
                 ) : (
                   <div className="w-16 h-10 rounded bg-muted flex items-center justify-center">
                     <ImageIcon className="h-4 w-4 text-muted-foreground" />
@@ -595,7 +592,7 @@ export default function CosersPage() {
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
             <DialogDescription>
-              确定要删除分类 "{selectedCategory?.name}" 吗？此操作不可撤销。
+              确定要删除分类 &quot;{selectedCategory?.name}&quot; 吗？此操作不可撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

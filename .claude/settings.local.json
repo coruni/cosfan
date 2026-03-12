@@ -11,7 +11,13 @@
       "Bash(git config:*)",
       "Bash(git diff:*)",
       "Bash(ls -la src/app/\\\\[locale\\\\]/)",
-      "Bash(ls -la src/app/\\\\[locale\\\\]/\\\\\\(main\\\\\\)/)"
+      "Bash(ls -la src/app/\\\\[locale\\\\]/\\\\\\(main\\\\\\)/)",
+      "Bash(find /home/coder/project/cosfan/src/app -type d -name \"*discover*\" -o -type f -name \"*discover*\" 2>/dev/null | head -20)",
+      "Bash(ls -la /home/coder/project/cosfan/src/app/[locale]/\\\\\\(main\\\\\\)/discover/)",
+      "Bash(ls -la \"/home/coder/project/cosfan/src/app/[locale]/\\(main\\)/discover/\")",
+      "Bash(ls -la \"/home/coder/project/cosfan/src/app/[locale]/\\(main\\)/\")",
+      "Bash(pnpm eslint:*)",
+      "Bash(pnpm tsc:*)"
     ]
   }
 }

@@ -6,6 +6,7 @@ import {
   orderControllerGetAllOrders,
   orderControllerCancelOrder,
 } from '@/api/sdk.gen';
+import type { OrderControllerGetAllOrdersResponse, OrderControllerGetAllOrdersData } from '@/api/types.gen';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -30,33 +31,11 @@ import { Search, Eye, Loader2, ChevronLeft, ChevronRight, XCircle } from 'lucide
 import { toast } from 'sonner';
 import { Table as UITable, TableHeader, TableRow, TableHead, TableBody, TableCell } from '@/components/ui/table';
 
-type Order = {
-  id: number;
-  userId: number;
-  authorId: number;
-  articleId: unknown;
-  orderNo: string;
-  type: string;
-  title: string;
-  amount: string;
-  paymentMethod: unknown;
-  paymentOrderNo: unknown;
-  status: string;
-  paidAt: unknown;
-  details: {
-    plan: string;
-    duration: number;
-    basePrice: number;
-    isLifetime: boolean;
-    totalAmount: number;
-    membershipName: string;
-    membershipLevel: number;
-    remark?: string;
-  };
-  remark: string | null;
-  createdAt: string;
-  updatedAt: string;
-};
+type OrderStatus = 'PENDING' | 'PAID' | 'CANCELLED' | 'REFUNDED' | 'EXPIRED';
+type OrderType = 'MEMBERSHIP' | 'PRODUCT' | 'SERVICE' | 'ARTICLE';
+type PaymentMethod = 'ALIPAY' | 'WECHAT' | 'BALANCE' | 'EPAY';
+
+type Order = OrderControllerGetAllOrdersResponse['data']['data'][number];
 
 export default function OrdersPage() {
   const queryClient = useQueryClient();
@@ -78,8 +57,8 @@ export default function OrdersPage() {
           page,
           limit,
           userId: Number(search) || undefined,
-          status: statusFilter && statusFilter !== 'ALL' ? statusFilter as any : undefined,
-          type: typeFilter && typeFilter !== 'ALL' ? typeFilter as any : undefined,
+          status: statusFilter && statusFilter !== 'ALL' ? statusFilter as OrderControllerGetAllOrdersData['query']['status'] : undefined,
+          type: typeFilter && typeFilter !== 'ALL' ? typeFilter as OrderControllerGetAllOrdersData['query']['type'] : undefined,
         },
       });
       return response.data;
@@ -96,8 +75,9 @@ export default function OrdersPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-orders'] });
       setCancelDialogOpen(false);
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '取消失败');
+    onError: (error: unknown) => {
+      const err = error as { message?: string };
+      toast.error(err?.message || '取消失败');
     },
   });
 
@@ -121,12 +101,12 @@ export default function OrdersPage() {
     cancelMutation.mutate(selectedOrder.id);
   };
 
-  const orders: Order[] = (ordersData as any)?.data?.data || [];
-  const total = (ordersData as any)?.data?.meta?.total || 0;
+  const orders: Order[] = ordersData?.data?.data || [];
+  const total = ordersData?.data?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
   const getStatusBadge = (status?: string) => {
-    switch (status) {
+    switch (status as OrderStatus) {
       case 'PENDING':
         return <Badge variant="secondary">待支付</Badge>;
       case 'PAID':
@@ -143,7 +123,7 @@ export default function OrdersPage() {
   };
 
   const getTypeBadge = (type?: string) => {
-    switch (type) {
+    switch (type as OrderType) {
       case 'ARTICLE':
         return <Badge variant="outline">文章</Badge>;
       case 'MEMBERSHIP':
@@ -157,8 +137,8 @@ export default function OrdersPage() {
     }
   };
 
-  const getPaymentMethodLabel = (method?: string) => {
-    switch (method) {
+  const getPaymentMethodLabel = (method?: unknown) => {
+    switch (method as PaymentMethod) {
       case 'ALIPAY':
         return '支付宝';
       case 'WECHAT':
@@ -196,7 +176,7 @@ export default function OrdersPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={statusFilter || undefined} onValueChange={(v) => { setStatusFilter(v as any); setPage(1); }}>
+            <Select value={statusFilter || undefined} onValueChange={(v) => { setStatusFilter(v as OrderStatus | 'ALL'); setPage(1); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="状态" />
               </SelectTrigger>
@@ -208,7 +188,7 @@ export default function OrdersPage() {
                 <SelectItem value="REFUNDED">已退款</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={typeFilter || undefined} onValueChange={(v) => { setTypeFilter(v as any); setPage(1); }}>
+            <Select value={typeFilter || undefined} onValueChange={(v) => { setTypeFilter(v as OrderType | 'ALL'); setPage(1); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="类型" />
               </SelectTrigger>
@@ -262,7 +242,7 @@ export default function OrdersPage() {
                         <TableCell>
                           <span className="font-medium whitespace-nowrap">¥{Number(order.amount || 0).toFixed(2)}</span>
                         </TableCell>
-                        <TableCell className="whitespace-nowrap">{getPaymentMethodLabel(order.paymentMethod as string)}</TableCell>
+                        <TableCell className="whitespace-nowrap">{getPaymentMethodLabel(order.paymentMethod)}</TableCell>
                         <TableCell>{getStatusBadge(order.status)}</TableCell>
                         <TableCell className="whitespace-nowrap">
                           {order.createdAt ? new Date(order.createdAt).toLocaleDateString() : '-'}
@@ -358,7 +338,7 @@ export default function OrdersPage() {
                 </div>
                 <div className="space-y-1">
                   <Label className="text-muted-foreground">支付方式</Label>
-                  <p className="text-sm">{getPaymentMethodLabel(selectedOrder.paymentMethod as string)}</p>
+                  <p className="text-sm">{getPaymentMethodLabel(selectedOrder.paymentMethod)}</p>
                 </div>
                 <div className="space-y-1">
                   <Label className="text-muted-foreground">用户ID</Label>
@@ -422,7 +402,7 @@ export default function OrdersPage() {
           <DialogHeader>
             <DialogTitle>确认取消订单</DialogTitle>
             <DialogDescription>
-              确定要取消订单 "{selectedOrder?.orderNo}" 吗？
+              确定要取消订单 &quot;{selectedOrder?.orderNo}&quot; 吗？
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

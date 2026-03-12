@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { userControllerFindAll, articleControllerFindAll, tagControllerFindAll, orderControllerGetAllOrders, categoryControllerFindAll } from '@/api/sdk.gen';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Users, FileText, Tag, ShoppingCart, TrendingUp, Eye, Heart, DollarSign } from 'lucide-react';
+import { Users, FileText, Tag, ShoppingCart } from 'lucide-react';
 import { Link } from '@/i18n';
 
 export default function DashboardPage() {
@@ -53,7 +53,7 @@ export default function DashboardPage() {
   const stats = [
     {
       title: t('stats.totalUsers'),
-      value: (usersData as any)?.total || 0,
+      value: usersData?.total || 0,
       icon: Users,
       description: t('stats.totalUsersDesc'),
       color: 'text-blue-600',
@@ -61,7 +61,7 @@ export default function DashboardPage() {
     },
     {
       title: t('stats.totalArticles'),
-      value: (articlesData as any)?.total || 0,
+      value: articlesData?.total || 0,
       icon: FileText,
       description: t('stats.totalArticlesDesc'),
       color: 'text-green-600',
@@ -69,7 +69,7 @@ export default function DashboardPage() {
     },
     {
       title: t('stats.totalTags'),
-      value: (tagsData as any)?.total || 0,
+      value: tagsData?.total || 0,
       icon: Tag,
       description: t('stats.totalTagsDesc'),
       color: 'text-purple-600',
@@ -77,7 +77,7 @@ export default function DashboardPage() {
     },
     {
       title: t('stats.totalOrders'),
-      value: (ordersData as any)?.total || 0,
+      value: ordersData?.total || 0,
       icon: ShoppingCart,
       description: t('stats.totalOrdersDesc'),
       color: 'text-orange-600',
@@ -149,7 +149,7 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {categoriesData?.data?.data.slice(0, 5).map((category: any) => (
+              {categoriesData?.data?.data.slice(0, 5).map((category: { id: number; name: string; _count?: { articles?: number } }) => (
                 <div key={category.id} className="flex items-center justify-between">
                   <span className="text-sm">{category.name}</span>
                   <span className="text-sm text-muted-foreground">{category._count?.articles || 0} {tCommon('articlesCount')}</span>

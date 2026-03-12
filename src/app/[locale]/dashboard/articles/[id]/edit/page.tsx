@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
+import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useParams } from 'next/navigation';
 import {
@@ -41,9 +42,9 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { 
-  ArrowLeft, Loader2, ChevronLeft, ChevronRight, Plus, X, 
-  Image as ImageIcon, Upload, Check, Download, Link as LinkIcon, Key, Lock
+import {
+  ArrowLeft, Loader2, ChevronLeft, ChevronRight, Plus, X,
+  Image as ImageIcon, Upload, Check, Download, Lock
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from '@/i18n';
@@ -81,10 +82,13 @@ const naturalSort = (a: string, b: string) => {
 };
 
 const uploadFiles = async (files: File[]): Promise<string[]> => {
+  const formData = new FormData();
+  files.forEach((file) => formData.append('files', file));
   const response = await uploadControllerUploadFile({
-    body: files as any,
+    body: formData as unknown as { file?: Blob | File },
   });
-  return (response.data?.data || []).map((f: any) => f.url).filter(Boolean);
+  const data = response.data?.data as unknown as { url?: string }[] | undefined;
+  return (data || []).map((f) => f.url).filter((url): url is string => Boolean(url));
 };
 
 export default function ArticleEditPage() {
@@ -158,6 +162,8 @@ export default function ArticleEditPage() {
   useEffect(() => {
     if (articleData?.data) {
       const article = articleData.data;
+      const articleTags = article.tags as unknown as { name: string }[] | undefined;
+      const articleDownloads = article.downloads as unknown as { type: DownloadType; url: string; password?: string; extractionCode?: string }[] | undefined;
       setForm({
         title: article.title || '',
         summary: article.summary || '',
@@ -165,14 +171,14 @@ export default function ArticleEditPage() {
         images: article.images || [],
         cover: article.cover || '',
         categoryId: article.category?.id || 0,
-        tagNames: article.tags?.map((t: any) => t.name) || [],
+        tagNames: articleTags?.map((t) => t.name) || [],
         status: (article.status || 'DRAFT') as 'DRAFT' | 'PUBLISHED',
         requireLogin: article.requireLogin ?? false,
         requirePayment: article.requirePayment ?? false,
         requireMembership: article.requireMembership ?? false,
         viewPrice: Number(article.viewPrice) || 0,
         type: (article.type || 'image') as 'image' | 'mixed',
-        downloads: (article.downloads || []).map((d: any) => ({
+        downloads: (articleDownloads || []).map((d) => ({
           type: d.type as DownloadType,
           url: d.url,
           password: d.password || '',
@@ -183,10 +189,10 @@ export default function ArticleEditPage() {
   }, [articleData]);
 
   const updateMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: Record<string, unknown>) => {
       const response = await articleControllerUpdate({
         path: { id: articleId },
-        body: data,
+        body: data as Parameters<typeof articleControllerUpdate>[0]['body'],
       });
       return response.data;
     },
@@ -196,13 +202,14 @@ export default function ArticleEditPage() {
       queryClient.invalidateQueries({ queryKey: ['article', articleId] });
       router.push('/dashboard/articles');
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '更新失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '更新失败';
+      toast.error(message);
     },
   });
 
   const createCategoryMutation = useMutation({
-    mutationFn: async (data: any) => {
+    mutationFn: async (data: { name: string; description: string; status: string; sort: number }) => {
       const response = await categoryControllerCreate({ body: data });
       return response.data;
     },
@@ -212,8 +219,9 @@ export default function ArticleEditPage() {
       setCategoryDialogOpen(false);
       setNewCategoryForm({ name: '', description: '' });
     },
-    onError: (error: any) => {
-      toast.error(error?.message || '创建失败');
+    onError: (error: unknown) => {
+      const message = error instanceof Error ? error.message : '创建失败';
+      toast.error(message);
     },
   });
 
@@ -234,8 +242,9 @@ export default function ArticleEditPage() {
     
     try {
       return await uploadFiles(sortedFiles);
-    } catch (error: any) {
-      toast.error(`上传失败: ${error?.message || '未知错误'}`);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '未知错误';
+      toast.error(`上传失败: ${message}`);
       return [];
     }
   };
@@ -308,8 +317,9 @@ export default function ArticleEditPage() {
           return { ...prev, images: newImages };
         });
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     } finally {
       setUploadingIndex(null);
     }
@@ -322,8 +332,9 @@ export default function ArticleEditPage() {
       if (urls[0]) {
         setForm(prev => ({ ...prev, cover: urls[0] }));
       }
-    } catch (error: any) {
-      toast.error(error?.message || '上传失败');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : '上传失败';
+      toast.error(message);
     } finally {
       setIsUploadingCover(false);
     }
@@ -517,7 +528,7 @@ export default function ArticleEditPage() {
                 {form.images.map((img, idx) => (
                   <div key={idx} className="relative group aspect-square border rounded-lg overflow-hidden bg-muted">
                     {img ? (
-                      <img src={img} alt="" className="w-full h-full object-cover" />
+                      <Image src={img} alt="" fill className="object-cover" sizes="(max-width: 768px) 50vw, 25vw" />
                     ) : (
                       <label className="flex flex-col items-center justify-center w-full h-full cursor-pointer hover:bg-muted/50">
                         <Upload className="h-6 w-6 text-muted-foreground mb-1" />
@@ -587,7 +598,7 @@ export default function ArticleEditPage() {
             <CardContent className="space-y-4">
               <div className="space-y-2">
                 <Label>状态</Label>
-                <Select value={form.status} onValueChange={(v: any) => setForm({ ...form, status: v })}>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as 'DRAFT' | 'PUBLISHED' })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="DRAFT">草稿</SelectItem>
@@ -599,7 +610,7 @@ export default function ArticleEditPage() {
 
               <div className="space-y-2">
                 <Label>类型</Label>
-                <Select value={form.type} onValueChange={(v: any) => setForm({ ...form, type: v })}>
+                <Select value={form.type} onValueChange={(v) => setForm({ ...form, type: v as 'image' | 'mixed' })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     <SelectItem value="image">图片</SelectItem>
@@ -613,7 +624,7 @@ export default function ArticleEditPage() {
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer relative group">
                     {form.cover ? (
-                      <img src={form.cover} alt="封面" className="w-20 h-14 rounded object-cover" />
+                      <Image src={form.cover} alt="封面" width={80} height={56} className="rounded object-cover" />
                     ) : (
                       <div className="w-20 h-14 rounded bg-muted flex items-center justify-center group-hover:bg-muted/80">
                         {isUploadingCover ? (

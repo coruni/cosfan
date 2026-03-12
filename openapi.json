@@ -646,7 +646,10 @@
         "requestBody": {
           "content": {
             "application/json": {
-              "schema": {}
+              "schema": {
+                "$ref": "#/components/schemas/UpdateRoleDto"
+              },
+              "examples": {}
             }
           },
           "required": true
@@ -33933,11 +33936,7 @@
           }
         },
         "required": [
-          "name",
-          "avatar",
-          "background",
-          "cover",
-          "sort"
+          "name"
         ]
       },
       "UpdateTagDto": {

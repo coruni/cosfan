@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   articleControllerFindAll,
@@ -70,7 +71,7 @@ export default function ArticlesPage() {
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
       setDeleteDialogOpen(false);
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast.error(error?.message || '删除失败');
     },
   });
@@ -177,9 +178,11 @@ export default function ArticlesPage() {
                         <TableCell>
                           <div className="flex items-center gap-3">
                             {article.cover ? (
-                              <img
+                              <Image
                                 src={article.cover}
                                 alt={article.title}
+                                width={48}
+                                height={48}
                                 className="w-12 h-12 object-cover rounded flex-shrink-0"
                               />
                             ) : (

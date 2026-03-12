@@ -621,19 +621,19 @@ export type CreateTagDto = {
     /**
      * 标签头像
      */
-    avatar: string;
+    avatar?: string;
     /**
      * 标签背景
      */
-    background: string;
+    background?: string;
     /**
      * 标签封面
      */
-    cover: string;
+    cover?: string;
     /**
      * 排序
      */
-    sort: number;
+    sort?: number;
 };
 
 export type UpdateTagDto = {
@@ -1815,7 +1815,7 @@ export type RoleControllerFindOneResponses = {
 export type RoleControllerFindOneResponse = RoleControllerFindOneResponses[keyof RoleControllerFindOneResponses];
 
 export type RoleControllerUpdateData = {
-    body: unknown;
+    body: UpdateRoleDto;
     headers?: {
         Authorization?: string;
         'Device-Id'?: string;

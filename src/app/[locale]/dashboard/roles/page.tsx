@@ -1,21 +1,20 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useState } from "react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   roleControllerFindWithPagination,
   roleControllerCreate,
   roleControllerRemove,
   roleControllerUpdate,
-  roleControllerToggleStatus,
   roleControllerAssignPermissions,
   permissionControllerFindAll,
-} from '@/api/sdk.gen';
-import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Badge } from '@/components/ui/badge';
+} from "@/api/sdk.gen";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 import {
   Dialog,
   DialogContent,
@@ -23,18 +22,26 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from "@/components/ui/dialog";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Search, Plus, Pencil, Trash2, Loader2, ShieldCheck, Power } from 'lucide-react';
-import { toast } from 'sonner';
-import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow, Table } from '@/components/ui/table';
+  Search,
+  Plus,
+  Pencil,
+  Trash2,
+  Loader2,
+  ShieldCheck,
+  Power,
+} from "lucide-react";
+import { toast } from "sonner";
+import {
+  Table as UITable,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 
 type Role = {
   id: number;
@@ -55,27 +62,27 @@ export default function RolesPage() {
   const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
-  const [search, setSearch] = useState('');
-  const [searchInput, setSearchInput] = useState('');
+  const [search, setSearch] = useState("");
+  const [searchInput, setSearchInput] = useState("");
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [permissionsDialogOpen, setPermissionsDialogOpen] = useState(false);
   const [selectedRole, setSelectedRole] = useState<Role | null>(null);
   const [editForm, setEditForm] = useState({
-    name: '',
-    displayName: '',
-    description: '',
+    name: "",
+    displayName: "",
+    description: "",
   });
   const [createForm, setCreateForm] = useState({
-    name: '',
-    displayName: '',
-    description: '',
+    name: "",
+    displayName: "",
+    description: "",
   });
   const [selectedPermissions, setSelectedPermissions] = useState<number[]>([]);
 
   const { data: rolesData, isLoading } = useQuery({
-    queryKey: ['admin-roles', page, limit, search],
+    queryKey: ["admin-roles", page, limit, search],
     queryFn: async () => {
       const response = await roleControllerFindWithPagination({
         query: { page, limit, name: search || undefined },
@@ -85,17 +92,21 @@ export default function RolesPage() {
   });
 
   const { data: permissionsData } = useQuery({
-    queryKey: ['admin-permissions-all'],
+    queryKey: ["admin-permissions-all"],
     queryFn: async () => {
-      const response = await permissionControllerFindAll({
-        query: { page: 1, limit: 100 },
-      });
+      const response = await permissionControllerFindAll({});
       return response.data;
     },
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: { name: string; displayName: string; description: string } }) => {
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: number;
+      data: { name: string; displayName: string; description: string };
+    }) => {
       const response = await roleControllerUpdate({
         path: { id: String(id) },
         body: data,
@@ -103,30 +114,34 @@ export default function RolesPage() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success('角色更新成功');
-      queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
+      toast.success("角色更新成功");
+      queryClient.invalidateQueries({ queryKey: ["admin-roles"] });
       setEditDialogOpen(false);
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '更新失败');
+      toast.error(err?.message || "更新失败");
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: { name: string; displayName: string; description: string }) => {
+    mutationFn: async (data: {
+      name: string;
+      displayName: string;
+      description: string;
+    }) => {
       const response = await roleControllerCreate({ body: data });
       return response.data;
     },
     onSuccess: () => {
-      toast.success('角色创建成功');
-      queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
+      toast.success("角色创建成功");
+      queryClient.invalidateQueries({ queryKey: ["admin-roles"] });
       setCreateDialogOpen(false);
-      setCreateForm({ name: '', displayName: '', description: '' });
+      setCreateForm({ name: "", displayName: "", description: "" });
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '创建失败');
+      toast.error(err?.message || "创建失败");
     },
   });
 
@@ -136,36 +151,42 @@ export default function RolesPage() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success('角色删除成功');
-      queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
+      toast.success("角色删除成功");
+      queryClient.invalidateQueries({ queryKey: ["admin-roles"] });
       setDeleteDialogOpen(false);
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '删除失败');
+      toast.error(err?.message || "删除失败");
     },
   });
 
   const toggleStatusMutation = useMutation({
     mutationFn: async ({ id, isActive }: { id: number; isActive: boolean }) => {
-      const response = await roleControllerToggleStatus({
+      const response = await roleControllerUpdate({
         path: { id: String(id) },
         body: { isActive },
       });
       return response.data;
     },
     onSuccess: () => {
-      toast.success('状态更新成功');
-      queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
+      toast.success("状态更新成功");
+      queryClient.invalidateQueries({ queryKey: ["admin-roles"] });
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '状态更新失败');
+      toast.error(err?.message || "状态更新失败");
     },
   });
 
   const assignPermissionsMutation = useMutation({
-    mutationFn: async ({ id, permissions }: { id: number; permissions: number[] }) => {
+    mutationFn: async ({
+      id,
+      permissions,
+    }: {
+      id: number;
+      permissions: number[];
+    }) => {
       const response = await roleControllerAssignPermissions({
         path: { id: String(id) },
         body: { permissions },
@@ -173,13 +194,13 @@ export default function RolesPage() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success('权限分配成功');
-      queryClient.invalidateQueries({ queryKey: ['admin-roles'] });
+      toast.success("权限分配成功");
+      queryClient.invalidateQueries({ queryKey: ["admin-roles"] });
       setPermissionsDialogOpen(false);
     },
     onError: (error: unknown) => {
       const err = error as { message?: string };
-      toast.error(err?.message || '权限分配失败');
+      toast.error(err?.message || "权限分配失败");
     },
   });
 
@@ -191,9 +212,9 @@ export default function RolesPage() {
   const openEditDialog = (role: Role) => {
     setSelectedRole(role);
     setEditForm({
-      name: role.name || '',
-      displayName: role.displayName || '',
-      description: role.description || '',
+      name: role.name || "",
+      displayName: role.displayName || "",
+      description: role.description || "",
     });
     setEditDialogOpen(true);
   };
@@ -205,7 +226,7 @@ export default function RolesPage() {
 
   const openPermissionsDialog = (role: Role) => {
     setSelectedRole(role);
-    setSelectedPermissions(role.permissions?.map(p => p.id) || []);
+    setSelectedPermissions(role.permissions?.map((p) => p.id) || []);
     setPermissionsDialogOpen(true);
   };
 
@@ -216,7 +237,7 @@ export default function RolesPage() {
 
   const handleCreateSubmit = () => {
     if (!createForm.name) {
-      toast.error('角色名称为必填项');
+      toast.error("角色名称为必填项");
       return;
     }
     createMutation.mutate(createForm);
@@ -233,20 +254,23 @@ export default function RolesPage() {
 
   const handlePermissionsSubmit = () => {
     if (!selectedRole) return;
-    assignPermissionsMutation.mutate({ id: selectedRole.id, permissions: selectedPermissions });
+    assignPermissionsMutation.mutate({
+      id: selectedRole.id,
+      permissions: selectedPermissions,
+    });
   };
 
   const togglePermission = (permissionId: number) => {
-    setSelectedPermissions(prev =>
+    setSelectedPermissions((prev) =>
       prev.includes(permissionId)
-        ? prev.filter(id => id !== permissionId)
+        ? prev.filter((id) => id !== permissionId)
         : [...prev, permissionId]
     );
   };
 
   const roles = (rolesData?.data?.data || rolesData?.data || []) as Role[];
-  const permissions = (permissionsData?.data?.data || permissionsData?.data || []) as Permission[];
-  const total = (rolesData?.data?.meta?.total || rolesData?.meta?.total || 0);
+  const permissions = (permissionsData?.data?.data || []) as Permission[];
+  const total = rolesData?.data?.meta?.total || 0;
   const totalPages = Math.ceil(total / limit);
 
   return (
@@ -270,7 +294,7 @@ export default function RolesPage() {
                 placeholder="搜索角色名称..."
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                onKeyDown={(e) => e.key === "Enter" && handleSearch()}
                 className="max-w-sm"
               />
               <Button variant="outline" onClick={handleSearch}>
@@ -307,16 +331,18 @@ export default function RolesPage() {
                             <span className="font-medium">{role.name}</span>
                           </div>
                         </TableCell>
-                        <TableCell>{role.displayName || '-'}</TableCell>
-                        <TableCell>{role.description || '-'}</TableCell>
+                        <TableCell>{role.displayName || "-"}</TableCell>
+                        <TableCell>{role.description || "-"}</TableCell>
                         <TableCell>
                           <Badge variant="outline">
                             {role.permissions?.length || 0} 个
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <Badge variant={role.isActive ? 'default' : 'secondary'}>
-                            {role.isActive ? '启用' : '禁用'}
+                          <Badge
+                            variant={role.isActive ? "default" : "secondary"}
+                          >
+                            {role.isActive ? "启用" : "禁用"}
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
@@ -332,7 +358,7 @@ export default function RolesPage() {
                             variant="ghost"
                             size="icon"
                             onClick={() => handleToggleStatus(role)}
-                            title={role.isActive ? '禁用' : '启用'}
+                            title={role.isActive ? "禁用" : "启用"}
                           >
                             <Power className="h-4 w-4" />
                           </Button>
@@ -355,7 +381,10 @@ export default function RolesPage() {
                     ))}
                     {roles.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                        <TableCell
+                          colSpan={6}
+                          className="text-center py-8 text-muted-foreground"
+                        >
                           暂无角色数据
                         </TableCell>
                       </TableRow>
@@ -376,7 +405,7 @@ export default function RolesPage() {
                       disabled={page <= 1}
                       onClick={() => setPage(page - 1)}
                     >
-                      {'<'}
+                      {"<"}
                     </Button>
                     <Button
                       variant="outline"
@@ -384,7 +413,7 @@ export default function RolesPage() {
                       disabled={page >= totalPages}
                       onClick={() => setPage(page + 1)}
                     >
-                      {'>'}
+                      {">"}
                     </Button>
                   </div>
                 </div>
@@ -407,7 +436,9 @@ export default function RolesPage() {
               <Input
                 id="edit-name"
                 value={editForm.name}
-                onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, name: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -415,7 +446,9 @@ export default function RolesPage() {
               <Input
                 id="edit-displayName"
                 value={editForm.displayName}
-                onChange={(e) => setEditForm({ ...editForm, displayName: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, displayName: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -423,7 +456,9 @@ export default function RolesPage() {
               <Input
                 id="edit-description"
                 value={editForm.description}
-                onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                onChange={(e) =>
+                  setEditForm({ ...editForm, description: e.target.value })
+                }
               />
             </div>
           </div>
@@ -431,8 +466,13 @@ export default function RolesPage() {
             <Button variant="outline" onClick={() => setEditDialogOpen(false)}>
               取消
             </Button>
-            <Button onClick={handleEditSubmit} disabled={updateMutation.isPending}>
-              {updateMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            <Button
+              onClick={handleEditSubmit}
+              disabled={updateMutation.isPending}
+            >
+              {updateMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
               保存
             </Button>
           </DialogFooter>
@@ -452,7 +492,9 @@ export default function RolesPage() {
               <Input
                 id="create-name"
                 value={createForm.name}
-                onChange={(e) => setCreateForm({ ...createForm, name: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, name: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -460,7 +502,9 @@ export default function RolesPage() {
               <Input
                 id="create-displayName"
                 value={createForm.displayName}
-                onChange={(e) => setCreateForm({ ...createForm, displayName: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, displayName: e.target.value })
+                }
               />
             </div>
             <div className="space-y-2">
@@ -468,16 +512,26 @@ export default function RolesPage() {
               <Input
                 id="create-description"
                 value={createForm.description}
-                onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
+                onChange={(e) =>
+                  setCreateForm({ ...createForm, description: e.target.value })
+                }
               />
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreateDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setCreateDialogOpen(false)}
+            >
               取消
             </Button>
-            <Button onClick={handleCreateSubmit} disabled={createMutation.isPending}>
-              {createMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            <Button
+              onClick={handleCreateSubmit}
+              disabled={createMutation.isPending}
+            >
+              {createMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
               创建
             </Button>
           </DialogFooter>
@@ -490,11 +544,15 @@ export default function RolesPage() {
           <DialogHeader>
             <DialogTitle>确认删除</DialogTitle>
             <DialogDescription>
-              确定要删除角色 "{selectedRole?.displayName || selectedRole?.name}" 吗？此操作不可撤销。
+              确定要删除角色 &quot;{selectedRole?.displayName || selectedRole?.name}&quot;
+              吗？此操作不可撤销。
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setDeleteDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setDeleteDialogOpen(false)}
+            >
               取消
             </Button>
             <Button
@@ -502,7 +560,9 @@ export default function RolesPage() {
               onClick={handleDeleteConfirm}
               disabled={deleteMutation.isPending}
             >
-              {deleteMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+              {deleteMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
               删除
             </Button>
           </DialogFooter>
@@ -510,12 +570,16 @@ export default function RolesPage() {
       </Dialog>
 
       {/* Permissions Dialog */}
-      <Dialog open={permissionsDialogOpen} onOpenChange={setPermissionsDialogOpen}>
+      <Dialog
+        open={permissionsDialogOpen}
+        onOpenChange={setPermissionsDialogOpen}
+      >
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>分配权限</DialogTitle>
             <DialogDescription>
-              为角色 "{selectedRole?.displayName || selectedRole?.name}" 分配权限
+              为角色 &quot;{selectedRole?.displayName || selectedRole?.name}&quot;
+              分配权限
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4 max-h-96 overflow-y-auto">
@@ -526,7 +590,10 @@ export default function RolesPage() {
                   checked={selectedPermissions.includes(permission.id)}
                   onCheckedChange={() => togglePermission(permission.id)}
                 />
-                <Label htmlFor={`permission-${permission.id}`} className="cursor-pointer">
+                <Label
+                  htmlFor={`permission-${permission.id}`}
+                  className="cursor-pointer"
+                >
                   {permission.name}
                   {permission.description && (
                     <span className="text-muted-foreground text-sm ml-1">
@@ -537,15 +604,25 @@ export default function RolesPage() {
               </div>
             ))}
             {permissions.length === 0 && (
-              <p className="text-muted-foreground text-center py-4">暂无权限数据</p>
+              <p className="text-muted-foreground text-center py-4">
+                暂无权限数据
+              </p>
             )}
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setPermissionsDialogOpen(false)}>
+            <Button
+              variant="outline"
+              onClick={() => setPermissionsDialogOpen(false)}
+            >
               取消
             </Button>
-            <Button onClick={handlePermissionsSubmit} disabled={assignPermissionsMutation.isPending}>
-              {assignPermissionsMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+            <Button
+              onClick={handlePermissionsSubmit}
+              disabled={assignPermissionsMutation.isPending}
+            >
+              {assignPermissionsMutation.isPending && (
+                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+              )}
               保存
             </Button>
           </DialogFooter>

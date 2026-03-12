@@ -31,29 +31,9 @@ import {
 import { Search, Pencil, Trash2, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { CommentControllerFindOneResponse } from '@/api';
 
-type Comment = {
-  id: number;
-  content: string;
-  images: string[];
-  likes: number;
-  replyCount: number;
-  status: string;
-  articleId?: number;
-  article?: {
-    id: number;
-    title: string;
-  };
-  author: {
-    id: number;
-    username: string;
-    nickname: string;
-    avatar: string;
-  };
-  parentId?: number;
-  createdAt?: string;
-  updatedAt?: string;
-};
+type Comment = CommentControllerFindOneResponse['data']['data'][number]
 
 export default function CommentsPage() {
   const queryClient = useQueryClient();
@@ -163,7 +143,7 @@ export default function CommentsPage() {
     }
   };
 
-  const comments = (commentsData?.data?.data||[]) as any;
+  const comments = (commentsData?.data?.data || []) as unknown as Comment[];
   const total = (commentsData?.data?.meta?.total || 0);
   const totalPages = Math.ceil(total / limit);
 
