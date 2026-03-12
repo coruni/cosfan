@@ -274,7 +274,7 @@ export default function SettingsPage() {
   const updateMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number; data: { key?: string; value?: string; description?: string } }) => {
       const response = await configControllerUpdateAll({
-        body: [{ id, ...data }],
+        body: [{  ...data }],
       });
       return response.data;
     },

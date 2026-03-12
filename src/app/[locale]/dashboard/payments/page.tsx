@@ -78,8 +78,9 @@ export default function PaymentsPage() {
         query: {
           page,
           limit,
-          status: statusFilter === 'all' ? undefined : statusFilter,
-          paymentMethod: methodFilter === 'all' ? undefined : methodFilter,
+          // userId: Number(search) || undefined,
+          // status: statusFilter === 'all' ? undefined : statusFilter,
+          // paymentMethod: methodFilter === 'all' ? undefined : methodFilter,
         },
       });
       return response.data as PaymentsResponse;
