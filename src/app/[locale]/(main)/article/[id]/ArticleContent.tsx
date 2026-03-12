@@ -88,7 +88,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     mutationFn: async () => {
       await articleControllerLike({
         path: { id },
-        body: undefined
+        body: {
+          reactionType: 'like'
+        }
       });
     },
     onSuccess: () => {

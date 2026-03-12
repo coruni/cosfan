@@ -33730,14 +33730,7 @@
         "required": [
           "title",
           "content",
-          "sort",
           "categoryId",
-          "requireLogin",
-          "requireFollow",
-          "requirePayment",
-          "requireMembership",
-          "listRequireLogin",
-          "viewPrice",
           "type"
         ]
       },

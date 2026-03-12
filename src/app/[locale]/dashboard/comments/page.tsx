@@ -229,7 +229,7 @@ export default function CommentsPage() {
                         </TableCell>
                         <TableCell>
                           <span className="text-sm text-muted-foreground">
-                            {comment.article?.title || `ID: ${comment.articleId}` || '-'}
+                            {comment.article?.title || `ID: ${comment.article.id}` || '-'}
                           </span>
                         </TableCell>
                         <TableCell>

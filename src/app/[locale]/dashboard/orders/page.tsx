@@ -57,8 +57,8 @@ export default function OrdersPage() {
           page,
           limit,
           userId: Number(search) || undefined,
-          status: statusFilter && statusFilter !== 'ALL' ? statusFilter as OrderControllerGetAllOrdersData['query']['status'] : undefined,
-          type: typeFilter && typeFilter !== 'ALL' ? typeFilter as OrderControllerGetAllOrdersData['query']['type'] : undefined,
+          status: statusFilter && statusFilter !== 'ALL' ? statusFilter as NonNullable<OrderControllerGetAllOrdersData['query']>['status'] : undefined,
+          type: typeFilter && typeFilter !== 'ALL' ? typeFilter as NonNullable<OrderControllerGetAllOrdersData['query']>['type'] : undefined,
         },
       });
       return response.data;

@@ -180,7 +180,7 @@ export default function ArticlesPage() {
                             {article.cover ? (
                               <Image
                                 src={article.cover}
-                                alt={article.title}
+                                alt={article.title!}
                                 width={48}
                                 height={48}
                                 className="w-12 h-12 object-cover rounded flex-shrink-0"

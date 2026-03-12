@@ -465,7 +465,7 @@ export type CreateArticleDto = {
     /**
      * 排序
      */
-    sort: number;
+    sort?: number;
     /**
      * 分类ID
      */
@@ -485,27 +485,27 @@ export type CreateArticleDto = {
     /**
      * 是否需要登录后才能查看
      */
-    requireLogin: boolean;
+    requireLogin?: boolean;
     /**
      * 是否仅关注后可查看
      */
-    requireFollow: boolean;
+    requireFollow?: boolean;
     /**
      * 是否需要支付后才能查看
      */
-    requirePayment: boolean;
+    requirePayment?: boolean;
     /**
      * 是否需要会员才能查看
      */
-    requireMembership: boolean;
+    requireMembership?: boolean;
     /**
      * 仅登录后才在列表显示
      */
-    listRequireLogin: boolean;
+    listRequireLogin?: boolean;
     /**
      * 查看所需支付金额
      */
-    viewPrice: number;
+    viewPrice?: number;
     /**
      * 文章类型
      */
