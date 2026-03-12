@@ -199,7 +199,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
           <button
             key={index}
             onClick={() => openGallery(index)}
-            className="relative aspect-[3/4] overflow-hidden rounded-lg group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary"
+            className="relative aspect-[3/4] overflow-hidden rounded-lg group cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary bg-muted"
           >
             <Image
               src={image}
