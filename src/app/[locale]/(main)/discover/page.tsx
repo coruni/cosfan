@@ -1,6 +1,57 @@
+import type { Metadata } from 'next';
 import { Suspense } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { DiscoverPageContent } from './DiscoverPageContent';
+import { getTranslations, setRequestLocale } from 'next-intl/server';
+import { BreadcrumbJsonLd } from '@/components/seo';
+import { configControllerGetPublicConfigs } from '@/api/sdk.gen';
+import { client } from '@/api/client.gen';
+import { API_BASE_URL } from '@/config/constants';
+import { initServerInterceptors } from '@/lib/server-init';
+
+async function getSiteConfig() {
+  try {
+    initServerInterceptors();
+    client.setConfig({ baseUrl: API_BASE_URL });
+    const response = await configControllerGetPublicConfigs();
+    return response.data?.data;
+  } catch (error) {
+    console.error('Failed to fetch site config:', error);
+    return null;
+  }
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'discover' });
+  const config = await getSiteConfig();
+  const siteName = config?.site_name || '';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://picart.example.com';
+
+  const title = t('title');
+  const description = locale === 'zh'
+    ? `探索热门Coser和精选Cosplay图集，发现优质Cosplay作品。${siteName ? ` - ${siteName}` : ''}`
+    : `Discover popular cosers and curated cosplay galleries.${siteName ? ` - ${siteName}` : ''}`;
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: `${baseUrl}/discover`,
+    },
+    openGraph: {
+      title: `${title}${siteName ? ` | ${siteName}` : ''}`,
+      description,
+      type: 'website',
+      locale: locale === 'zh' ? 'zh_CN' : 'en_US',
+      url: `${baseUrl}/discover`,
+    },
+  };
+}
 
 
 
@@ -38,10 +89,29 @@ function DiscoverSkeleton() {
   );
 }
 
-export default function DiscoverPage() {
+export default async function DiscoverPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+
+  const config = await getSiteConfig();
+  const siteName = config?.site_name || '';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || '';
+
   return (
-    <Suspense fallback={<DiscoverSkeleton />}>
-      <DiscoverPageContent />
-    </Suspense>
+    <>
+      <BreadcrumbJsonLd
+        items={[
+          { name: siteName || 'Home', url: baseUrl },
+          { name: 'Discover', url: `${baseUrl}/discover` },
+        ]}
+      />
+      <Suspense fallback={<DiscoverSkeleton />}>
+        <DiscoverPageContent />
+      </Suspense>
+    </>
   );
 }
