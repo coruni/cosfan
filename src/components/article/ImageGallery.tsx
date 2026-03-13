@@ -62,9 +62,9 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     setPosition({ x: 0, y: 0 });
   }, [images.length]);
 
-  const zoomIn = () => {
+  const zoomIn = useCallback(() => {
     setZoomLevel((prev) => Math.min(prev + 0.5, 3));
-  };
+  }, []);
 
   const zoomOut = useCallback(() => {
     setZoomLevel((prev) => {
@@ -139,14 +139,14 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     setTouchStartY(touch.clientY);
 
     if (e.touches.length === 1 && zoomLevel > 1) {
-      e.stopPropagation();
+      e.preventDefault();
       setIsDragging(true);
       setDragStart({
         x: touch.clientX - position.x,
         y: touch.clientY - position.y,
       });
     } else if (e.touches.length === 2) {
-      e.stopPropagation();
+      e.preventDefault();
       setIsDragging(false);
       const distance = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
@@ -154,22 +154,30 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
       );
       setPinchStartDistance(distance);
     }
-  }, [zoomLevel, position, lastTap]);
+  }, [zoomLevel, position, lastTap, resetZoom]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    // 始终阻止默认行为以避免页面滚动
+    if (zoomLevel > 1 || e.touches.length === 2) {
+      e.preventDefault();
+    }
+
     if (e.touches.length === 1 && isDragging && zoomLevel > 1) {
-      e.stopPropagation();
       const touch = e.touches[0];
       const newX = touch.clientX - dragStart.x;
       const newY = touch.clientY - dragStart.y;
 
-      const maxOffset = (zoomLevel - 1) * (isMobile ? 200 : 500);
-      const clampedX = Math.max(-maxOffset, Math.min(maxOffset, newX));
-      const clampedY = Math.max(-maxOffset, Math.min(maxOffset, newY));
+      // 移动端使用更大的拖动范围
+      const container = containerRef.current;
+      const containerWidth = container?.clientWidth || 300;
+      const containerHeight = container?.clientHeight || 500;
+      const maxOffsetX = (zoomLevel - 1) * containerWidth * 0.4;
+      const maxOffsetY = (zoomLevel - 1) * containerHeight * 0.4;
+      const clampedX = Math.max(-maxOffsetX, Math.min(maxOffsetX, newX));
+      const clampedY = Math.max(-maxOffsetY, Math.min(maxOffsetY, newY));
 
       setPosition({ x: clampedX, y: clampedY });
     } else if (e.touches.length === 2 && pinchStartDistance > 0) {
-      e.stopPropagation();
       const currentDistance = Math.hypot(
         e.touches[0].clientX - e.touches[1].clientX,
         e.touches[0].clientY - e.touches[1].clientY
@@ -184,7 +192,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
         setPinchStartDistance(currentDistance);
       }
     }
-  }, [isDragging, zoomLevel, dragStart, pinchStartDistance, zoomOut, isMobile]);
+  }, [isDragging, zoomLevel, dragStart, pinchStartDistance, zoomOut, zoomIn]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
     const touchEndX = e.changedTouches[0].clientX;
@@ -290,7 +298,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
             <VisuallyHidden>
               <DialogTitle>{t('preview')}</DialogTitle>
             </VisuallyHidden>
-            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center overflow-hidden touch-none">
+            <div ref={containerRef} className="relative w-full h-full flex items-center justify-center overflow-hidden">
 
               {/* 关闭按钮 - 移动端右上角 */}
               <Button
@@ -343,7 +351,10 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
                 onDoubleClick={handleDoubleClick}
-                style={{ cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default' }}
+                style={{
+                  cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
+                  touchAction: 'none',
+                }}
               >
                 <div
                   className="relative transition-transform duration-100 ease-out"
