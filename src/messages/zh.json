@@ -214,12 +214,36 @@
     "historyDesc": "最近浏览的图集",
     "likesDesc": "点赞过的图集",
     "favoritesDesc": "收藏的图集",
+    "pagination": "第 {page} / {totalPages} 页",
+    "notLoggedIn": {
+      "title": "请先登录",
+      "description": "登录后查看个人中心",
+      "goLogin": "去登录"
+    },
     "stats": {
       "posts": "发布",
       "followers": "粉丝",
       "following": "关注",
       "wallet": "钱包",
-      "balance": "余额"
+      "balance": "余额",
+      "points": "积分"
+    },
+    "actions": {
+      "goSettings": "设置",
+      "editProfile": "编辑资料",
+      "renewVip": "续费会员",
+      "openVip": "立即开通"
+    },
+    "vip": {
+      "title": "VIP会员",
+      "standardMember": "标准会员",
+      "openVipTitle": "开通VIP会员",
+      "openVipDesc": "解锁高清原图下载、无广告体验等专属权益",
+      "expired": "已过期",
+      "expireTomorrow": "明天到期",
+      "expireInDays": "{days}天后到期",
+      "expire": "到期",
+      "validUntil": "有效期至"
     },
     "tabs": {
       "history": "浏览历史",
@@ -712,6 +736,7 @@
     "notFound": "文章不存在或已被删除",
     "backToHome": "返回首页",
     "uncategorized": "未分类",
+    "uncategorizedAvatar": "{name}的头像",
     "liked": "点赞成功",
     "unliked": "取消点赞",
     "favorited": "收藏成功",
@@ -719,7 +744,6 @@
     "operationFailed": "操作失败",
     "linkCopied": "链接已复制到剪贴板",
     "favoriteAction": "收藏",
-    "favorited": "已收藏",
     "share": "分享",
     "downloadResources": "下载资源",
     "downloadCount": "下载 ({count})",
@@ -736,6 +760,18 @@
     "openVip": "开通VIP",
     "payToUnlock": "支付 {price} 元解锁",
     "noImages": "暂无图片内容",
+    "loginToViewButton": "登录查看更多",
+    "openVipButton": "开通VIP",
+    "payToUnlockButton": "支付 {price} 元解锁",
+    "aria": {
+      "viewCount": "浏览量 {count}",
+      "like": "点赞",
+      "unlike": "取消点赞",
+      "favorite": "收藏",
+      "unfavorite": "取消收藏",
+      "share": "分享文章",
+      "commentCount": "评论数 {count}"
+    },
     "downloadType": {
       "baidu": "百度网盘",
       "quark": "夸克网盘",
@@ -748,7 +784,8 @@
       "direct": "直链下载",
       "other": "其他",
       "unknown": "未知"
-    }
+    },
+    "recommendations": "相关推荐"
   },
   "component": {
     "article": {
@@ -793,6 +830,14 @@
       "uploadFailed": "上传失败",
       "cancel": "取消",
       "confirm": "确认"
+    },
+    "articleComments": {
+      "title": "全部评论",
+      "empty": "暂无评论，快来抢沙发吧",
+      "reply": "回复",
+      "viewMore": "查看更多 {count} 条回复",
+      "repliedTo": "回复了",
+      "user": "用户"
     }
   },
   "legal": {

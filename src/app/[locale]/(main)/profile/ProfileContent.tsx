@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useQuery, useMutation } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import {
   articleControllerGetUserBrowseHistory,
   articleControllerGetLikedArticles,
@@ -62,24 +63,23 @@ import {
   PaginationPrevious,
 } from "@/components/ui/pagination";
 
-function formatVipExpireAt(expireAt: string | undefined): string {
+function formatVipExpireAt(expireAt: string | undefined, t: (key: string, options?: Record<string, unknown>) => string): string {
   if (!expireAt) return "";
   const date = new Date(expireAt);
   const now = new Date();
   const diff = date.getTime() - now.getTime();
   const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-  if (days <= 0) return "已过期";
-  if (days === 1) return "明天到期";
-  if (days <= 7) return `${days}天后到期`;
-  if (days <= 30) return `${days}天后到期`;
+  if (days <= 0) return t("profile.vip.expired");
+  if (days === 1) return t("profile.vip.expireTomorrow");
+  if (days <= 30) return t("profile.vip.expireInDays", { days });
 
   return (
     date.toLocaleDateString("zh-CN", {
       year: "numeric",
       month: "long",
       day: "numeric",
-    }) + " 到期"
+    }) + " " + t("profile.vip.expire")
   );
 }
 
@@ -120,6 +120,9 @@ function getPageNumbers(currentPage: number, totalPages: number) {
 }
 
 export default function ProfileContent() {
+  const tProfile = useTranslations("profile");
+  const tCommon = useTranslations("common");
+  const tToast = useTranslations("toast");
   const {
     user,
     isAuthenticated,
@@ -193,12 +196,12 @@ export default function ProfileContent() {
       return response.data;
     },
     onSuccess: () => {
-      toast.success("资料更新成功");
+      toast.success(tToast("profileUpdateSuccess"));
       setShowEditDialog(false);
       refreshUser();
     },
     onError: (error) => {
-      const message = error instanceof Error ? error.message : "更新失败";
+      const message = error instanceof Error ? error.message : tToast("updateFailed");
       toast.error(message);
     },
   });
@@ -234,10 +237,10 @@ export default function ProfileContent() {
       if (uploadedFile?.url) {
         setEditForm((prev) => ({ ...prev, avatar: uploadedFile.url || "" }));
       } else {
-        throw new Error("上传失败");
+        throw new Error(tToast("uploadFailed"));
       }
     } catch (error) {
-      const message = error instanceof Error ? error.message : "头像上传失败";
+      const message = error instanceof Error ? error.message : tToast("avatarUploadFailed");
       toast.error(message);
     }
   };
@@ -262,12 +265,12 @@ export default function ProfileContent() {
       <div className="container py-6">
         <Card className="max-w-md mx-auto">
           <CardHeader className="text-center">
-            <CardTitle>请先登录</CardTitle>
-            <CardDescription>登录后查看个人中心</CardDescription>
+            <CardTitle>{tProfile("notLoggedIn.title")}</CardTitle>
+            <CardDescription>{tProfile("notLoggedIn.description")}</CardDescription>
           </CardHeader>
           <CardContent className="text-center">
             <Link href="/login">
-              <Button>去登录</Button>
+              <Button>{tProfile("notLoggedIn.goLogin")}</Button>
             </Link>
           </CardContent>
         </Card>
@@ -321,7 +324,7 @@ export default function ProfileContent() {
           </PaginationContent>
         </Pagination>
         <p className="text-sm text-muted-foreground">
-          第 {currentPage} / {totalPages} 页
+          {tProfile("pagination", { page: currentPage, totalPages })}
         </p>
       </div>
     );
@@ -372,12 +375,12 @@ export default function ProfileContent() {
             <div className="flex gap-2">
               <Link href="/settings">
                 <Button variant="outline" size="sm">
-                  设置
+                  {tProfile("actions.goSettings")}
                 </Button>
               </Link>
               <Button variant="outline" size="sm" onClick={handleEditClick}>
                 <Edit className="h-4 w-4 mr-2" />
-                编辑资料
+                {tProfile("actions.editProfile")}
               </Button>
             </div>
           </div>
@@ -389,23 +392,23 @@ export default function ProfileContent() {
               <p className="text-2xl font-bold">
                 {userData?.articleCount || 0}
               </p>
-              <p className="text-sm text-muted-foreground">发布</p>
+              <p className="text-sm text-muted-foreground">{tProfile("stats.posts")}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold">
                 {userData?.followerCount || 0}
               </p>
-              <p className="text-sm text-muted-foreground">粉丝</p>
+              <p className="text-sm text-muted-foreground">{tProfile("stats.followers")}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold">
                 {userData?.followingCount || 0}
               </p>
-              <p className="text-sm text-muted-foreground">关注</p>
+              <p className="text-sm text-muted-foreground">{tProfile("stats.following")}</p>
             </div>
             <div className="text-center">
               <p className="text-2xl font-bold">{userData?.points || 0}</p>
-              <p className="text-sm text-muted-foreground">积分</p>
+              <p className="text-sm text-muted-foreground">{tProfile("stats.points")}</p>
             </div>
           </div>
         </CardContent>
@@ -422,22 +425,22 @@ export default function ProfileContent() {
                 </div>
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <h3 className="text-lg font-bold">VIP会员</h3>
+                    <h3 className="text-lg font-bold">{tProfile("vip.title")}</h3>
                     <Badge
                       variant="secondary"
                       className="bg-amber-100 text-amber-700 dark:bg-amber-900 dark:text-amber-300"
                     >
-                      {userData?.membershipLevelName || "标准会员"}
+                      {userData?.membershipLevelName || tProfile("vip.standardMember")}
                     </Badge>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Clock className="h-4 w-4" />
                     <span>
                       {vipStatus.daysLeft > 30
-                        ? `有效期至 ${new Date(
+                        ? `${tProfile("vip.validUntil")} ${new Date(
                             vipStatus.expireAt
                           ).toLocaleDateString("zh-CN")}`
-                        : formatVipExpireAt(vipStatus.expireAt)}
+                        : formatVipExpireAt(vipStatus.expireAt, tProfile)}
                     </span>
                   </div>
                 </div>
@@ -448,7 +451,7 @@ export default function ProfileContent() {
                   className="border-amber-500 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-950"
                 >
                   <Sparkles className="h-4 w-4 mr-2" />
-                  续费会员
+                  {tProfile("actions.renewVip")}
                 </Button>
               </Link>
             </div>
@@ -459,16 +462,16 @@ export default function ProfileContent() {
                   <Crown className="h-8 w-8 text-muted-foreground" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold mb-1">开通VIP会员</h3>
+                  <h3 className="text-lg font-bold mb-1">{tProfile("vip.openVipTitle")}</h3>
                   <p className="text-sm text-muted-foreground">
-                    解锁高清原图下载、无广告体验等专属权益
+                    {tProfile("vip.openVipDesc")}
                   </p>
                 </div>
               </div>
               <Link href="/vip">
                 <Button className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white border-0">
                   <Crown className="h-4 w-4 mr-2" />
-                  立即开通
+                  {tProfile("actions.openVip")}
                 </Button>
               </Link>
             </div>
@@ -484,23 +487,23 @@ export default function ProfileContent() {
         <TabsList className="grid w-full grid-cols-3 max-w-md">
           <TabsTrigger value="history" className="gap-2">
             <Eye className="h-4 w-4" />
-            浏览历史
+            {tProfile("tabs.history")}
           </TabsTrigger>
           <TabsTrigger value="likes" className="gap-2">
             <Heart className="h-4 w-4" />
-            我的点赞
+            {tProfile("tabs.likes")}
           </TabsTrigger>
           <TabsTrigger value="favorites" className="gap-2">
             <Bookmark className="h-4 w-4" />
-            我的收藏
+            {tProfile("tabs.favorites")}
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="history">
           <Card>
             <CardHeader>
-              <CardTitle>浏览历史</CardTitle>
-              <CardDescription>最近浏览的图集</CardDescription>
+              <CardTitle>{tProfile("tabs.history")}</CardTitle>
+              <CardDescription>{tProfile("historyDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <ArticleGrid
@@ -517,8 +520,8 @@ export default function ProfileContent() {
         <TabsContent value="likes">
           <Card>
             <CardHeader>
-              <CardTitle>我的点赞</CardTitle>
-              <CardDescription>点赞过的图集</CardDescription>
+              <CardTitle>{tProfile("tabs.likes")}</CardTitle>
+              <CardDescription>{tProfile("likesDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <ArticleGrid
@@ -535,8 +538,8 @@ export default function ProfileContent() {
         <TabsContent value="favorites">
           <Card>
             <CardHeader>
-              <CardTitle>我的收藏</CardTitle>
-              <CardDescription>收藏的图集</CardDescription>
+              <CardTitle>{tProfile("tabs.favorites")}</CardTitle>
+              <CardDescription>{tProfile("favoritesDesc")}</CardDescription>
             </CardHeader>
             <CardContent>
               <ArticleGrid
@@ -555,8 +558,8 @@ export default function ProfileContent() {
       <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>编辑资料</DialogTitle>
-            <DialogDescription>修改您的个人信息</DialogDescription>
+            <DialogTitle>{tProfile("editProfile")}</DialogTitle>
+            <DialogDescription>{tProfile("editProfileDesc")}</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="flex flex-col items-center gap-4">
@@ -585,36 +588,36 @@ export default function ProfileContent() {
                 onChange={handleFileChange}
               />
               <Button variant="ghost" size="sm" onClick={handleAvatarClick}>
-                更换头像
+                {tProfile("changeAvatar")}
               </Button>
             </div>
             <div className="space-y-2">
-              <Label htmlFor="nickname">昵称</Label>
+              <Label htmlFor="nickname">{tProfile("form.nickname")}</Label>
               <Input
                 id="nickname"
                 value={editForm.nickname}
                 onChange={(e) =>
                   setEditForm((prev) => ({ ...prev, nickname: e.target.value }))
                 }
-                placeholder="输入昵称"
+                placeholder={tProfile("form.nicknamePlaceholder")}
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="bio">个人介绍</Label>
+              <Label htmlFor="bio">{tProfile("form.bio")}</Label>
               <Textarea
                 id="bio"
                 value={editForm.bio}
                 onChange={(e) =>
                   setEditForm((prev) => ({ ...prev, bio: e.target.value }))
                 }
-                placeholder="介绍一下自己..."
+                placeholder={tProfile("form.bioPlaceholder")}
                 rows={3}
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowEditDialog(false)}>
-              取消
+              {tCommon("cancel")}
             </Button>
             <Button
               onClick={handleSaveEdit}
@@ -623,7 +626,7 @@ export default function ProfileContent() {
               {updateMutation.isPending && (
                 <Loader2 className="h-4 w-4 animate-spin mr-2" />
               )}
-              保存
+              {tCommon("save")}
             </Button>
           </DialogFooter>
         </DialogContent>

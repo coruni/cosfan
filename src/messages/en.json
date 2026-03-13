@@ -214,12 +214,36 @@
     "historyDesc": "Recently viewed galleries",
     "likesDesc": "Liked galleries",
     "favoritesDesc": "Favorite galleries",
+    "pagination": "Page {page} / {totalPages}",
+    "notLoggedIn": {
+      "title": "Please login first",
+      "description": "Login to view profile",
+      "goLogin": "Go to Login"
+    },
     "stats": {
       "posts": "Posts",
       "followers": "Followers",
       "following": "Following",
       "wallet": "Wallet",
-      "balance": "Balance"
+      "balance": "Balance",
+      "points": "Points"
+    },
+    "actions": {
+      "goSettings": "Settings",
+      "editProfile": "Edit Profile",
+      "renewVip": "Renew Membership",
+      "openVip": "Open Now"
+    },
+    "vip": {
+      "title": "VIP Member",
+      "standardMember": "Standard Member",
+      "openVipTitle": "Open VIP Membership",
+      "openVipDesc": "Unlock HD downloads, ad-free experience and more exclusive benefits",
+      "expired": "Expired",
+      "expireTomorrow": "Expires tomorrow",
+      "expireInDays": "Expires in {days} days",
+      "expire": "Expire",
+      "validUntil": "Valid until"
     },
     "tabs": {
       "history": "History",
@@ -712,6 +736,7 @@
     "notFound": "Article not found or has been deleted",
     "backToHome": "Back to Home",
     "uncategorized": "Uncategorized",
+    "uncategorizedAvatar": "{name}'s avatar",
     "liked": "Liked",
     "unliked": "Unliked",
     "favorited": "Favorited",
@@ -719,7 +744,6 @@
     "operationFailed": "Operation failed",
     "linkCopied": "Link copied to clipboard",
     "favoriteAction": "Favorite",
-    "favorited": "Favorited",
     "share": "Share",
     "downloadResources": "Download Resources",
     "downloadCount": "Download ({count})",
@@ -736,6 +760,18 @@
     "openVip": "Open VIP",
     "payToUnlock": "Pay ¥{price} to Unlock",
     "noImages": "No images available",
+    "loginToViewButton": "Login to View More",
+    "openVipButton": "Open VIP",
+    "payToUnlockButton": "Pay ¥{price} to Unlock",
+    "aria": {
+      "viewCount": "{count} views",
+      "like": "Like",
+      "unlike": "Cancel like",
+      "favorite": "Favorite",
+      "unfavorite": "Unfavorite",
+      "share": "Share article",
+      "commentCount": "{count} comments"
+    },
     "downloadType": {
       "baidu": "Baidu Netdisk",
       "quark": "Quark",
@@ -748,7 +784,8 @@
       "direct": "Direct Download",
       "other": "Other",
       "unknown": "Unknown"
-    }
+    },
+    "recommendations": "Related Recommendations"
   },
   "component": {
     "article": {
@@ -793,6 +830,14 @@
       "uploadFailed": "Upload failed",
       "cancel": "Cancel",
       "confirm": "Confirm"
+    },
+    "articleComments": {
+      "title": "All Comments",
+      "empty": "No comments yet, be the first!",
+      "reply": "Reply",
+      "viewMore": "View {count} more replies",
+      "repliedTo": "replied to",
+      "user": "User"
     }
   },
   "legal": {

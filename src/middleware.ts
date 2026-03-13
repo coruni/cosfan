@@ -14,6 +14,25 @@ function generateDeviceId(): string {
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const searchParams = request.nextUrl.searchParams;
+  const reason = searchParams.get('reason');
+
+  // 如果是 token 过期跳转，清除 cookie 中的 token
+  if (reason === 'token_expired') {
+    const response = intlMiddleware(request);
+    response.cookies.set('access_token', '', {
+      path: '/',
+      maxAge: 0,
+    });
+    response.cookies.set('refresh_token', '', {
+      path: '/',
+      maxAge: 0,
+    });
+    // 清除参数，避免刷新后再次清除
+    const url = request.nextUrl.clone();
+    url.searchParams.delete('reason');
+    return response;
+  }
 
   const pathnameWithoutLocale = pathname.replace(/^\/(zh|en)/, '') || '/';
 
