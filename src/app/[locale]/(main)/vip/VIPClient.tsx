@@ -146,9 +146,12 @@ export function VIPClient({ config }: VIPClientProps) {
 
   useEffect(() => {
     if (searchParams.get('success') === 'true') {
-      setShowSuccessDialog(true);
-      refreshUser();
-      window.history.replaceState({}, '', '/vip');
+      // 使用 requestAnimationFrame 避免同步 setState
+      requestAnimationFrame(() => {
+        setShowSuccessDialog(true);
+        refreshUser();
+        window.history.replaceState({}, '', '/vip');
+      });
     }
   }, [searchParams, refreshUser]);
 
@@ -217,7 +220,9 @@ export function VIPClient({ config }: VIPClientProps) {
 
   // 在客户端获取浏览器名称，避免 hydration 不匹配
   useEffect(() => {
-    setBrowserName(getBrowserName());
+    requestAnimationFrame(() => {
+      setBrowserName(getBrowserName());
+    });
   }, []);
 
   // Safari/严格浏览器兼容：在新标签页打开
@@ -226,7 +231,7 @@ export function VIPClient({ config }: VIPClientProps) {
       window.open(paymentRedirectUrl, '_blank', 'noopener,noreferrer');
       setShowRedirectDialog(false);
     }
-  }, [paymentRedirectUrl]);
+  }, [paymentRedirectUrl, setShowRedirectDialog]);
 
   // Safari/严格浏览器兼容：复制链接
   const handleCopyPaymentLink = useCallback(async () => {
@@ -239,7 +244,7 @@ export function VIPClient({ config }: VIPClientProps) {
         toast.error(t('toast.copyFailed'));
       }
     }
-  }, [paymentRedirectUrl]);
+  }, [paymentRedirectUrl, t, setShowRedirectDialog]);
 
   const handlePurchase = (plan: VipPlan) => {
     if (!isAuthenticated) {

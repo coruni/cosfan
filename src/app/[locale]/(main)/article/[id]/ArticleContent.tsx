@@ -296,6 +296,17 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
               {article.views}
             </Button>
             <Button
+              variant="ghost"
+              size="sm"
+              className="text-muted-foreground cursor-default"
+              aria-label={t("aria.commentCount", {
+                count: article.commentCount,
+              })}
+            >
+              <MessageCircle className="h-4 w-4 mr-1" aria-hidden="true" />
+              {article.commentCount}
+            </Button>
+            <Button
               variant="outline"
               size="sm"
               onClick={handleLike}
@@ -312,17 +323,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
               />
               {article.likes}
             </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="text-muted-foreground cursor-default"
-              aria-label={t("aria.commentCount", {
-                count: article.commentCount,
-              })}
-            >
-              <MessageCircle className="h-4 w-4 mr-1" aria-hidden="true" />
-              {article.commentCount}
-            </Button>
+
             <Button
               variant="outline"
               size="sm"

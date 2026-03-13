@@ -28,7 +28,7 @@ export function QueryProvider({ children }: QueryProviderProps) {
             // 重试延迟：指数退避
             retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
             // 错误时保留之前的缓存数据
-            placeholderData: (previousData: any) => previousData,
+            placeholderData: (previousData: unknown) => previousData,
           },
           mutations: {
             // Mutation 重试次数

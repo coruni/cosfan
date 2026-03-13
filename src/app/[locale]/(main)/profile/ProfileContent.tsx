@@ -440,7 +440,7 @@ export default function ProfileContent() {
                         ? `${tProfile("vip.validUntil")} ${new Date(
                             vipStatus.expireAt
                           ).toLocaleDateString("zh-CN")}`
-                        : formatVipExpireAt(vipStatus.expireAt, tProfile)}
+                        : formatVipExpireAt(vipStatus.expireAt, tProfile as any)}
                     </span>
                   </div>
                 </div>

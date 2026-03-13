@@ -207,7 +207,7 @@ export function setupClientInterceptors() {
     }
 
     // 如果是刷新 token 的请求失败，直接返回错误，不进行刷新
-    if ((error as any).config?.url?.includes("refresh-token")) {
+    if ((error as { config?: { url?: string } }).config?.url?.includes("refresh-token")) {
       clearTokens();
       // 清除后立即 reload，让 SSR 重新渲染时没有 token
       window.location.reload();
@@ -218,7 +218,7 @@ export function setupClientInterceptors() {
       const refreshed = await refreshAccessToken();
       if (refreshed) {
         // 刷新成功，重新发起原始请求
-        const originalConfig = (error as any)?.config;
+        const originalConfig = (error as { config?: any })?.config;
         return client.request(originalConfig);
       }
 

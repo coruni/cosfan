@@ -5,7 +5,7 @@ import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import { Dialog, DialogTitle } from '@/components/ui/dialog';
 import * as DialogPrimitive from '@radix-ui/react-dialog';
-import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Move, ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronLeft, ChevronRight, X, ZoomIn, ZoomOut, Move } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { VisuallyHidden } from '@/components/ui/visually-hidden';
 
@@ -25,10 +25,14 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [pinchStartDistance, setPinchStartDistance] = useState(0);
-  const [isMobile, setIsMobile] = useState(false);
+  const [pinchStartZoom, setPinchStartZoom] = useState(1);
   const [touchStartX, setTouchStartX] = useState(0);
   const [touchStartY, setTouchStartY] = useState(0);
-  const [lastTap, setLastTap] = useState(0);
+  const [isMobile, setIsMobile] = useState(false);
+  const [isDoubleTap, setIsDoubleTap] = useState(false);
+  const lastTapRef = useRef(0);
+  const isDoubleTapRef = useRef(false);
+  const doubleTapTimerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const totalImages = imageCount || images.length;
@@ -81,14 +85,42 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     setPosition({ x: 0, y: 0 });
   };
 
-  // 双击放大
-  const handleDoubleClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+  // 双击放大 - 使用 ref 防止状态更新延迟问题
+  const handleDoubleClick = useCallback(() => {
+    // 如果正在处理双击，忽略后续调用
+    if (isDoubleTapRef.current) return;
+
+    isDoubleTapRef.current = true;
+    setIsDoubleTap(true);
+
+    // 切换缩放
     if (zoomLevel > 1) {
-      resetZoom();
+      setZoomLevel(1);
+      setPosition({ x: 0, y: 0 });
     } else {
       setZoomLevel(2);
     }
+
+    // 清除之前的定时器
+    if (doubleTapTimerRef.current) {
+      clearTimeout(doubleTapTimerRef.current);
+    }
+
+    // 500ms 后重置双击标志
+    doubleTapTimerRef.current = setTimeout(() => {
+      isDoubleTapRef.current = false;
+      setIsDoubleTap(false);
+    }, 500);
   }, [zoomLevel]);
+
+  // 清理定时器
+  useEffect(() => {
+    return () => {
+      if (doubleTapTimerRef.current) {
+        clearTimeout(doubleTapTimerRef.current);
+      }
+    };
+  }, []);
 
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     if (zoomLevel > 1) {
@@ -112,7 +144,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
 
       setPosition({ x: clampedX, y: clampedY });
     }
-  }, [isDragging, zoomLevel, dragStart, isMobile]);
+  }, [isDragging, zoomLevel, dragStart.x, dragStart.y, isMobile]);
 
   const handleMouseUp = useCallback(() => {
     setIsDragging(false);
@@ -121,31 +153,9 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
   // 滑动手势处理
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     const now = Date.now();
-    const touch = e.touches[0];
 
-    // 双击检测
-    if (now - lastTap < 300) {
-      if (zoomLevel > 1) {
-        resetZoom();
-      } else {
-        setZoomLevel(2);
-      }
-      setLastTap(0);
-      return;
-    }
-    setLastTap(now);
-
-    setTouchStartX(touch.clientX);
-    setTouchStartY(touch.clientY);
-
-    if (e.touches.length === 1 && zoomLevel > 1) {
-      e.preventDefault();
-      setIsDragging(true);
-      setDragStart({
-        x: touch.clientX - position.x,
-        y: touch.clientY - position.y,
-      });
-    } else if (e.touches.length === 2) {
+    // 双指缩放：只有 changedTouches 长度为 1 且 touches 长度为 2 时才是第二根手指放下
+    if (e.touches.length === 2) {
       e.preventDefault();
       setIsDragging(false);
       const distance = Math.hypot(
@@ -153,8 +163,64 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
         e.touches[0].clientY - e.touches[1].clientY
       );
       setPinchStartDistance(distance);
+      setPinchStartZoom(zoomLevel);
+      // 重置双击时间戳，避免双指抬起后被误判为双击
+      lastTapRef.current = 0;
+      return;
     }
-  }, [zoomLevel, position, lastTap, resetZoom]);
+
+    // 单指操作：只有 touches 长度为 1 时才处理
+    if (e.touches.length !== 1) {
+      return;
+    }
+
+    const touch = e.touches[0];
+
+    // 双击检测 - 300ms 内两次单指触摸
+    if (now - lastTapRef.current < 300) {
+      // 立即标记为正在双击，阻止后续操作
+      isDoubleTapRef.current = true;
+      setIsDoubleTap(true);
+
+      // 双击时切换缩放
+      if (zoomLevel > 1) {
+        setZoomLevel(1);
+        setPosition({ x: 0, y: 0 });
+      } else {
+        setZoomLevel(2);
+      }
+
+      lastTapRef.current = 0; // 重置时间戳
+
+      // 清除之前的定时器
+      if (doubleTapTimerRef.current) {
+        clearTimeout(doubleTapTimerRef.current);
+      }
+
+      // 500ms 后重置双击标志
+      doubleTapTimerRef.current = setTimeout(() => {
+        isDoubleTapRef.current = false;
+        setIsDoubleTap(false);
+      }, 500);
+
+      return; // 双击时不执行其他操作
+    }
+
+    // 记录单指触摸时间戳和位置
+    lastTapRef.current = now;
+    setTouchStartX(touch.clientX);
+    setTouchStartY(touch.clientY);
+
+    // 已缩放状态下单指拖动
+    if (zoomLevel > 1) {
+      e.preventDefault();
+      setIsDragging(true);
+      setDragStart({
+        x: touch.clientX - position.x,
+        y: touch.clientY - position.y,
+      });
+    }
+  }, [zoomLevel, position]);
 
   const handleTouchMove = useCallback((e: React.TouchEvent) => {
     // 始终阻止默认行为以避免页面滚动
@@ -183,18 +249,45 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
         e.touches[0].clientY - e.touches[1].clientY
       );
 
-      const scaleFactor = currentDistance / pinchStartDistance;
-      if (scaleFactor > 1.1) {
-        zoomIn();
-        setPinchStartDistance(currentDistance);
-      } else if (scaleFactor < 0.9) {
-        zoomOut();
-        setPinchStartDistance(currentDistance);
+      // 平滑缩放：基于初始缩放比例计算新的缩放级别
+      const scaleRatio = currentDistance / pinchStartDistance;
+      let newZoom = pinchStartZoom * scaleRatio;
+
+      // 限制缩放范围
+      newZoom = Math.max(1, Math.min(3, newZoom));
+
+      // 如果缩放到1，重置位置
+      if (newZoom <= 1.05) {
+        setZoomLevel(1);
+        setPosition({ x: 0, y: 0 });
+      } else {
+        setZoomLevel(newZoom);
       }
     }
-  }, [isDragging, zoomLevel, dragStart, pinchStartDistance, zoomOut, zoomIn]);
+  }, [isDragging, zoomLevel, dragStart, pinchStartDistance, pinchStartZoom]);
 
   const handleTouchEnd = useCallback((e: React.TouchEvent) => {
+    // 如果正在处理双击，不执行滑动切换
+    if (isDoubleTapRef.current) {
+      setIsDragging(false);
+      setPinchStartDistance(0);
+      setPinchStartZoom(1);
+      // 如果还有手指在屏幕上，不清空时间戳；如果全部抬起，清空时间戳
+      if (e.touches.length === 0) {
+        lastTapRef.current = 0;
+      }
+      return;
+    }
+
+    // 双指操作结束时不触发滑动切换
+    if (pinchStartDistance > 0) {
+      setIsDragging(false);
+      setPinchStartDistance(0);
+      setPinchStartZoom(1);
+      lastTapRef.current = 0;
+      return;
+    }
+
     const touchEndX = e.changedTouches[0].clientX;
     const touchEndY = e.changedTouches[0].clientY;
     const deltaX = touchEndX - touchStartX;
@@ -211,7 +304,8 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
 
     setIsDragging(false);
     setPinchStartDistance(0);
-  }, [touchStartX, touchStartY, zoomLevel, goToPrevious, goToNext]);
+    setPinchStartZoom(1);
+  }, [touchStartX, touchStartY, zoomLevel, goToPrevious, goToNext, pinchStartDistance]);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -220,7 +314,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     } else {
       zoomOut();
     }
-  }, [zoomOut]);
+  }, [zoomIn, zoomOut]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (e.key === 'ArrowLeft') {
@@ -242,7 +336,7 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     } else if (e.key === '0') {
       resetZoom();
     }
-  }, [zoomLevel, zoomOut, goToPrevious, goToNext]);
+  }, [zoomLevel, zoomIn, zoomOut, goToPrevious, goToNext]);
 
   useEffect(() => {
     const handleGlobalMouseUp = () => {
@@ -256,8 +350,10 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
   // 关闭时重置状态
   useEffect(() => {
     if (!isOpen) {
-      setZoomLevel(1);
-      setPosition({ x: 0, y: 0 });
+      requestAnimationFrame(() => {
+        setZoomLevel(1);
+        setPosition({ x: 0, y: 0 });
+      });
     }
   }, [isOpen]);
 

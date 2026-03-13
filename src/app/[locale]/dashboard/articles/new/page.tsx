@@ -108,7 +108,7 @@ const naturalSort = (a: string, b: string) => {
 
 const uploadFiles = async (files: File[]): Promise<string[]> => {
   const response = await uploadControllerUploadFile({
-    body: files as any,
+    body: files as unknown as Record<string, unknown>,
   });
   const data = response.data?.data;
   if (!data) return [];
