@@ -1,0 +1,61 @@
+# 依赖目录
+node_modules/
+vendor/
+venv/
+.venv/
+__pycache__/
+
+# 构建产物
+dist/
+build/
+out/
+.next/
+target/
+
+# 日志和临时文件
+*.log
+*.tmp
+.cache/
+.temp/
+
+# 测试覆盖率报告
+coverage/
+.nyc_output/
+
+# 数据文件
+*.sql
+*.dump
+*.csv
+*.xlsx
+
+# 媒体文件
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.mp4
+*.mp3
+
+# IDE配置
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 环境配置
+.env
+.env.local
+.env.production
+
+# 文档（如果不需要）
+docs/
+*.md
+
+# 大型数据目录
+data/
+uploads/
+

@@ -7,6 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ```bash
 pnpm dev          # Start development server (localhost:3000)
 pnpm build        # Build for production
+pnpm build:standalone # Build standalone output for deployment
 pnpm start        # Start production server
 pnpm lint         # Run ESLint (eslint.config.mjs)
 pnpm generate:api # Generate API client from openapi.json
@@ -89,3 +90,31 @@ Required in `.env.local`:
 - Generated API files (`*.gen.ts`) are ignored by ESLint
 - Use shadcn/ui components from `@/components/ui/`
 - Theme provider supports light/dark/system modes
+
+### shadcn/ui Components
+
+Components are managed via the `shadcn` CLI. Available components are installed in `src/components/ui/`.
+To add new components: `npx shadcn add <component-name>`
+
+## Performance Optimization
+
+### Network-Aware Loading
+
+The app implements network-aware performance optimizations:
+
+- **Network Detection Hook** (`src/hooks/useNetwork.ts`): Detects connection type (slow-2g, 2g, 3g, 4g) and data saver mode
+- **LazyImage Component** (`src/components/LazyImage.tsx`): Progressive loading with quality adjustment based on network speed
+- **QueryProvider** (`src/components/providers/QueryProvider.tsx`): React Query with retry logic, exponential backoff, and cache optimizations for weak networks
+
+### React Optimization Patterns
+
+- Use `Suspense` with skeleton fallbacks for async components (HomePage, DiscoverPage, ProfilePage, etc.)
+- Use `dynamic = 'force-dynamic'` for layouts that require fresh data on each request
+- Image loading: First 6 images use `loading="eager"`, others use `loading="lazy"`
+
+### Image Optimization
+
+- Supports AVIF and WebP formats
+- Multiple device sizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840]
+- Network-aware quality: 50% (slow-2g/2g), 75% (3g), 85% (4g+)
+- Progressive loading with blur placeholder

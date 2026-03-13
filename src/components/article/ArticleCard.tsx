@@ -24,8 +24,8 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <Link href={`/article/${article.id}`}>
       <article className="group overflow-hidden h-full hover:shadow-lg transition-all duration-300 border border-border rounded-lg">
-        <Card className="h-full py-0! gap-2 border-0">
-          <figure className="relative aspect-[3/4] overflow-hidden bg-muted">
+        <Card className="h-full py-0! gap-2 border-0 rounded-lg">
+          <figure className="relative aspect-3/4 overflow-hidden bg-muted">
             {coverImage ? (
               <Image
                 src={coverImage}

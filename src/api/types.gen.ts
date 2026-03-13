@@ -5011,7 +5011,143 @@ export type ArticleControllerFindRecommendationsResponses = {
         code: number;
         message: string;
         data: {
-            data: Array<string>;
+            data: Array<{
+                id: number;
+                title?: string;
+                requireLogin?: boolean;
+                requireFollow?: boolean;
+                requirePayment?: boolean;
+                requireMembership?: boolean;
+                listRequireLogin?: boolean;
+                viewPrice?: string;
+                type?: string;
+                content?: string;
+                images?: Array<string>;
+                sort?: number;
+                summary?: string;
+                views?: number;
+                likes?: number;
+                favoriteCount?: number;
+                commentCount?: number;
+                status?: string;
+                cover?: string;
+                authorId?: number;
+                author: {
+                    id: number;
+                    username: string;
+                    nickname: string;
+                    status: string;
+                    banned: string;
+                    banReason: string;
+                    avatar: string;
+                    description: string;
+                    background: string;
+                    gender: string;
+                    birthDate: string;
+                    articleCount: number;
+                    followerCount: number;
+                    followingCount: number;
+                    level: number;
+                    experience: number;
+                    wallet: number;
+                    points: number;
+                    membershipLevel: number;
+                    membershipLevelName: string;
+                    membershipStatus: string;
+                    membershipStartDate: string;
+                    membershipEndDate: string;
+                    lastLoginAt: string;
+                    lastActiveAt: string;
+                    inviterId: string;
+                    myInviteCode: string;
+                    inviteCode: string;
+                    inviteEarnings: string;
+                    inviteCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                    equippedDecorations: {
+                        AVATAR_FRAME: {
+                            id: number;
+                            name: string;
+                            type: string;
+                            imageUrl: string;
+                            rarity: string;
+                        };
+                    };
+                    isMember: boolean;
+                    isFollowed: boolean;
+                };
+                category?: {
+                    id: number;
+                    name: string;
+                    description: string;
+                    parentId: number;
+                    link: string;
+                    parent: {
+                        id: number;
+                        name: string;
+                        description: string;
+                        parentId: string;
+                        link: string;
+                        avatar: string;
+                        background: string;
+                        cover: string;
+                        sort: number;
+                        status: string;
+                        articleCount: number;
+                        followCount: number;
+                        createdAt: string;
+                        updatedAt: string;
+                    };
+                    avatar: string;
+                    background: string;
+                    cover: string;
+                    sort: number;
+                    status: string;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                };
+                tags?: Array<{
+                    id: number;
+                    name: string;
+                    description: string;
+                    avatar: string;
+                    background: string;
+                    cover: string;
+                    sort: number;
+                    articleCount: number;
+                    followCount: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }>;
+                downloads?: Array<{
+                    id: number;
+                    type: string;
+                    url: string;
+                    password: string;
+                    extractionCode: string;
+                    articleId: number;
+                    createdAt: string;
+                    updatedAt: string;
+                }>;
+                downloadCount?: number;
+                createdAt?: string;
+                updatedAt?: string;
+                isLiked?: boolean;
+                isPaid?: boolean;
+                imageCount?: number;
+                reactionStats?: {
+                    like: number;
+                    love: number;
+                    haha: number;
+                    wow: number;
+                    sad: number;
+                    angry: number;
+                    dislike: number;
+                };
+            }>;
             meta: {
                 total: number;
                 page: number;
@@ -5922,29 +6058,6 @@ export type ArticleControllerGetFavoritedArticlesResponses = {
 };
 
 export type ArticleControllerGetFavoritedArticlesResponse = ArticleControllerGetFavoritedArticlesResponses[keyof ArticleControllerGetFavoritedArticlesResponses];
-
-export type ArticleControllerDownloadIdLinkData = {
-    body?: never;
-    headers?: {
-        Authorization?: string;
-        'Device-Id'?: string;
-        'Device-Name'?: string;
-        'Device-Type'?: string;
-    };
-    path: {
-        id: string;
-    };
-    query?: never;
-    url: '/article/download/{id}/link';
-};
-
-export type ArticleControllerDownloadIdLinkResponses = {
-    200: {
-        [key: string]: unknown;
-    };
-};
-
-export type ArticleControllerDownloadIdLinkResponse = ArticleControllerDownloadIdLinkResponses[keyof ArticleControllerDownloadIdLinkResponses];
 
 export type ArticleControllerUpdateBrowseProgressData = {
     body: unknown;

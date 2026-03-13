@@ -11913,7 +11913,531 @@
                         "data": {
                           "type": "array",
                           "items": {
-                            "type": "string"
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "integer"
+                              },
+                              "title": {
+                                "type": "string"
+                              },
+                              "requireLogin": {
+                                "type": "boolean"
+                              },
+                              "requireFollow": {
+                                "type": "boolean"
+                              },
+                              "requirePayment": {
+                                "type": "boolean"
+                              },
+                              "requireMembership": {
+                                "type": "boolean"
+                              },
+                              "listRequireLogin": {
+                                "type": "boolean"
+                              },
+                              "viewPrice": {
+                                "type": "string"
+                              },
+                              "type": {
+                                "type": "string"
+                              },
+                              "content": {
+                                "type": "string"
+                              },
+                              "images": {
+                                "type": "array",
+                                "items": {
+                                  "type": "string"
+                                }
+                              },
+                              "sort": {
+                                "type": "integer"
+                              },
+                              "summary": {
+                                "type": "string"
+                              },
+                              "views": {
+                                "type": "integer"
+                              },
+                              "likes": {
+                                "type": "integer"
+                              },
+                              "favoriteCount": {
+                                "type": "integer"
+                              },
+                              "commentCount": {
+                                "type": "integer"
+                              },
+                              "status": {
+                                "type": "string"
+                              },
+                              "cover": {
+                                "type": "string"
+                              },
+                              "authorId": {
+                                "type": "integer"
+                              },
+                              "author": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "username": {
+                                    "type": "string"
+                                  },
+                                  "nickname": {
+                                    "type": "string"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "banned": {
+                                    "type": "string"
+                                  },
+                                  "banReason": {
+                                    "type": "string"
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "gender": {
+                                    "type": "string"
+                                  },
+                                  "birthDate": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followerCount": {
+                                    "type": "integer"
+                                  },
+                                  "followingCount": {
+                                    "type": "integer"
+                                  },
+                                  "level": {
+                                    "type": "integer"
+                                  },
+                                  "experience": {
+                                    "type": "integer"
+                                  },
+                                  "wallet": {
+                                    "type": "integer"
+                                  },
+                                  "points": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevel": {
+                                    "type": "integer"
+                                  },
+                                  "membershipLevelName": {
+                                    "type": "string"
+                                  },
+                                  "membershipStatus": {
+                                    "type": "string"
+                                  },
+                                  "membershipStartDate": {
+                                    "type": "string"
+                                  },
+                                  "membershipEndDate": {
+                                    "type": "string"
+                                  },
+                                  "lastLoginAt": {
+                                    "type": "string"
+                                  },
+                                  "lastActiveAt": {
+                                    "type": "string"
+                                  },
+                                  "inviterId": {
+                                    "type": "string"
+                                  },
+                                  "myInviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteCode": {
+                                    "type": "string"
+                                  },
+                                  "inviteEarnings": {
+                                    "type": "string"
+                                  },
+                                  "inviteCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  },
+                                  "equippedDecorations": {
+                                    "type": "object",
+                                    "properties": {
+                                      "AVATAR_FRAME": {
+                                        "type": "object",
+                                        "properties": {
+                                          "id": {
+                                            "type": "integer"
+                                          },
+                                          "name": {
+                                            "type": "string"
+                                          },
+                                          "type": {
+                                            "type": "string"
+                                          },
+                                          "imageUrl": {
+                                            "type": "string"
+                                          },
+                                          "rarity": {
+                                            "type": "string"
+                                          }
+                                        },
+                                        "required": [
+                                          "id",
+                                          "name",
+                                          "type",
+                                          "imageUrl",
+                                          "rarity"
+                                        ]
+                                      }
+                                    },
+                                    "required": [
+                                      "AVATAR_FRAME"
+                                    ]
+                                  },
+                                  "isMember": {
+                                    "type": "boolean"
+                                  },
+                                  "isFollowed": {
+                                    "type": "boolean"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "username",
+                                  "nickname",
+                                  "status",
+                                  "banned",
+                                  "banReason",
+                                  "avatar",
+                                  "description",
+                                  "background",
+                                  "gender",
+                                  "birthDate",
+                                  "articleCount",
+                                  "followerCount",
+                                  "followingCount",
+                                  "level",
+                                  "experience",
+                                  "wallet",
+                                  "points",
+                                  "membershipLevel",
+                                  "membershipLevelName",
+                                  "membershipStatus",
+                                  "membershipStartDate",
+                                  "membershipEndDate",
+                                  "lastLoginAt",
+                                  "lastActiveAt",
+                                  "inviterId",
+                                  "myInviteCode",
+                                  "inviteCode",
+                                  "inviteEarnings",
+                                  "inviteCount",
+                                  "createdAt",
+                                  "updatedAt",
+                                  "equippedDecorations",
+                                  "isMember",
+                                  "isFollowed"
+                                ]
+                              },
+                              "category": {
+                                "type": "object",
+                                "properties": {
+                                  "id": {
+                                    "type": "integer"
+                                  },
+                                  "name": {
+                                    "type": "string"
+                                  },
+                                  "description": {
+                                    "type": "string"
+                                  },
+                                  "parentId": {
+                                    "type": "integer"
+                                  },
+                                  "link": {
+                                    "type": "string"
+                                  },
+                                  "parent": {
+                                    "type": "object",
+                                    "properties": {
+                                      "id": {
+                                        "type": "integer"
+                                      },
+                                      "name": {
+                                        "type": "string"
+                                      },
+                                      "description": {
+                                        "type": "string"
+                                      },
+                                      "parentId": {
+                                        "type": "string"
+                                      },
+                                      "link": {
+                                        "type": "string"
+                                      },
+                                      "avatar": {
+                                        "type": "string"
+                                      },
+                                      "background": {
+                                        "type": "string"
+                                      },
+                                      "cover": {
+                                        "type": "string"
+                                      },
+                                      "sort": {
+                                        "type": "integer"
+                                      },
+                                      "status": {
+                                        "type": "string"
+                                      },
+                                      "articleCount": {
+                                        "type": "integer"
+                                      },
+                                      "followCount": {
+                                        "type": "integer"
+                                      },
+                                      "createdAt": {
+                                        "type": "string"
+                                      },
+                                      "updatedAt": {
+                                        "type": "string"
+                                      }
+                                    },
+                                    "required": [
+                                      "id",
+                                      "name",
+                                      "description",
+                                      "link",
+                                      "avatar",
+                                      "background",
+                                      "cover",
+                                      "sort",
+                                      "status",
+                                      "articleCount",
+                                      "followCount",
+                                      "createdAt",
+                                      "updatedAt",
+                                      "parentId"
+                                    ]
+                                  },
+                                  "avatar": {
+                                    "type": "string"
+                                  },
+                                  "background": {
+                                    "type": "string"
+                                  },
+                                  "cover": {
+                                    "type": "string"
+                                  },
+                                  "sort": {
+                                    "type": "integer"
+                                  },
+                                  "status": {
+                                    "type": "string"
+                                  },
+                                  "articleCount": {
+                                    "type": "integer"
+                                  },
+                                  "followCount": {
+                                    "type": "integer"
+                                  },
+                                  "createdAt": {
+                                    "type": "string"
+                                  },
+                                  "updatedAt": {
+                                    "type": "string"
+                                  }
+                                },
+                                "required": [
+                                  "id",
+                                  "name",
+                                  "description",
+                                  "parentId",
+                                  "link",
+                                  "parent",
+                                  "avatar",
+                                  "background",
+                                  "cover",
+                                  "sort",
+                                  "status",
+                                  "articleCount",
+                                  "followCount",
+                                  "createdAt",
+                                  "updatedAt"
+                                ]
+                              },
+                              "tags": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "name": {
+                                      "type": "string"
+                                    },
+                                    "description": {
+                                      "type": "string"
+                                    },
+                                    "avatar": {
+                                      "type": "string"
+                                    },
+                                    "background": {
+                                      "type": "string"
+                                    },
+                                    "cover": {
+                                      "type": "string"
+                                    },
+                                    "sort": {
+                                      "type": "integer"
+                                    },
+                                    "articleCount": {
+                                      "type": "integer"
+                                    },
+                                    "followCount": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "name",
+                                    "description",
+                                    "avatar",
+                                    "background",
+                                    "cover",
+                                    "sort",
+                                    "articleCount",
+                                    "followCount",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                }
+                              },
+                              "downloads": {
+                                "type": "array",
+                                "items": {
+                                  "type": "object",
+                                  "properties": {
+                                    "id": {
+                                      "type": "integer"
+                                    },
+                                    "type": {
+                                      "type": "string"
+                                    },
+                                    "url": {
+                                      "type": "string"
+                                    },
+                                    "password": {
+                                      "type": "string"
+                                    },
+                                    "extractionCode": {
+                                      "type": "string"
+                                    },
+                                    "articleId": {
+                                      "type": "integer"
+                                    },
+                                    "createdAt": {
+                                      "type": "string"
+                                    },
+                                    "updatedAt": {
+                                      "type": "string"
+                                    }
+                                  },
+                                  "required": [
+                                    "id",
+                                    "type",
+                                    "url",
+                                    "password",
+                                    "extractionCode",
+                                    "articleId",
+                                    "createdAt",
+                                    "updatedAt"
+                                  ]
+                                }
+                              },
+                              "downloadCount": {
+                                "type": "integer"
+                              },
+                              "createdAt": {
+                                "type": "string"
+                              },
+                              "updatedAt": {
+                                "type": "string"
+                              },
+                              "isLiked": {
+                                "type": "boolean"
+                              },
+                              "isPaid": {
+                                "type": "boolean"
+                              },
+                              "imageCount": {
+                                "type": "integer"
+                              },
+                              "reactionStats": {
+                                "type": "object",
+                                "properties": {
+                                  "like": {
+                                    "type": "integer"
+                                  },
+                                  "love": {
+                                    "type": "integer"
+                                  },
+                                  "haha": {
+                                    "type": "integer"
+                                  },
+                                  "wow": {
+                                    "type": "integer"
+                                  },
+                                  "sad": {
+                                    "type": "integer"
+                                  },
+                                  "angry": {
+                                    "type": "integer"
+                                  },
+                                  "dislike": {
+                                    "type": "integer"
+                                  }
+                                },
+                                "required": [
+                                  "like",
+                                  "love",
+                                  "haha",
+                                  "wow",
+                                  "sad",
+                                  "angry",
+                                  "dislike"
+                                ]
+                              }
+                            },
+                            "required": [
+                              "author",
+                              "id"
+                            ]
                           }
                         },
                         "meta": {
@@ -15399,84 +15923,6 @@
               }
             },
             "headers": {}
-          }
-        },
-        "security": []
-      }
-    },
-    "/article/download/{id}/link": {
-      "get": {
-        "summary": "获取Telegram文件下载地址",
-        "deprecated": false,
-        "description": "",
-        "operationId": "articleController_downloadIdLink",
-        "tags": [
-          "文章管理"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "Authorization",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "Bearer {{token}}",
-            "schema": {
-              "type": "string",
-              "default": "Bearer {{token}}"
-            }
-          },
-          {
-            "name": "Device-Id",
-            "in": "header",
-            "description": "",
-            "required": false,
-            "example": "{{deviceId}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceId}}"
-            }
-          },
-          {
-            "name": "Device-Name",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceName}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceName}}"
-            }
-          },
-          {
-            "name": "Device-Type",
-            "in": "header",
-            "description": "",
-            "example": "{{deviceType}}",
-            "schema": {
-              "type": "string",
-              "default": "{{deviceType}}"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {}
-                }
-              }
-            }
           }
         },
         "security": []

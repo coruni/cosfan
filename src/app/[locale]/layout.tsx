@@ -8,6 +8,7 @@ import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { SiteConfigProvider } from "@/contexts/SiteConfigContext";
 import { Toaster } from "@/components/ui/sonner";
+import NextTopLoader from "nextjs-toploader";
 import { configControllerGetPublicConfigs } from "@/api/sdk.gen";
 import { client } from "@/api/client.gen";
 import { API_BASE_URL } from "@/config/constants";
@@ -184,6 +185,20 @@ export default async function RootLayout({
             <QueryProvider>
               <SiteConfigProvider config={siteConfig ?? null}>
                 <AuthProvider serverUser={serverUser}>
+                  <NextTopLoader
+                    color="var(--primary)"
+                    initialPosition={0.08}
+                    crawlSpeed={200}
+                    height={3}
+                    crawl={true}
+                    showSpinner={false}
+                    easing="ease"
+                    speed={200}
+                    shadow="0 0 10px var(--primary), 0 0 5px var(--primary)"
+                    template='<div class="bar" role="bar"><div class="peg"></div></div>'
+                    zIndex={1600}
+                    showAtBottom={false}
+                  />
                   <div id="main-content">{children}</div>
                   <Toaster />
                 </AuthProvider>

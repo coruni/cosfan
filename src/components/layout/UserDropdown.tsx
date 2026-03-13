@@ -12,6 +12,7 @@ import {
 import { ROUTES } from '@/config/constants';
 import { User, Settings, LogOut, Crown, LayoutDashboard } from 'lucide-react';
 import type { UserData } from '@/lib/auth';
+import { cn } from '@/lib/utils';
 
 interface UserDropdownProps {
   variant?: 'header' | 'sidebar';
@@ -26,13 +27,13 @@ export function UserDropdown({ variant = 'header', user, isAuthenticated, onLogo
 
   if (!isAuthenticated || !user) {
     return (
-      <div className={variant === 'sidebar' ? 'space-y-2' : 'flex items-center gap-2'}>
-        <Link href={ROUTES.LOGIN} onClick={onClose}>
-          <Button variant="ghost" size="sm" className={variant === 'sidebar' ? 'w-full' : ''}>
+      <div className={cn('flex items-center flex-col gap-2 w-full')}>
+        <Link href={ROUTES.LOGIN} onClick={onClose} className='block w-full'>
+          <Button variant="ghost" size="sm" className='block w-full'>
             {t('login')}
           </Button>
         </Link>
-        <Link href={ROUTES.REGISTER} onClick={onClose}>
+        <Link href={ROUTES.REGISTER} onClick={onClose} className='block w-full'>
           <Button size="sm" className={variant === 'sidebar' ? 'w-full' : ''}>{t('register')}</Button>
         </Link>
       </div>
