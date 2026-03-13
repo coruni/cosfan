@@ -24,8 +24,12 @@ export async function generateMetadata({
   client.setConfig({ baseUrl: API_BASE_URL });
 
   try {
-    const response = await articleControllerFindOne({ path: { id } });
-    const article = response.data?.data;
+    const [articleResponse, configResponse] = await Promise.all([
+      articleControllerFindOne({ path: { id } }),
+      configControllerGetPublicConfigs(),
+    ]);
+    const article = articleResponse.data?.data;
+    const config = configResponse.data?.data;
 
     if (!article) {
       return { title: "文章不存在" };
@@ -40,9 +44,17 @@ export async function generateMetadata({
     const images = article.images?.slice(0, 1) || [];
     const coverImage = article.cover || images[0];
 
+    // 合并长尾词和文章页关键词
+    const longTailKeywords = config?.seo_long_tail_keywords || "";
+    const articleKeywords = config?.seo_article_page_keywords || "";
+    const keywords = [longTailKeywords, articleKeywords]
+      .filter(Boolean)
+      .join(",");
+
     return {
       title,
       description,
+      keywords: keywords ? keywords.split(",").filter(Boolean) : undefined,
       alternates: {
         canonical: articleUrl,
       },

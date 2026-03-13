@@ -25,8 +25,15 @@ export async function generateMetadata(): Promise<Metadata> {
   const siteSubtitle = config?.site_subtitle || "";
   const description = config?.site_description || "";
   const keywords = config?.site_keywords || "";
+  const longTailKeywords = config?.seo_long_tail_keywords || "";
+  const homeKeywords = config?.seo_home_keywords || "";
   const baseUrl =
     process.env.NEXT_PUBLIC_SITE_URL || "https://picart.example.com";
+
+  // 合并关键词：site_keywords + seo_home_keywords + seo_long_tail_keywords
+  const allKeywords = [keywords, homeKeywords, longTailKeywords]
+    .filter(Boolean)
+    .join(",");
 
   const fullTitle = siteSubtitle ? `${siteName} | ${siteSubtitle}` : siteName;
 
@@ -35,7 +42,7 @@ export async function generateMetadata(): Promise<Metadata> {
       absolute: fullTitle,
     },
     description,
-    keywords: keywords.split(","),
+    keywords: allKeywords.split(",").filter(Boolean),
     alternates: {
       canonical: baseUrl,
     },
