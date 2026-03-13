@@ -122,7 +122,6 @@ export default function ArticleNewPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [form, setForm] = useState({
     title: "",
-    summary: "",
     content: "",
     images: [] as string[],
     cover: "",
@@ -485,14 +484,14 @@ export default function ArticleNewPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>摘要</Label>
+                <Label>内容</Label>
                 <Textarea
-                  value={form.summary}
+                  value={form.content}
                   onChange={(e) =>
-                    setForm({ ...form, summary: e.target.value })
+                    setForm({ ...form, content: e.target.value })
                   }
-                  rows={2}
-                  placeholder="输入文章摘要"
+                  rows={4}
+                  placeholder="输入文章内容"
                 />
               </div>
             </CardContent>
@@ -575,6 +574,11 @@ export default function ArticleNewPage() {
                     <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
                       {idx + 1}
                     </div>
+                    {form.cover === img && img && (
+                      <div className="absolute top-1 left-8 bg-primary text-white text-xs px-1.5 py-0.5 rounded">
+                        封面
+                      </div>
+                    )}
                     <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         type="button"
@@ -597,15 +601,29 @@ export default function ArticleNewPage() {
                         <ChevronRight className="h-3 w-3" />
                       </Button>
                     </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute bottom-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeImage(idx)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+                    <div className="absolute bottom-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {img && form.cover !== img && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setForm({ ...form, cover: img })}
+                          title="设为封面"
+                        >
+                          <ImageIcon className="h-3 w-3" />
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => removeImage(idx)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>

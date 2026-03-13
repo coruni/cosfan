@@ -179,7 +179,7 @@ export default function ArticlesPage() {
                           <div className="flex items-center gap-3">
                             {article.cover ? (
                               <Image
-                                src={article.cover}
+                                src={article.cover.trim()}
                                 alt={article.title!}
                                 width={48}
                                 height={48}

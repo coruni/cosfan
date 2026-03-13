@@ -8,6 +8,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from '@/components/ui/pagination';
 import { useSearchParams, usePathname } from 'next/navigation';
 import type { ArticleControllerFindOneResponse } from '@/api';
+import { Advertisement } from '@/components/Advertisement';
 
 function ArticleCardSkeleton() {
   return (
@@ -92,7 +93,10 @@ export function HomePageContent() {
 
   return (
     <main className="space-y-6">
-      
+
+      {/* 首页顶部广告 */}
+      <Advertisement type="homepage" />
+
       <section aria-labelledby="latest-articles">
         <div className="flex items-center justify-between mb-4">
           <h2 id="latest-articles" className="text-xl font-bold">{t('latestArticles')}</h2>

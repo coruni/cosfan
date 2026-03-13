@@ -35,7 +35,16 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
   const doubleTapTimerRef = useRef<NodeJS.Timeout | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const totalImages = imageCount || images.length;
+  // 过滤无效图片URL
+  const validImages = images?.filter(img => img && typeof img === 'string' && img.trim() !== '') || [];
+  const totalImages = imageCount || validImages.length;
+
+  // 确保 currentIndex 不越界
+  useEffect(() => {
+    if (validImages.length > 0 && currentIndex >= validImages.length) {
+      setCurrentIndex(0);
+    }
+  }, [validImages.length, currentIndex]);
 
   // 检测移动端
   useEffect(() => {
@@ -55,16 +64,16 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
   };
 
   const goToPrevious = useCallback(() => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : images.length - 1));
+    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : validImages.length - 1));
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
-  }, [images.length]);
+  }, [validImages.length]);
 
   const goToNext = useCallback(() => {
-    setCurrentIndex((prev) => (prev < images.length - 1 ? prev + 1 : 0));
+    setCurrentIndex((prev) => (prev < validImages.length - 1 ? prev + 1 : 0));
     setZoomLevel(1);
     setPosition({ x: 0, y: 0 });
-  }, [images.length]);
+  }, [validImages.length]);
 
   const zoomIn = useCallback(() => {
     setZoomLevel((prev) => Math.min(prev + 0.5, 3));
@@ -357,14 +366,14 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
     }
   }, [isOpen]);
 
-  if (!images || images.length === 0) {
+  if (!validImages || validImages.length === 0) {
     return null;
   }
 
   return (
     <>
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2">
-        {images.map((image, index) => (
+        {validImages.map((image, index) => (
           <button
             key={index}
             onClick={() => openGallery(index)}
@@ -458,16 +467,18 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
                     transform: `scale(${zoomLevel}) translate(${position.x / zoomLevel}px, ${position.y / zoomLevel}px)`,
                   }}
                 >
-                  <Image
-                    src={images[currentIndex]}
-                    alt={`Image ${currentIndex + 1}`}
-                    width={2000}
-                    height={2000}
-                    className={`object-contain pointer-events-none ${isMobile ? 'max-w-[95vw] max-h-[80vh]' : 'max-w-[90vw] max-h-[90vh]'}`}
-                    priority
-                    draggable={false}
-                    quality={100}
-                  />
+                  {validImages[currentIndex] && (
+                    <Image
+                      src={validImages[currentIndex]}
+                      alt={`Image ${currentIndex + 1}`}
+                      width={2000}
+                      height={2000}
+                      className={`object-contain pointer-events-none ${isMobile ? 'max-w-[95vw] max-h-[80vh]' : 'max-w-[90vw] max-h-[90vh]'}`}
+                      priority
+                      draggable={false}
+                      quality={100}
+                    />
+                  )}
                 </div>
               </div>
 

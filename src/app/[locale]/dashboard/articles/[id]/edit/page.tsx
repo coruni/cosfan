@@ -100,7 +100,6 @@ export default function ArticleEditPage() {
   const [isDragging, setIsDragging] = useState(false);
   const [form, setForm] = useState({
     title: '',
-    summary: '',
     content: '',
     images: [] as string[],
     cover: '',
@@ -166,7 +165,6 @@ export default function ArticleEditPage() {
       const articleDownloads = article.downloads as unknown as { type: DownloadType; url: string; password?: string; extractionCode?: string }[] | undefined;
       setForm({
         title: article.title || '',
-        summary: article.summary || '',
         content: article.content || '',
         images: article.images || [],
         cover: article.cover || '',
@@ -415,7 +413,7 @@ export default function ArticleEditPage() {
     updateMutation.mutate({
       ...form,
       images: form.images.join(','),
-      downloads: form.downloads.length > 0 ? form.downloads : undefined,
+      downloads: form.downloads,
     });
   };
 
@@ -482,12 +480,12 @@ export default function ArticleEditPage() {
               </div>
 
               <div className="space-y-2">
-                <Label>摘要</Label>
-                <Textarea 
-                  value={form.summary} 
-                  onChange={(e) => setForm({ ...form, summary: e.target.value })} 
-                  rows={2}
-                  placeholder="输入文章摘要"
+                <Label>内容</Label>
+                <Textarea
+                  value={form.content}
+                  onChange={(e) => setForm({ ...form, content: e.target.value })}
+                  rows={4}
+                  placeholder="输入文章内容"
                 />
               </div>
             </CardContent>
@@ -552,6 +550,11 @@ export default function ArticleEditPage() {
                     <div className="absolute top-1 left-1 bg-black/60 text-white text-xs px-1.5 py-0.5 rounded">
                       {idx + 1}
                     </div>
+                    {form.cover === img && img && (
+                      <div className="absolute top-1 left-8 bg-primary text-white text-xs px-1.5 py-0.5 rounded">
+                        封面
+                      </div>
+                    )}
                     <div className="absolute top-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         type="button"
@@ -574,15 +577,29 @@ export default function ArticleEditPage() {
                         <ChevronRight className="h-3 w-3" />
                       </Button>
                     </div>
-                    <Button
-                      type="button"
-                      variant="destructive"
-                      size="icon"
-                      className="absolute bottom-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={() => removeImage(idx)}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
+                    <div className="absolute bottom-1 right-1 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      {img && form.cover !== img && (
+                        <Button
+                          type="button"
+                          variant="secondary"
+                          size="icon"
+                          className="h-6 w-6"
+                          onClick={() => setForm({ ...form, cover: img })}
+                          title="设为封面"
+                        >
+                          <ImageIcon className="h-3 w-3" />
+                        </Button>
+                      )}
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        size="icon"
+                        className="h-6 w-6"
+                        onClick={() => removeImage(idx)}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -624,7 +641,7 @@ export default function ArticleEditPage() {
                 <div className="flex items-center gap-3">
                   <label className="cursor-pointer relative group">
                     {form.cover ? (
-                      <Image src={form.cover} alt="封面" width={80} height={56} className="rounded object-cover" />
+                      <Image src={form.cover.trim()} alt="封面" width={80} height={56} className="rounded object-cover" />
                     ) : (
                       <div className="w-20 h-14 rounded bg-muted flex items-center justify-center group-hover:bg-muted/80">
                         {isUploadingCover ? (

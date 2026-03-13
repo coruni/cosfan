@@ -27,6 +27,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { useAuth } from "@/contexts/AuthContext";
+import { useSiteConfig } from "@/contexts/SiteConfigContext";
 import { ImageGallery } from "@/components/article/ImageGallery";
 import { ArticleComments } from "@/components/article/ArticleComments";
 import { toast } from "sonner";
@@ -39,11 +40,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { Advertisement } from "@/components/Advertisement";
 
 interface Article {
   id: number;
   title: string;
   summary?: string;
+  content?: string;
   images: string[];
   imageCount?: number;
   views: number;
@@ -89,6 +92,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
   const pathname = usePathname();
   const id = params.id as string;
   const { isAuthenticated, user } = useAuth();
+  const { config } = useSiteConfig();
   const queryClient = useQueryClient();
 
   const { data: article, isLoading } = useQuery({
@@ -247,6 +251,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
 
   return (
     <>
+      {/* 文章顶部广告 */}
+      <Advertisement type="articleTop" />
+
       <article
         className="space-y-6"
         itemScope
@@ -274,9 +281,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
                 height={40}
                 className="rounded-full object-cover w-10 h-10"
               />
-              <span className="font-medium" itemProp="name">
-                {article.author.nickname}
-              </span>
+              {/* <span className="font-medium" itemProp="name">
+                {article.category?.name}
+              </span> */}
             </Link>
             <Link href={`/cosers/${article.category?.id}`}>
               <Badge variant="secondary">
@@ -372,6 +379,11 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
                       {t("resourcesCount", { count: article.downloads.length })}
                     </DialogDescription>
                   </DialogHeader>
+                  {config?.site_mail && (
+                    <div className="bg-muted/50 border rounded-lg p-3 text-sm text-muted-foreground">
+                      {config.site_mail}
+                    </div>
+                  )}
                   <div className="space-y-3 mt-2">
                     {article.downloads.map((download, index) => (
                       <div
@@ -379,7 +391,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
                         className="flex items-center justify-between p-3 border rounded-lg bg-card"
                       >
                         <div className="flex items-center gap-3 flex-1 min-w-0">
-                          <div className="flex-shrink-0 w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <div className="shrink-0 w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center">
                             <Download className="h-4 w-4 text-primary" />
                           </div>
                           <div className="min-w-0 flex-1">
@@ -460,9 +472,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
             )}
           </div>
 
-          {article.summary && (
+          {article?.content && (
             <p className="text-muted-foreground" itemProp="description">
-              {article.summary}
+              {article?.content}
             </p>
           )}
         </header>
@@ -470,10 +482,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
         {hasImages ? (
           <>
             <figure itemProp="image">
-              <ImageGallery images={article.images} />
-              {article.summary && (
-                <figcaption className="sr-only">{article.summary}</figcaption>
-              )}
+              <ImageGallery images={article?.images || []} />
             </figure>
 
             {!canViewAllImages && remainingImages > 0 && (
@@ -574,6 +583,9 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
           </div>
         </section>
       )}
+
+      {/* 文章底部广告 */}
+      <Advertisement type="articleBottom" />
 
       {/* 悬浮评论按钮 */}
       <ArticleComments articleId={id} />
