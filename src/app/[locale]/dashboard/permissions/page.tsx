@@ -199,6 +199,7 @@ export default function PermissionsPage() {
                 <UITable>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[60px]">ID</TableHead>
                       <TableHead>权限名称</TableHead>
                       <TableHead>描述</TableHead>
                       <TableHead className="text-right">操作</TableHead>
@@ -207,6 +208,7 @@ export default function PermissionsPage() {
                   <TableBody>
                     {permissions.map((permission) => (
                       <TableRow key={permission.id}>
+                        <TableCell className="text-muted-foreground text-sm">{permission.id}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <Shield className="h-4 w-4 text-muted-foreground" />
@@ -234,7 +236,7 @@ export default function PermissionsPage() {
                     ))}
                     {permissions.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={3} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
                           暂无权限数据
                         </TableCell>
                       </TableRow>

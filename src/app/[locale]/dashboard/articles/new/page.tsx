@@ -31,6 +31,11 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -53,6 +58,7 @@ import {
   Check,
   Download,
   Lock,
+  ChevronsUpDown,
 } from "lucide-react";
 import { toast } from "sonner";
 import { Link } from "@/i18n";
@@ -139,6 +145,8 @@ export default function ArticleNewPage() {
     downloads: [] as DownloadItem[],
   });
   const [tagInput, setTagInput] = useState("");
+  const [categoryInput, setCategoryInput] = useState("");
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
   const [newDownload, setNewDownload] = useState<DownloadItem>({
     type: "baidu",
     url: "",
@@ -219,7 +227,7 @@ export default function ArticleNewPage() {
     }
     createCategoryMutation.mutate({
       ...newCategoryForm,
-      status: "ACTIVE",
+      status: "ENABLED",
       sort: 0,
     });
   };
@@ -417,6 +425,17 @@ export default function ArticleNewPage() {
   const tags = tagsData?.data?.data || [];
   const filteredTags = tags.filter((t: Tag) => !form.tagNames.includes(t.name));
 
+  const selectedCategory = categories.find((cat: Category) => cat.id === form.categoryId);
+  const filteredCategories = categories.filter((cat: Category) =>
+    cat.name.toLowerCase().includes(categoryInput.toLowerCase())
+  );
+
+  const handleSelectCategory = (categoryId: number) => {
+    setForm({ ...form, categoryId });
+    setCategoryPopoverOpen(false);
+    setCategoryInput("");
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -454,23 +473,52 @@ export default function ArticleNewPage() {
                 <div className="space-y-2">
                   <Label>分类 *</Label>
                   <div className="flex gap-2">
-                    <Select
-                      value={String(form.categoryId)}
-                      onValueChange={(v) =>
-                        setForm({ ...form, categoryId: Number(v) })
-                      }
-                    >
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="选择分类" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat: Category) => (
-                          <SelectItem key={cat.id} value={String(cat.id)}>
-                            {cat.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={categoryPopoverOpen}
+                          className="flex-1 justify-between"
+                        >
+                          {selectedCategory ? selectedCategory.name : "选择分类"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            placeholder="搜索分类..."
+                            value={categoryInput}
+                            onValueChange={setCategoryInput}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              <div className="p-2 text-center text-sm text-muted-foreground">
+                                未找到分类
+                              </div>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {filteredCategories.map((cat: Category) => (
+                                <CommandItem
+                                  key={cat.id}
+                                  value={String(cat.id)}
+                                  onSelect={() => handleSelectCategory(cat.id)}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      form.categoryId === cat.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {cat.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <Button
                       type="button"
                       variant="outline"

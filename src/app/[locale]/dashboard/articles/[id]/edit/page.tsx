@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useRouter, useParams } from 'next/navigation';
@@ -32,6 +32,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
+import {
   Command,
   CommandEmpty,
   CommandGroup,
@@ -44,7 +49,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
 import {
   ArrowLeft, Loader2, ChevronLeft, ChevronRight, Plus, X,
-  Image as ImageIcon, Upload, Check, Download, Lock
+  Image as ImageIcon, Upload, Check, Download, Lock, ChevronsUpDown
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from '@/i18n';
@@ -114,6 +119,8 @@ export default function ArticleEditPage() {
     downloads: [] as DownloadItem[],
   });
   const [tagInput, setTagInput] = useState('');
+  const [categoryInput, setCategoryInput] = useState('');
+  const [categoryPopoverOpen, setCategoryPopoverOpen] = useState(false);
   const [newDownload, setNewDownload] = useState<DownloadItem>({
     type: 'baidu',
     url: '',
@@ -230,7 +237,7 @@ export default function ArticleEditPage() {
     }
     createCategoryMutation.mutate({
       ...newCategoryForm,
-      status: 'ACTIVE',
+      status: 'ENABLED',
       sort: 0,
     });
   };
@@ -421,6 +428,28 @@ export default function ArticleEditPage() {
   const tags = tagsData?.data?.data || [];
   const filteredTags = tags.filter((t: Tag) => !form.tagNames.includes(t.name));
 
+  // 获取文章当前分类信息
+  const articleCategory = articleData?.data?.category as { id: number; name: string } | undefined;
+
+  // 将文章分类合并到列表中（如果不在列表里）
+  const allCategories = useMemo(() => {
+    if (!articleCategory) return categories;
+    const exists = categories.some((cat: Category) => cat.id === articleCategory.id);
+    if (exists) return categories;
+    return [...categories, articleCategory as Category];
+  }, [categories, articleCategory]);
+
+  const selectedCategory = allCategories.find((cat: Category) => cat.id === form.categoryId);
+  const filteredCategories = allCategories.filter((cat: Category) =>
+    cat.name.toLowerCase().includes(categoryInput.toLowerCase())
+  );
+
+  const handleSelectCategory = (categoryId: number) => {
+    setForm({ ...form, categoryId });
+    setCategoryPopoverOpen(false);
+    setCategoryInput('');
+  };
+
   if (isLoadingArticle) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -462,16 +491,52 @@ export default function ArticleEditPage() {
                 <div className="space-y-2">
                   <Label>分类 *</Label>
                   <div className="flex gap-2">
-                    <Select value={String(form.categoryId)} onValueChange={(v) => setForm({ ...form, categoryId: Number(v) })}>
-                      <SelectTrigger className="flex-1">
-                        <SelectValue placeholder="选择分类" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((cat: Category) => (
-                          <SelectItem key={cat.id} value={String(cat.id)}>{cat.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Popover open={categoryPopoverOpen} onOpenChange={setCategoryPopoverOpen}>
+                      <PopoverTrigger asChild>
+                        <Button
+                          variant="outline"
+                          role="combobox"
+                          aria-expanded={categoryPopoverOpen}
+                          className="flex-1 justify-between"
+                        >
+                          {selectedCategory ? selectedCategory.name : "选择分类"}
+                          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+                        <Command shouldFilter={false}>
+                          <CommandInput
+                            placeholder="搜索分类..."
+                            value={categoryInput}
+                            onValueChange={setCategoryInput}
+                          />
+                          <CommandList>
+                            <CommandEmpty>
+                              <div className="p-2 text-center text-sm text-muted-foreground">
+                                未找到分类
+                              </div>
+                            </CommandEmpty>
+                            <CommandGroup>
+                              {filteredCategories.map((cat: Category) => (
+                                <CommandItem
+                                  key={cat.id}
+                                  value={String(cat.id)}
+                                  onSelect={() => handleSelectCategory(cat.id)}
+                                >
+                                  <Check
+                                    className={cn(
+                                      "mr-2 h-4 w-4",
+                                      form.categoryId === cat.id ? "opacity-100" : "opacity-0"
+                                    )}
+                                  />
+                                  {cat.name}
+                                </CommandItem>
+                              ))}
+                            </CommandGroup>
+                          </CommandList>
+                        </Command>
+                      </PopoverContent>
+                    </Popover>
                     <Button type="button" variant="outline" size="icon" onClick={() => setCategoryDialogOpen(true)}>
                       <Plus className="h-4 w-4" />
                     </Button>

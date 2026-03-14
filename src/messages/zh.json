@@ -721,7 +721,9 @@
     "list": "Coser列表",
     "listDesc": "浏览所有Coser，发现精彩的Cosplay作品集",
     "articlesCount": "{count} 套图集",
-    "viewWorks": "查看 {name} 的Cosplay作品集"
+    "viewWorks": "查看 {name} 的Cosplay作品集",
+    "totalCount": "共 {count} 位Coser",
+    "empty": "暂无Coser"
   },
   "discover": {
     "title": "发现",

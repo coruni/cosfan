@@ -1,9 +1,7 @@
 import { Metadata } from 'next';
-import { categoryControllerFindAll } from '@/api/sdk.gen';
-import { client } from '@/api/client.gen';
-import { API_BASE_URL } from '@/config/constants';
+import { Suspense } from 'react';
 import { CosersContent } from './CosersContent';
-import { initServerInterceptors } from '@/lib/server-init';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export async function generateMetadata(): Promise<Metadata> {
   return {
@@ -19,20 +17,28 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-async function getCosers() {
-  try {
-    initServerInterceptors();
-    client.setConfig({ baseUrl: API_BASE_URL });
-    const response = await categoryControllerFindAll();
-    return response.data?.data.data || [];
-  } catch (error) {
-    console.error('Failed to fetch cosers:', error);
-    return [];
-  }
+function CosersSkeleton() {
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <Skeleton className="h-8 w-24" />
+        <Skeleton className="h-4 w-20" />
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
+        {Array.from({ length: 12 }).map((_, i) => (
+          <div key={i} className="aspect-[3/4] rounded-lg overflow-hidden">
+            <Skeleton className="w-full h-full" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
 }
 
-export default async function CosersPage() {
-  const cosers = await getCosers();
-
-  return <CosersContent initialData={cosers} />;
+export default function CosersPage() {
+  return (
+    <Suspense fallback={<CosersSkeleton />}>
+      <CosersContent />
+    </Suspense>
+  );
 }

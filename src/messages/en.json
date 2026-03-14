@@ -721,7 +721,9 @@
     "list": "Coser List",
     "listDesc": "Browse all Cosers and discover amazing Cosplay collections",
     "articlesCount": "{count} galleries",
-    "viewWorks": "View {name}'s Cosplay collection"
+    "viewWorks": "View {name}'s Cosplay collection",
+    "totalCount": "{count} Cosers",
+    "empty": "No Cosers found"
   },
   "discover": {
     "title": "Discover",
