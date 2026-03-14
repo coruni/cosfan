@@ -163,9 +163,11 @@ export default function ArticleNewPage() {
   const [isUploadingMultiple, setIsUploadingMultiple] = useState(false);
 
   const { data: categoriesData, refetch: refetchCategories } = useQuery({
-    queryKey: ["categories"],
+    queryKey: ["categories", categoryInput],
     queryFn: async () => {
-      const response = await categoryControllerFindAll();
+      const response = await categoryControllerFindAll({
+        query: { name: categoryInput || undefined, limit: 100 },
+      });
       return response.data;
     },
   });
@@ -426,9 +428,6 @@ export default function ArticleNewPage() {
   const filteredTags = tags.filter((t: Tag) => !form.tagNames.includes(t.name));
 
   const selectedCategory = categories.find((cat: Category) => cat.id === form.categoryId);
-  const filteredCategories = categories.filter((cat: Category) =>
-    cat.name.toLowerCase().includes(categoryInput.toLowerCase())
-  );
 
   const handleSelectCategory = (categoryId: number) => {
     setForm({ ...form, categoryId });
@@ -499,7 +498,7 @@ export default function ArticleNewPage() {
                               </div>
                             </CommandEmpty>
                             <CommandGroup>
-                              {filteredCategories.map((cat: Category) => (
+                              {categories.map((cat: Category) => (
                                 <CommandItem
                                   key={cat.id}
                                   value={String(cat.id)}

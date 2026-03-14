@@ -148,9 +148,11 @@ export default function ArticleEditPage() {
   });
 
   const { data: categoriesData, refetch: refetchCategories } = useQuery({
-    queryKey: ['categories'],
+    queryKey: ['categories', categoryInput],
     queryFn: async () => {
-      const response = await categoryControllerFindAll();
+      const response = await categoryControllerFindAll({
+        query: { name: categoryInput || undefined, limit: 100 },
+      });
       return response.data;
     },
   });
@@ -440,9 +442,6 @@ export default function ArticleEditPage() {
   }, [categories, articleCategory]);
 
   const selectedCategory = allCategories.find((cat: Category) => cat.id === form.categoryId);
-  const filteredCategories = allCategories.filter((cat: Category) =>
-    cat.name.toLowerCase().includes(categoryInput.toLowerCase())
-  );
 
   const handleSelectCategory = (categoryId: number) => {
     setForm({ ...form, categoryId });
@@ -517,7 +516,7 @@ export default function ArticleEditPage() {
                               </div>
                             </CommandEmpty>
                             <CommandGroup>
-                              {filteredCategories.map((cat: Category) => (
+                              {allCategories.map((cat: Category) => (
                                 <CommandItem
                                   key={cat.id}
                                   value={String(cat.id)}
