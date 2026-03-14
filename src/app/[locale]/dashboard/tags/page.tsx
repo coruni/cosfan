@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { 
   tagControllerFindAll, 
   tagControllerRemove, 
@@ -33,6 +34,7 @@ type Tag = NonNullable<TagControllerFindAllResponse['data']['data']>[number];
 
 export default function TagsPage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('pagination');
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
@@ -229,6 +231,7 @@ export default function TagsPage() {
                 <UITable>
                 <TableHeader>
                   <TableRow>
+                    <TableHead className="w-[60px]">ID</TableHead>
                     <TableHead>标签</TableHead>
                     <TableHead>描述</TableHead>
                     <TableHead>文章数</TableHead>
@@ -241,6 +244,7 @@ export default function TagsPage() {
                 <TableBody>
                   {tags.map((tag) => (
                     <TableRow key={tag.id}>
+                      <TableCell className="text-muted-foreground text-sm">{tag.id}</TableCell>
                       <TableCell>
                         <div className="flex items-center gap-3">
                           {tag.avatar && (
@@ -288,7 +292,7 @@ export default function TagsPage() {
                   ))}
                   {tags.length === 0 && (
                     <TableRow>
-                      <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                      <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
                         暂无标签数据
                       </TableCell>
                     </TableRow>
@@ -300,7 +304,7 @@ export default function TagsPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    共 {total} 条记录，第 {page} / {totalPages} 页
+                    {t('info', { total, page, totalPages })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

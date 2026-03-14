@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import {
   commentControllerFindAllComments,
   commentControllerRemove,
@@ -28,7 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Search, Pencil, Trash2, Loader2 } from 'lucide-react';
+import { Search, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { CommentControllerFindOneResponse } from '@/api';
@@ -37,6 +38,7 @@ type Comment = CommentControllerFindOneResponse['data']['data'][number]
 
 export default function CommentsPage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('pagination');
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
@@ -196,6 +198,7 @@ export default function CommentsPage() {
                 <UITable>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[60px]">ID</TableHead>
                       <TableHead>评论内容</TableHead>
                       <TableHead>作者</TableHead>
                       <TableHead>文章</TableHead>
@@ -209,6 +212,7 @@ export default function CommentsPage() {
                   <TableBody>
                     {comments.map((comment) => (
                       <TableRow key={comment.id}>
+                        <TableCell className="text-muted-foreground text-sm">{comment.id}</TableCell>
                         <TableCell>
                           <div className="max-w-xs truncate">
                             {comment.content}
@@ -264,7 +268,7 @@ export default function CommentsPage() {
                     ))}
                     {comments.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           暂无评论数据
                         </TableCell>
                       </TableRow>
@@ -276,7 +280,7 @@ export default function CommentsPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    共 {total} 条记录，第 {page} / {totalPages} 页
+                    {t('info', { total, page, totalPages })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -285,7 +289,7 @@ export default function CommentsPage() {
                       disabled={page <= 1}
                       onClick={() => setPage(page - 1)}
                     >
-                      {'<'}
+                      <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
@@ -293,7 +297,7 @@ export default function CommentsPage() {
                       disabled={page >= totalPages}
                       onClick={() => setPage(page + 1)}
                     >
-                      {'>'}
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>

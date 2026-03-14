@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import {
   orderControllerGetAllOrders,
   orderControllerCancelOrder,
@@ -39,6 +40,7 @@ type Order = OrderControllerGetAllOrdersResponse['data']['data'][number];
 
 export default function OrdersPage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('pagination');
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
@@ -213,6 +215,7 @@ export default function OrdersPage() {
                 <UITable>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[60px]">ID</TableHead>
                       <TableHead>订单号</TableHead>
                       <TableHead>标题</TableHead>
                       <TableHead>类型</TableHead>
@@ -226,6 +229,7 @@ export default function OrdersPage() {
                   <TableBody>
                     {orders.map((order) => (
                       <TableRow key={order.id}>
+                        <TableCell className="text-muted-foreground text-sm">{order.id}</TableCell>
                         <TableCell>
                           <code className="text-xs bg-muted px-2 py-1 rounded whitespace-nowrap">
                             {order.orderNo}
@@ -271,7 +275,7 @@ export default function OrdersPage() {
                     ))}
                     {orders.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           暂无订单数据
                         </TableCell>
                       </TableRow>
@@ -283,7 +287,7 @@ export default function OrdersPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    共 {total} 条记录，第 {page} / {totalPages} 页
+                    {t('info', { total, page, totalPages })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button

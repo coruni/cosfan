@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useTranslations } from 'next-intl';
 import {
   roleControllerFindWithPagination,
   roleControllerCreate,
@@ -32,6 +33,8 @@ import {
   Loader2,
   ShieldCheck,
   Power,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -60,6 +63,7 @@ type Permission = {
 
 export default function RolesPage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('pagination');
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState("");
@@ -314,6 +318,7 @@ export default function RolesPage() {
                 <UITable>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[60px]">ID</TableHead>
                       <TableHead>角色名称</TableHead>
                       <TableHead>显示名称</TableHead>
                       <TableHead>描述</TableHead>
@@ -325,6 +330,7 @@ export default function RolesPage() {
                   <TableBody>
                     {roles.map((role) => (
                       <TableRow key={role.id}>
+                        <TableCell className="text-muted-foreground text-sm">{role.id}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <ShieldCheck className="h-4 w-4 text-muted-foreground" />
@@ -382,7 +388,7 @@ export default function RolesPage() {
                     {roles.length === 0 && (
                       <TableRow>
                         <TableCell
-                          colSpan={6}
+                          colSpan={7}
                           className="text-center py-8 text-muted-foreground"
                         >
                           暂无角色数据
@@ -396,7 +402,7 @@ export default function RolesPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    共 {total} 条记录，第 {page} / {totalPages} 页
+                    {t('info', { total, page, totalPages })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -405,7 +411,7 @@ export default function RolesPage() {
                       disabled={page <= 1}
                       onClick={() => setPage(page - 1)}
                     >
-                      {"<"}
+                      <ChevronLeft className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
@@ -413,7 +419,7 @@ export default function RolesPage() {
                       disabled={page >= totalPages}
                       onClick={() => setPage(page + 1)}
                     >
-                      {">"}
+                      <ChevronRight className="h-4 w-4" />
                     </Button>
                   </div>
                 </div>

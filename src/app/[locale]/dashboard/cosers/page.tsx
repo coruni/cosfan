@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import { 
   categoryControllerFindAll, 
   categoryControllerCreate,
@@ -26,7 +27,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageCropDialog } from '@/components/ui/image-crop-dialog';
-import { Search, Plus, Pencil, Trash2, Loader2, Image as ImageIcon } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Loader2, Image as ImageIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { CategoryControllerFindAllResponse, CreateCategoryDto, UpdateCategoryDto } from '@/api';
 
@@ -34,6 +35,9 @@ type Category = NonNullable<CategoryControllerFindAllResponse['data']['data']>[n
 
 export default function CosersPage() {
   const queryClient = useQueryClient();
+  const t = useTranslations('pagination');
+  const [page, setPage] = useState(1);
+  const [limit] = useState(10);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -49,7 +53,7 @@ export default function CosersPage() {
     background: '',
     cover: '',
     sort: 0,
-    status: 'ACTIVE',
+    status: 'ENABLED',
   });
   const [createForm, setCreateForm] = useState({
     name: '',
@@ -58,13 +62,19 @@ export default function CosersPage() {
     background: '',
     cover: '',
     sort: 0,
-    status: 'ACTIVE',
+    status: 'ENABLED',
   });
 
   const { data: categoriesData, isLoading } = useQuery({
-    queryKey: ['admin-categories', search],
+    queryKey: ['admin-categories', page, limit, search],
     queryFn: async () => {
-      const response = await categoryControllerFindAll();
+      const response = await categoryControllerFindAll({
+        query: {
+          page,
+          limit,
+          name: search || undefined,
+        },
+      });
       return response.data;
     },
   });
@@ -78,7 +88,7 @@ export default function CosersPage() {
       toast.success('分类创建成功');
       queryClient.invalidateQueries({ queryKey: ['admin-categories'] });
       setCreateDialogOpen(false);
-      setCreateForm({ name: '', description: '', avatar: '', sort: 0,background:'',cover:'',status:'ACTIVE' });
+      setCreateForm({ name: '', description: '', avatar: '', sort: 0,background:'',cover:'',status:'ENABLED' });
     },
     onError: (error: Error) => {
       toast.error(error?.message || '创建失败');
@@ -120,6 +130,7 @@ export default function CosersPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
+    setPage(1);
   };
 
   const openEditDialog = (category: Category) => {
@@ -131,7 +142,7 @@ export default function CosersPage() {
       background: category.background || '',
       cover: category.cover || '',
       sort: category.sort || 0,
-      status: category.status || 'ACTIVE',
+      status: category.status || 'ENABLED',
     });
     setEditDialogOpen(true);
   };
@@ -204,9 +215,8 @@ export default function CosersPage() {
   };
 
   const categories = categoriesData?.data?.data || [];
-  const filteredCategories = search 
-    ? categories.filter((c: Category) => c.name?.toLowerCase().includes(search.toLowerCase()))
-    : categories;
+  const total = categoriesData?.data?.meta?.total || 0;
+  const totalPages = categoriesData?.data?.meta?.totalPages || 1;
 
   return (
     <div className="space-y-6">
@@ -244,10 +254,12 @@ export default function CosersPage() {
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
             </div>
           ) : (
-            <div className="overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0">
+            <>
+              <div className="overflow-x-auto -mx-6 px-6 md:mx-0 md:px-0">
               <UITable>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[60px]">ID</TableHead>
                   <TableHead>分类名称</TableHead>
                   <TableHead>描述</TableHead>
                   <TableHead>头像</TableHead>
@@ -257,8 +269,9 @@ export default function CosersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredCategories.map((category: Category) => (
+                {categories.map((category: Category) => (
                   <TableRow key={category.id}>
+                    <TableCell className="text-muted-foreground text-sm">{category.id}</TableCell>
                     <TableCell>
                       <span className="font-medium">{category.name}</span>
                     </TableCell>
@@ -298,16 +311,33 @@ export default function CosersPage() {
                     </TableCell>
                   </TableRow>
                 ))}
-                {filteredCategories.length === 0 && (
+                {categories.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                    <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                       暂无分类数据
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
               </UITable>
-            </div>
+              </div>
+
+              {totalPages > 1 && (
+              <div className="flex items-center justify-between mt-4">
+                <p className="text-sm text-muted-foreground">
+                  {t('info', { total, page, totalPages })}
+                </p>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="icon" disabled={page <= 1} onClick={() => setPage(page - 1)}>
+                    <ChevronLeft className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="icon" disabled={page >= totalPages} onClick={() => setPage(page + 1)}>
+                    <ChevronRight className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+              )}
+            </>
           )}
         </CardContent>
       </Card>

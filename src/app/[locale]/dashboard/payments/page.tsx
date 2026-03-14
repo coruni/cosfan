@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslations } from 'next-intl';
 import {
   paymentControllerFindUserPayments,
 } from '@/api/sdk.gen';
@@ -62,6 +63,7 @@ type PaymentsResponse = {
 };
 
 export default function PaymentsPage() {
+  const t = useTranslations('pagination');
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
@@ -195,6 +197,7 @@ export default function PaymentsPage() {
                 <UITable>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-[60px]">ID</TableHead>
                       <TableHead>支付单号</TableHead>
                       <TableHead>订单号</TableHead>
                       <TableHead>用户</TableHead>
@@ -208,6 +211,7 @@ export default function PaymentsPage() {
                   <TableBody>
                     {payments.map((payment) => (
                       <TableRow key={payment.id}>
+                        <TableCell className="text-muted-foreground text-sm">{payment.id}</TableCell>
                         <TableCell>
                           <code className="text-xs bg-muted px-2 py-1 rounded whitespace-nowrap">
                             {payment.transactionId || payment.paymentOrderNo || payment.id}
@@ -255,7 +259,7 @@ export default function PaymentsPage() {
                     ))}
                     {payments.length === 0 && (
                       <TableRow>
-                        <TableCell colSpan={8} className="text-center py-8 text-muted-foreground">
+                        <TableCell colSpan={9} className="text-center py-8 text-muted-foreground">
                           暂无支付记录
                         </TableCell>
                       </TableRow>
@@ -267,7 +271,7 @@ export default function PaymentsPage() {
               {totalPages > 1 && (
                 <div className="flex items-center justify-between mt-4">
                   <p className="text-sm text-muted-foreground">
-                    共 {total} 条记录，第 {page} / {totalPages} 页
+                    {t('info', { total, page, totalPages })}
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
