@@ -1150,7 +1150,7 @@ export const reportControllerUpdate = <ThrowOnError extends boolean = false>(opt
 /**
  * 获取装饰品列表
  */
-export const decorationControllerFindAll = <ThrowOnError extends boolean = false>(options: Options<DecorationControllerFindAllData, ThrowOnError>) => (options.client ?? client).get<DecorationControllerFindAllResponses, unknown, ThrowOnError>({ url: '/decoration', ...options });
+export const decorationControllerFindAll = <ThrowOnError extends boolean = false>(options?: Options<DecorationControllerFindAllData, ThrowOnError>) => (options?.client ?? client).get<DecorationControllerFindAllResponses, unknown, ThrowOnError>({ url: '/decoration', ...options });
 
 /**
  * 创建装饰品

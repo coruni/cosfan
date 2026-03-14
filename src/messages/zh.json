@@ -22,7 +22,11 @@
     "days": "天",
     "articlesCount": "篇",
     "confirmDelete": "确认删除",
-    "confirmCancel": "确认取消"
+    "confirmCancel": "确认取消",
+    "sortBy": "排序方式",
+    "createdAt": "创建时间",
+    "newest": "最新",
+    "oldest": "最旧"
   },
   "validation": {
     "usernamePasswordRequired": "用户名和密码为必填项",

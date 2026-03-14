@@ -8487,6 +8487,15 @@
             }
           },
           {
+            "name": "status",
+            "in": "query",
+            "description": "状态",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -19618,6 +19627,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -20484,6 +20515,28 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "排序字段",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -23797,6 +23850,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -25801,6 +25876,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -27268,6 +27365,28 @@
             }
           },
           {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
+            }
+          },
+          {
             "name": "Authorization",
             "in": "header",
             "description": "",
@@ -28557,7 +28676,7 @@
             "name": "type",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -28566,7 +28685,7 @@
             "name": "status",
             "in": "query",
             "description": "",
-            "required": true,
+            "required": false,
             "schema": {
               "type": "string"
             }
@@ -28587,6 +28706,28 @@
             "required": false,
             "schema": {
               "type": "integer"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -30928,6 +31069,28 @@
             "required": false,
             "schema": {
               "type": "number"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {
@@ -33678,6 +33841,28 @@
             "required": false,
             "schema": {
               "type": "boolean"
+            }
+          },
+          {
+            "name": "sortBy",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "sortOrder",
+            "in": "query",
+            "description": "",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "DESC",
+                "ASC"
+              ]
             }
           },
           {

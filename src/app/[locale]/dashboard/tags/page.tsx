@@ -16,6 +16,13 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table as UITable, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -26,7 +33,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { ImageCropDialog } from '@/components/ui/image-crop-dialog';
-import { Search, Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, Image as ImageIcon } from 'lucide-react';
+import { Search, Plus, Pencil, Trash2, Loader2, ChevronLeft, ChevronRight, Image as ImageIcon, ArrowUpDown } from 'lucide-react';
 import { toast } from 'sonner';
 import { TagControllerFindAllResponse } from '@/api';
 
@@ -35,10 +42,13 @@ type Tag = NonNullable<TagControllerFindAllResponse['data']['data']>[number];
 export default function TagsPage() {
   const queryClient = useQueryClient();
   const t = useTranslations('pagination');
+  const tCommon = useTranslations('common');
   const [page, setPage] = useState(1);
   const [limit] = useState(10);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
+  const [sortBy, setSortBy] = useState<string>('createdAt');
+  const [sortOrder, setSortOrder] = useState<'DESC' | 'ASC'>('DESC');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -63,10 +73,10 @@ export default function TagsPage() {
   });
 
   const { data: tagsData, isLoading } = useQuery({
-    queryKey: ['admin-tags', page, limit, search],
+    queryKey: ['admin-tags', page, limit, search, sortBy, sortOrder],
     queryFn: async () => {
       const response = await tagControllerFindAll({
-        query: { page, limit, name: search || undefined },
+        query: { page, limit, name: search || undefined, sortBy, sortOrder },
       });
       return response.data;
     },
@@ -205,8 +215,8 @@ export default function TagsPage() {
 
       <Card>
         <CardHeader>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-2 flex-1">
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="flex items-center gap-2 flex-1 min-w-[200px]">
               <Input
                 placeholder="搜索标签名称..."
                 value={searchInput}
@@ -218,6 +228,16 @@ export default function TagsPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
+            <Select value={sortOrder} onValueChange={(v) => { setSortOrder(v as 'DESC' | 'ASC'); setPage(1); }}>
+              <SelectTrigger className="w-[120px]">
+                <ArrowUpDown className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="DESC">{tCommon('newest')}</SelectItem>
+                <SelectItem value="ASC">{tCommon('oldest')}</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </CardHeader>
         <CardContent>

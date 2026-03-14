@@ -58,6 +58,7 @@ export default function ArticlesPage() {
           page,
           limit,
           title: search || undefined,
+          status: statusFilter && statusFilter !== 'ALL' ? statusFilter : undefined,
         },
       });
       return response.data;
@@ -141,7 +142,7 @@ export default function ArticlesPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={statusFilter || undefined} onValueChange={(v) => { setStatusFilter(v || ''); setPage(1); }}>
+            <Select value={statusFilter || 'ALL'} onValueChange={(v) => { setStatusFilter(v === 'ALL' ? '' : v); setPage(1); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="状态" />
               </SelectTrigger>

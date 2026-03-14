@@ -22,7 +22,11 @@
     "days": "days",
     "articlesCount": "articles",
     "confirmDelete": "Confirm Delete",
-    "confirmCancel": "Confirm Cancel"
+    "confirmCancel": "Confirm Cancel",
+    "sortBy": "Sort by",
+    "createdAt": "Created at",
+    "newest": "Newest",
+    "oldest": "Oldest"
   },
   "validation": {
     "usernamePasswordRequired": "Username and password are required",

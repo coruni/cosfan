@@ -4066,6 +4066,10 @@ export type ArticleControllerFindAllData = {
         categoryId?: number;
         type?: string;
         tagId?: number;
+        /**
+         * 状态
+         */
+        status?: string;
     };
     url: '/article';
 };
@@ -7112,6 +7116,8 @@ export type TagControllerFindAllData = {
          */
         limit?: number;
         name?: string;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/tag';
 };
@@ -7418,6 +7424,11 @@ export type CategoryControllerFindAllData = {
         name?: string;
         status?: string;
         parentId?: number;
+        /**
+         * 排序字段
+         */
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/category';
 };
@@ -8586,6 +8597,8 @@ export type UploadControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/upload';
 };
@@ -9172,6 +9185,8 @@ export type BannerControllerFindAllData = {
          * 每页数量
          */
         limit?: number;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/banners';
 };
@@ -9599,6 +9614,8 @@ export type ReportControllerFindAllData = {
          * 举报人ID
          */
         reporterId?: number;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/report';
 };
@@ -9950,9 +9967,9 @@ export type DecorationControllerFindAllData = {
         'Device-Type'?: string;
     };
     path?: never;
-    query: {
-        type: string;
-        status: string;
+    query?: {
+        type?: string;
+        status?: string;
         /**
          * 分页
          */
@@ -9961,6 +9978,8 @@ export type DecorationControllerFindAllData = {
          * 限制
          */
         limit?: number;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/decoration';
 };
@@ -10627,6 +10646,8 @@ export type FavoriteControllerFindAllData = {
          * 用户ID
          */
         userId?: number;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/favorite';
 };
@@ -11568,6 +11589,8 @@ export type EmojiControllerFindAllData = {
          * 是否只查询收藏的表情
          */
         onlyFavorites?: boolean;
+        sortBy?: string;
+        sortOrder?: 'DESC' | 'ASC';
     };
     url: '/emoji';
 };
