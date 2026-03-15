@@ -3,7 +3,8 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter, useParams } from '@/i18n/routing';
+import { useRouter } from '@/i18n/routing';
+import { useParams } from 'next/navigation';
 import {
   articleControllerFindOne,
   articleControllerUpdate,
