@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-import { useSearchParams, useRouter, usePathname } from 'next/navigation';
+import { useSearchParams } from 'next-intl';
+import { useRouter, usePathname } from '@/i18n/routing';
 
 interface UsePaginationOptions {
   defaultPage?: number;
