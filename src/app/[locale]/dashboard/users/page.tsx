@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { 
-  userControllerFindAll, 
-  userControllerRemove, 
+import {
+  userControllerFindAll,
+  userControllerRemove,
   userControllerUpdate,
   userControllerCreate,
   uploadControllerUploadFile,
 } from '@/api/sdk.gen';
+import { usePagination } from '@/hooks';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -54,8 +55,7 @@ type User = {
 export default function UsersPage() {
   const queryClient = useQueryClient();
   const t = useTranslations('pagination');
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const { page, limit, setPage, resetPage } = usePagination({ defaultLimit: 10 });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [editDialogOpen, setEditDialogOpen] = useState(false);
@@ -145,7 +145,7 @@ export default function UsersPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const openEditDialog = (user: User) => {

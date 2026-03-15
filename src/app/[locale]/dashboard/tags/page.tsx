@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { 
-  tagControllerFindAll, 
-  tagControllerRemove, 
+import {
+  tagControllerFindAll,
+  tagControllerRemove,
   tagControllerUpdate,
   tagControllerCreate,
   uploadControllerUploadFile,
 } from '@/api/sdk.gen';
+import { usePagination } from '@/hooks';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -43,8 +44,7 @@ export default function TagsPage() {
   const queryClient = useQueryClient();
   const t = useTranslations('pagination');
   const tCommon = useTranslations('common');
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const { page, limit, setPage, resetPage } = usePagination({ defaultLimit: 10 });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [sortBy, setSortBy] = useState<string>('createdAt');
@@ -136,7 +136,7 @@ export default function TagsPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const openEditDialog = (tag: Tag) => {
@@ -228,7 +228,7 @@ export default function TagsPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={sortOrder} onValueChange={(v) => { setSortOrder(v as 'DESC' | 'ASC'); setPage(1); }}>
+            <Select value={sortOrder} onValueChange={(v) => { setSortOrder(v as 'DESC' | 'ASC'); resetPage(); }}>
               <SelectTrigger className="w-[120px]">
                 <ArrowUpDown className="h-4 w-4 mr-2" />
                 <SelectValue />

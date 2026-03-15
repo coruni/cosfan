@@ -6,6 +6,7 @@ import { useTranslations } from 'next-intl';
 import {
   paymentControllerFindUserPayments,
 } from '@/api/sdk.gen';
+import { usePagination } from '@/hooks';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -64,8 +65,7 @@ type PaymentsResponse = {
 
 export default function PaymentsPage() {
   const t = useTranslations('pagination');
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const { page, limit, setPage, resetPage } = usePagination({ defaultLimit: 10 });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -91,7 +91,7 @@ export default function PaymentsPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const openDetailDialog = (payment: Payment) => {
@@ -160,7 +160,7 @@ export default function PaymentsPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); resetPage(); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="状态" />
               </SelectTrigger>
@@ -172,7 +172,7 @@ export default function PaymentsPage() {
                 <SelectItem value="REFUNDED">已退款</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={methodFilter} onValueChange={(v) => { setMethodFilter(v); setPage(1); }}>
+            <Select value={methodFilter} onValueChange={(v) => { setMethodFilter(v); resetPage(); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="支付方式" />
               </SelectTrigger>

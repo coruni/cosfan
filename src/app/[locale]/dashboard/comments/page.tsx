@@ -8,6 +8,7 @@ import {
   commentControllerRemove,
   commentControllerUpdate,
 } from '@/api/sdk.gen';
+import { usePagination } from '@/hooks';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -39,8 +40,7 @@ type Comment = CommentControllerFindOneResponse['data']['data'][number]
 export default function CommentsPage() {
   const queryClient = useQueryClient();
   const t = useTranslations('pagination');
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const { page, limit, setPage, resetPage } = usePagination({ defaultLimit: 10 });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('all');
@@ -103,7 +103,7 @@ export default function CommentsPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const openEditDialog = (comment: Comment) => {
@@ -173,7 +173,7 @@ export default function CommentsPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); setPage(1); }}>
+            <Select value={statusFilter} onValueChange={(value) => { setStatusFilter(value); resetPage(); }}>
               <SelectTrigger className="w-[150px]">
                 <SelectValue placeholder="状态筛选" />
               </SelectTrigger>

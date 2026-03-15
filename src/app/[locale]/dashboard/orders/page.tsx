@@ -8,6 +8,7 @@ import {
   orderControllerCancelOrder,
 } from '@/api/sdk.gen';
 import type { OrderControllerGetAllOrdersResponse, OrderControllerGetAllOrdersData } from '@/api/types.gen';
+import { usePagination } from '@/hooks';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -41,8 +42,7 @@ type Order = OrderControllerGetAllOrdersResponse['data']['data'][number];
 export default function OrdersPage() {
   const queryClient = useQueryClient();
   const t = useTranslations('pagination');
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const { page, limit, setPage, resetPage } = usePagination({ defaultLimit: 10 });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -85,7 +85,7 @@ export default function OrdersPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const openDetailDialog = (order: Order) => {
@@ -178,7 +178,7 @@ export default function OrdersPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={statusFilter || undefined} onValueChange={(v) => { setStatusFilter(v as OrderStatus | 'ALL'); setPage(1); }}>
+            <Select value={statusFilter || undefined} onValueChange={(v) => { setStatusFilter(v as OrderStatus | 'ALL'); resetPage(); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="状态" />
               </SelectTrigger>
@@ -190,7 +190,7 @@ export default function OrdersPage() {
                 <SelectItem value="REFUNDED">已退款</SelectItem>
               </SelectContent>
             </Select>
-            <Select value={typeFilter || undefined} onValueChange={(v) => { setTypeFilter(v as OrderType | 'ALL'); setPage(1); }}>
+            <Select value={typeFilter || undefined} onValueChange={(v) => { setTypeFilter(v as OrderType | 'ALL'); resetPage(); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="类型" />
               </SelectTrigger>

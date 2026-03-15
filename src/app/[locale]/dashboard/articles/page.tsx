@@ -8,6 +8,7 @@ import {
   articleControllerFindAll,
   articleControllerRemove,
 } from '@/api/sdk.gen';
+import { usePagination } from '@/hooks';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,8 +43,7 @@ export default function ArticlesPage() {
   const queryClient = useQueryClient();
   const t = useTranslations('pagination');
   const tCommon = useTranslations('common');
-  const [page, setPage] = useState(1);
-  const [limit] = useState(10);
+  const { page, limit, setPage, resetPage } = usePagination({ defaultLimit: 10 });
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -82,7 +82,7 @@ export default function ArticlesPage() {
 
   const handleSearch = () => {
     setSearch(searchInput);
-    setPage(1);
+    resetPage();
   };
 
   const openDeleteDialog = (article: Article) => {
@@ -142,7 +142,7 @@ export default function ArticlesPage() {
                 <Search className="h-4 w-4" />
               </Button>
             </div>
-            <Select value={statusFilter || 'ALL'} onValueChange={(v) => { setStatusFilter(v === 'ALL' ? '' : v); setPage(1); }}>
+            <Select value={statusFilter || 'ALL'} onValueChange={(v) => { setStatusFilter(v === 'ALL' ? '' : v); resetPage(); }}>
               <SelectTrigger className="w-[100px] sm:w-[120px]">
                 <SelectValue placeholder="状态" />
               </SelectTrigger>
