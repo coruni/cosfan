@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useRouter } from "next/navigation";
+import { useRouter } from "@/i18n/routing";
 import Image from "next/image";
 import {
   articleControllerCreate,
@@ -192,7 +192,7 @@ export default function ArticleNewPage() {
     onSuccess: () => {
       toast.success("文章创建成功");
       queryClient.invalidateQueries({ queryKey: ["admin-articles"] });
-      router.push("/dashboard/articles");
+      router.back();
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : "创建失败";

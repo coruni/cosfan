@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter, useParams } from '@/i18n/routing';
 import {
   articleControllerFindOne,
   articleControllerUpdate,
@@ -207,7 +207,7 @@ export default function ArticleEditPage() {
       toast.success('文章更新成功');
       queryClient.invalidateQueries({ queryKey: ['admin-articles'] });
       queryClient.invalidateQueries({ queryKey: ['article', articleId] });
-      router.push('/dashboard/articles');
+      router.back();
     },
     onError: (error: unknown) => {
       const message = error instanceof Error ? error.message : '更新失败';
