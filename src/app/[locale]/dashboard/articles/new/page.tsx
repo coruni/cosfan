@@ -418,7 +418,6 @@ export default function ArticleNewPage() {
       images: form.images,
       sort: 0,
       requireFollow: false,
-      listRequireLogin: false,
       downloads: form.downloads,
     });
   };
@@ -779,6 +778,15 @@ export default function ArticleNewPage() {
                   onCheckedChange={(v) => setForm({ ...form, requireLogin: v })}
                 />
                 <span className="text-sm">需要登录</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <Switch
+                  checked={form.listRequireLogin}
+                  onCheckedChange={(v) =>
+                    setForm({ ...form, listRequireLogin: v })
+                  }
+                />
+                <span className="text-sm">列表登录可见</span>
               </label>
               <label className="flex items-center gap-2">
                 <Switch

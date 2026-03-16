@@ -113,6 +113,7 @@ export default function ArticleEditPage() {
     tagNames: [] as string[],
     status: 'DRAFT' as 'DRAFT' | 'PUBLISHED',
     requireLogin: false,
+    listRequireLogin: false,
     requirePayment: false,
     requireMembership: false,
     viewPrice: 0,
@@ -182,6 +183,7 @@ export default function ArticleEditPage() {
         tagNames: articleTags?.map((t) => t.name) || [],
         status: (article.status || 'DRAFT') as 'DRAFT' | 'PUBLISHED',
         requireLogin: article.requireLogin ?? false,
+        listRequireLogin: article.listRequireLogin ?? false,
         requirePayment: article.requirePayment ?? false,
         requireMembership: article.requireMembership ?? false,
         viewPrice: Number(article.viewPrice) || 0,
@@ -744,6 +746,10 @@ export default function ArticleEditPage() {
               <label className="flex items-center gap-2">
                 <Switch checked={form.requireLogin} onCheckedChange={(v) => setForm({ ...form, requireLogin: v })} />
                 <span className="text-sm">需要登录</span>
+              </label>
+              <label className="flex items-center gap-2">
+                <Switch checked={form.listRequireLogin} onCheckedChange={(v) => setForm({ ...form, listRequireLogin: v })} />
+                <span className="text-sm">列表登录可见</span>
               </label>
               <label className="flex items-center gap-2">
                 <Switch checked={form.requirePayment} onCheckedChange={(v) => setForm({ ...form, requirePayment: v })} />
