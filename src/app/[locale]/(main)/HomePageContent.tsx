@@ -6,7 +6,8 @@ import { articleControllerFindAll } from '@/api/sdk.gen';
 import { ArticleCard } from '@/components/article/ArticleCard';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious, PaginationEllipsis } from '@/components/ui/pagination';
-import { useSearchParams, usePathname } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { usePathname } from '@/i18n';
 import type { ArticleControllerFindOneResponse } from '@/api';
 import { Advertisement } from '@/components/Advertisement';
 

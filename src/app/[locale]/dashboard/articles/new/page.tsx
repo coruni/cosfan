@@ -806,6 +806,15 @@ export default function ArticleNewPage() {
                 />
                 <span className="text-sm">需要会员</span>
               </label>
+              <label className="flex items-center gap-2">
+                <Switch
+                  checked={form.listRequireLogin}
+                  onCheckedChange={(v) =>
+                    setForm({ ...form, listRequireLogin: v })
+                  }
+                />
+                <span className="text-sm">列表需要登录</span>
+              </label>
               {form.requirePayment && (
                 <div className="space-y-2">
                   <Label>查看价格</Label>

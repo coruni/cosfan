@@ -2,6 +2,7 @@
 
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
+import { usePathname } from '@/i18n';
 import { categoryControllerFindOne, articleControllerFindAll } from '@/api/sdk.gen';
 import { ArticleGrid } from '@/components/article/ArticleGrid';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -14,7 +15,14 @@ interface CoserContentProps {
 
 export function CoserContent({ id }: CoserContentProps) {
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const page = parseInt(searchParams.get('page') || '1', 10);
+
+  const createPageUrl = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNum.toString());
+    return `${pathname}?${params.toString()}`;
+  };
 
   const { data: coser, isLoading: isCoserLoading } = useQuery({
     queryKey: ['coser', id],
@@ -75,8 +83,8 @@ export function CoserContent({ id }: CoserContentProps) {
           <Pagination>
             <PaginationContent>
               <PaginationItem>
-                <PaginationPrevious 
-                  href={page > 1 ? `/cosers/${id}?page=${page - 1}` : '#'} 
+                <PaginationPrevious
+                  href={page > 1 ? createPageUrl(page - 1) : '#'}
                   className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
                 />
               </PaginationItem>
@@ -85,8 +93,8 @@ export function CoserContent({ id }: CoserContentProps) {
                 if (pageNum < 1 || pageNum > totalPages) return null;
                 return (
                   <PaginationItem key={pageNum}>
-                    <PaginationLink 
-                      href={`/cosers/${id}?page=${pageNum}`}
+                    <PaginationLink
+                      href={createPageUrl(pageNum)}
                       isActive={pageNum === page}
                     >
                       {pageNum}
@@ -95,8 +103,8 @@ export function CoserContent({ id }: CoserContentProps) {
                 );
               })}
               <PaginationItem>
-                <PaginationNext 
-                  href={page < totalPages ? `/cosers/${id}?page=${page + 1}` : '#'}
+                <PaginationNext
+                  href={page < totalPages ? createPageUrl(page + 1) : '#'}
                   className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
                 />
               </PaginationItem>
