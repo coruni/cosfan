@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
+import { usePathname, useRouter } from '@/i18n';
 import { ArticleGrid } from '@/components/article/ArticleGrid';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -15,12 +16,19 @@ import { ArticleControllerFindAllResponse, articleControllerSearch } from '@/api
 export function SearchContent() {
   const t = useTranslations('search');
   const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const keyword = searchParams.get('q') || '';
   const sort = searchParams.get('sort') || 'latest';
   const page = parseInt(searchParams.get('page') || '1', 10);
 
   const [searchInput, setSearchInput] = useState(keyword);
+
+  const createPageUrl = (pageNum: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNum.toString());
+    return `${pathname}?${params.toString()}`;
+  };
 
   const SORT_OPTIONS = [
     { value: 'latest', label: t('sort.latest') },
@@ -49,7 +57,7 @@ export function SearchContent() {
     const params = new URLSearchParams();
     if (searchInput) params.set('q', searchInput);
     if (sort !== 'latest') params.set('sort', sort);
-    router.push(`/search?${params.toString()}`);
+    router.push(`${pathname}?${params.toString()}`);
   };
 
   const articles: ArticleControllerFindAllResponse['data']['data'] = data?.data?.data as ArticleControllerFindAllResponse['data']['data'] || [];
@@ -73,7 +81,7 @@ export function SearchContent() {
           <Select value={sort} onValueChange={(value) => {
             const params = new URLSearchParams(searchParams.toString());
             params.set('sort', value);
-            router.push(`/search?${params.toString()}`);
+            router.push(`${pathname}?${params.toString()}`);
           }}>
             <SelectTrigger className="w-[140px]">
               <SelectValue />
@@ -110,8 +118,8 @@ export function SearchContent() {
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious 
-                      href={`/search?${new URLSearchParams({ ...Object.fromEntries(searchParams), page: String(page - 1) }).toString()}`}
+                    <PaginationPrevious
+                      href={page > 1 ? createPageUrl(page - 1) : '#'}
                       className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
                     />
                   </PaginationItem>
@@ -120,8 +128,8 @@ export function SearchContent() {
                     if (pageNum < 1 || pageNum > totalPages) return null;
                     return (
                       <PaginationItem key={pageNum}>
-                        <PaginationLink 
-                          href={`/search?${new URLSearchParams({ ...Object.fromEntries(searchParams), page: String(pageNum) }).toString()}`}
+                        <PaginationLink
+                          href={createPageUrl(pageNum)}
                           isActive={pageNum === page}
                         >
                           {pageNum}
@@ -130,8 +138,8 @@ export function SearchContent() {
                     );
                   })}
                   <PaginationItem>
-                    <PaginationNext 
-                      href={`/search?${new URLSearchParams({ ...Object.fromEntries(searchParams), page: String(page + 1) }).toString()}`}
+                    <PaginationNext
+                      href={page < totalPages ? createPageUrl(page + 1) : '#'}
                       className={page >= totalPages ? 'pointer-events-none opacity-50' : ''}
                     />
                   </PaginationItem>

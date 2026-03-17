@@ -3,7 +3,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
-import { useSearchParams, usePathname } from "next/navigation";
+import { useSearchParams } from "next/navigation";
+import { usePathname, Link } from "@/i18n";
 import { categoryControllerFindAll } from "@/api/sdk.gen";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,7 +16,6 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { Link } from "@/i18n";
 import { User } from "lucide-react";
 import type { CategoryControllerFindAllResponse } from "@/api";
 

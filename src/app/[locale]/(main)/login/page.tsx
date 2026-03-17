@@ -1,7 +1,8 @@
 'use client';
 
 import { useState, useEffect, Suspense } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from '@/i18n';
+import { useSearchParams } from 'next/navigation';
 import { Link } from '@/i18n';
 import { useTranslations } from 'next-intl';
 import { useForm } from 'react-hook-form';
