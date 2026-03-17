@@ -35278,6 +35278,9 @@
             "type": "string",
             "description": "提取码",
             "example": "1234"
+          },
+          "visibleWithoutPermission": {
+            "type": "boolean"
           }
         },
         "required": [

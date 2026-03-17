@@ -439,6 +439,7 @@ export type DownloadDto = {
      * 提取码
      */
     extractionCode?: string;
+    visibleWithoutPermission?: boolean;
 };
 
 export type CreateArticleDto = {

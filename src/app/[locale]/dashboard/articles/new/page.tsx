@@ -92,6 +92,7 @@ type DownloadItem = {
   url: string;
   password?: string;
   extractionCode?: string;
+  visibleWithoutPermission?: boolean;
 };
 
 const DOWNLOAD_TYPES: { value: DownloadType; label: string }[] = [
@@ -152,6 +153,7 @@ export default function ArticleNewPage() {
     url: "",
     password: "",
     extractionCode: "",
+    visibleWithoutPermission: false,
   });
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [newCategoryForm, setNewCategoryForm] = useState({
@@ -394,6 +396,7 @@ export default function ArticleNewPage() {
       url: "",
       password: "",
       extractionCode: "",
+      visibleWithoutPermission: false,
     });
   };
 
@@ -974,6 +977,15 @@ export default function ArticleNewPage() {
                     />
                   </div>
                 </div>
+                <label className="flex items-center gap-2">
+                  <Switch
+                    checked={newDownload.visibleWithoutPermission || false}
+                    onCheckedChange={(v) =>
+                      setNewDownload({ ...newDownload, visibleWithoutPermission: v })
+                    }
+                  />
+                  <span className="text-sm">无权限可见</span>
+                </label>
                 <Button size="sm" onClick={addDownload} className="w-full">
                   <Plus className="h-4 w-4 mr-1" />
                   添加下载资源
@@ -1002,6 +1014,11 @@ export default function ArticleNewPage() {
                             </span>
                             {(download.password || download.extractionCode) && (
                               <Lock className="h-3 w-3 text-muted-foreground" />
+                            )}
+                            {download.visibleWithoutPermission && (
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                                无权限可见
+                              </span>
                             )}
                           </div>
                           <p className="text-sm truncate text-muted-foreground">

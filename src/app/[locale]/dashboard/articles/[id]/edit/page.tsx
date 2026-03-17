@@ -67,6 +67,7 @@ type DownloadItem = {
   url: string;
   password?: string;
   extractionCode?: string;
+  visibleWithoutPermission?: boolean;
 };
 
 const DOWNLOAD_TYPES: { value: DownloadType; label: string }[] = [
@@ -129,6 +130,7 @@ export default function ArticleEditPage() {
     url: '',
     password: '',
     extractionCode: '',
+    visibleWithoutPermission: false,
   });
   const [categoryDialogOpen, setCategoryDialogOpen] = useState(false);
   const [newCategoryForm, setNewCategoryForm] = useState({
@@ -195,6 +197,7 @@ export default function ArticleEditPage() {
           url: d.url,
           password: d.password || '',
           extractionCode: d.extractionCode || '',
+          visibleWithoutPermission: d.visibleWithoutPermission ?? false,
         })),
       });
     }
@@ -405,6 +408,7 @@ export default function ArticleEditPage() {
       url: '',
       password: '',
       extractionCode: '',
+      visibleWithoutPermission: false,
     });
   };
 
@@ -883,7 +887,7 @@ export default function ArticleEditPage() {
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
                     <Label className="text-xs">提取密码</Label>
-                    <Input 
+                    <Input
                       placeholder="如: 123456"
                       value={newDownload.password || ''}
                       onChange={(e) => setNewDownload({ ...newDownload, password: e.target.value })}
@@ -891,13 +895,20 @@ export default function ArticleEditPage() {
                   </div>
                   <div className="space-y-2">
                     <Label className="text-xs">提取码</Label>
-                    <Input 
+                    <Input
                       placeholder="如: 1234"
                       value={newDownload.extractionCode || ''}
                       onChange={(e) => setNewDownload({ ...newDownload, extractionCode: e.target.value })}
                     />
                   </div>
                 </div>
+                <label className="flex items-center gap-2">
+                  <Switch
+                    checked={newDownload.visibleWithoutPermission || false}
+                    onCheckedChange={(v) => setNewDownload({ ...newDownload, visibleWithoutPermission: v })}
+                  />
+                  <span className="text-sm">无权限可见</span>
+                </label>
                 <Button size="sm" onClick={addDownload} className="w-full">
                   <Plus className="h-4 w-4 mr-1" />
                   添加下载资源
@@ -922,6 +933,11 @@ export default function ArticleEditPage() {
                             </span>
                             {(download.password || download.extractionCode) && (
                               <Lock className="h-3 w-3 text-muted-foreground" />
+                            )}
+                            {download.visibleWithoutPermission && (
+                              <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-300">
+                                无权限可见
+                              </span>
                             )}
                           </div>
                           <p className="text-sm truncate text-muted-foreground">{download.url}</p>
