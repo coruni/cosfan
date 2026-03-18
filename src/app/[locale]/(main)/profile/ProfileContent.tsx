@@ -102,17 +102,20 @@ function getVipStatus(user: UserControllerGetProfileResponse["data"]) {
 
 function getPageNumbers(currentPage: number, totalPages: number) {
   const pages: (number | "ellipsis")[] = [];
-  const showPages = 5;
+  // 减少显示页码数量，避免移动端溢出
+  const showPages = 3;
 
   if (totalPages <= showPages + 2) {
     for (let i = 1; i <= totalPages; i++) pages.push(i);
   } else {
     pages.push(1);
-    if (currentPage > 3) pages.push("ellipsis");
-    const start = Math.max(2, currentPage - 1);
-    const end = Math.min(totalPages - 1, currentPage + 1);
-    for (let i = start; i <= end; i++) pages.push(i);
-    if (currentPage < totalPages - 2) pages.push("ellipsis");
+    if (currentPage > 2) pages.push("ellipsis");
+    const start = Math.max(2, currentPage - Math.floor(showPages / 2));
+    const end = Math.min(totalPages - 1, start + showPages - 1);
+    for (let i = start; i <= end; i++) {
+      if (i > 1 && i < totalPages) pages.push(i);
+    }
+    if (currentPage < totalPages - 1) pages.push("ellipsis");
     if (totalPages > 1) pages.push(totalPages);
   }
 

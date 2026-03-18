@@ -117,7 +117,6 @@ export default function ArticleEditPage() {
     listRequireLogin: false,
     requirePayment: false,
     requireMembership: false,
-    listRequireLogin: false,
     viewPrice: 0,
     type: 'image' as 'image' | 'mixed',
     downloads: [] as DownloadItem[],
@@ -176,7 +175,7 @@ export default function ArticleEditPage() {
     if (articleData?.data) {
       const article = articleData.data;
       const articleTags = article.tags as unknown as { name: string }[] | undefined;
-      const articleDownloads = article.downloads as unknown as { type: DownloadType; url: string; password?: string; extractionCode?: string }[] | undefined;
+      const articleDownloads = article.downloads as unknown as { type: DownloadType; url: string; password?: string; extractionCode?: string; visibleWithoutPermission?: boolean }[] | undefined;
       setForm({
         title: article.title || '',
         content: article.content || '',
@@ -189,7 +188,6 @@ export default function ArticleEditPage() {
         listRequireLogin: article.listRequireLogin ?? false,
         requirePayment: article.requirePayment ?? false,
         requireMembership: article.requireMembership ?? false,
-        listRequireLogin: article.listRequireLogin ?? false,
         viewPrice: Number(article.viewPrice) || 0,
         type: (article.type || 'image') as 'image' | 'mixed',
         downloads: (articleDownloads || []).map((d) => ({

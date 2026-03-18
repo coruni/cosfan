@@ -88,9 +88,10 @@ export function CoserContent({ id }: CoserContentProps) {
                   className={page <= 1 ? 'pointer-events-none opacity-50' : ''}
                 />
               </PaginationItem>
-              {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                const pageNum = Math.max(1, Math.min(page - 2 + i, totalPages - 4 + i));
-                if (pageNum < 1 || pageNum > totalPages) return null;
+              {Array.from({ length: Math.min(3, totalPages) }, (_, i) => {
+                // 减少显示页码数量，避免移动端溢出
+                const offset = Math.max(0, Math.min(page - 2, totalPages - 3));
+                const pageNum = offset + i + 1;
                 return (
                   <PaginationItem key={pageNum}>
                     <PaginationLink
