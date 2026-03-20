@@ -395,9 +395,9 @@ export function ImageGallery({ images, initialIndex = 0, requireMembership = fal
 
       <Dialog open={isOpen} onOpenChange={setIsOpen}>
         <DialogPrimitive.Portal>
-          <DialogPrimitive.Overlay className="fixed inset-0 z-50 bg-black/80" />
+          <DialogPrimitive.Overlay className="fixed inset-0 z-50" />
           <DialogPrimitive.Content
-            className="fixed inset-0 z-50 m-0 w-full h-full p-0 bg-black border-0 rounded-none"
+            className="fixed inset-0 z-50 m-0 w-full h-full p-0 bg-black/75 border-0 rounded-none"
             onKeyDown={handleKeyDown}
           >
             <VisuallyHidden>

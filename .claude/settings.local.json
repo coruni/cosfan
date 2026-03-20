@@ -13,7 +13,8 @@
       "Bash(pnpm eslint:*)",
       "Bash(pnpm tsc:*)",
       "mcp__ide__getDiagnostics",
-      "Bash(curl:*)"
+      "Bash(curl:*)",
+      "WebFetch(domain:www.npmjs.com)"
     ]
   }
 }
