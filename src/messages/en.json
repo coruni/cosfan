@@ -738,6 +738,11 @@
     "empty": "No content",
     "coserWorks": "{name} - Cosplay Collection"
   },
+  "cosersPage": {
+    "title": "Coser List",
+    "description": "Browse all Cosers and discover amazing Cosplay collections",
+    "keywords": "coser,cosplay,anime,role-play,gallery"
+  },
   "article": {
     "notFound": "Article not found or has been deleted",
     "backToHome": "Back to Home",

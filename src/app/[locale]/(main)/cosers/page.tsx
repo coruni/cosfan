@@ -1,18 +1,26 @@
 import { Metadata } from 'next';
 import { Suspense } from 'react';
+import { getTranslations } from 'next-intl/server';
 import { CosersContent } from './CosersContent';
 import { Skeleton } from '@/components/ui/skeleton';
 
-export async function generateMetadata(): Promise<Metadata> {
+interface PageProps {
+  params: Promise<{ locale: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'cosersPage' });
+
   return {
-    title: 'Coser列表',
-    description: '浏览所有Coser，发现精彩的Cosplay作品集',
-    keywords: ['coser', 'cosplay', '二次元', '角色扮演', '图集'],
+    title: t('title'),
+    description: t('description'),
+    keywords: t('keywords').split(','),
     openGraph: {
-      title: 'Coser列表',
-      description: '浏览所有Coser，发现精彩的Cosplay作品集',
+      title: t('title'),
+      description: t('description'),
       type: 'website',
-      locale: 'zh_CN',
+      locale: locale === 'zh' ? 'zh_CN' : 'en_US',
     },
   };
 }
