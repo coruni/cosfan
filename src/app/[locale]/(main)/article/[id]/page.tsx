@@ -77,6 +77,12 @@ export async function generateMetadata({
         description,
         images: coverImage ? [coverImage] : undefined,
       },
+      // 防止被标记为成人/NSFW内容
+      other: {
+        rating: "general",
+        "rating-icon": "safe",
+        SafeSearch: "safe",
+      },
     };
   } catch {
     return { title: "文章不存在" };

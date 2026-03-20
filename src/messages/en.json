@@ -843,7 +843,13 @@
       "reply": "Reply",
       "viewMore": "View {count} more replies",
       "repliedTo": "replied to",
-      "user": "User"
+      "user": "User",
+      "placeholder": "Write your comment...",
+      "submit": "Send",
+      "loginToComment": "Login to comment",
+      "commentSuccess": "Comment posted successfully",
+      "commentFailed": "Failed to post comment, please try again",
+      "commentEmpty": "Comment cannot be empty"
     }
   },
   "legal": {

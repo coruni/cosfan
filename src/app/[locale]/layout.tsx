@@ -132,6 +132,9 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: {
       index: true,
       follow: true,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+      "max-snippet": -1,
       googleBot: {
         index: true,
         follow: true,
@@ -139,6 +142,13 @@ export async function generateMetadata(): Promise<Metadata> {
         "max-image-preview": "large",
         "max-snippet": -1,
       },
+    },
+    // 防止被标记为成人/NSFW内容
+    other: {
+      rating: "general",
+      "rating-icon": "safe",
+      SafeSearch: "safe",
+      "pics-label": "(pics-1.1 &quot;http://www.icra.org/ratingsv02.html&quot; l gen true for &quot;https://www.coslark.org&quot; r (nz 1 vz 1 lz 1 oz 1 cz 1))",
     },
   };
 }

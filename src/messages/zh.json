@@ -843,7 +843,13 @@
       "reply": "回复",
       "viewMore": "查看更多 {count} 条回复",
       "repliedTo": "回复了",
-      "user": "用户"
+      "user": "用户",
+      "placeholder": "写下你的评论...",
+      "submit": "发送",
+      "loginToComment": "登录后才能评论",
+      "commentSuccess": "评论成功",
+      "commentFailed": "评论失败，请重试",
+      "commentEmpty": "评论内容不能为空"
     }
   },
   "legal": {

@@ -1,8 +1,8 @@
 'use client';
 
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { MessageCircle, Heart } from 'lucide-react';
+import { MessageCircle, Heart, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -12,10 +12,12 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { commentControllerFindAll, commentControllerGetCommentCount } from '@/api/sdk.gen';
+import { commentControllerFindAll, commentControllerGetCommentCount, commentControllerCreate } from '@/api/sdk.gen';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
 import { useState } from 'react';
+import { toast } from 'sonner';
 
 interface Comment {
   id: number;
@@ -72,8 +74,10 @@ function formatTimeAgo(dateString: string): string {
 
 export function ArticleComments({ articleId }: { articleId: string }) {
   const t = useTranslations('component.articleComments');
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [commentContent, setCommentContent] = useState('');
+  const queryClient = useQueryClient();
 
   const { data: countData } = useQuery({
     queryKey: ['commentCount', articleId],
@@ -98,6 +102,36 @@ export function ArticleComments({ articleId }: { articleId: string }) {
     },
     enabled: isOpen, // 仅在打开时加载
   });
+
+  const createCommentMutation = useMutation({
+    mutationFn: async (content: string) => {
+      const response = await commentControllerCreate({
+        body: {
+          articleId: parseInt(articleId),
+          content,
+        } as unknown,
+      });
+      return response.data;
+    },
+    onSuccess: () => {
+      toast.success(t('commentSuccess'));
+      setCommentContent('');
+      // 刷新评论列表和计数
+      queryClient.invalidateQueries({ queryKey: ['comments', articleId] });
+      queryClient.invalidateQueries({ queryKey: ['commentCount', articleId] });
+    },
+    onError: () => {
+      toast.error(t('commentFailed'));
+    },
+  });
+
+  const handleSubmitComment = () => {
+    if (!commentContent.trim()) {
+      toast.error(t('commentEmpty'));
+      return;
+    }
+    createCommentMutation.mutate(commentContent.trim());
+  };
 
   const commentCount = countData ?? 0;
 
@@ -124,6 +158,34 @@ export function ArticleComments({ articleId }: { articleId: string }) {
             {t('title')} ({commentCount})
           </DialogTitle>
         </DialogHeader>
+
+        {/* 评论输入框 */}
+        <div className="flex gap-3 p-2 border-b">
+          <Avatar className="h-10 w-10 shrink-0">
+            <AvatarImage src={user?.avatar} />
+            <AvatarFallback>{user?.nickname?.[0] || '?'}</AvatarFallback>
+          </Avatar>
+          <div className="flex-1 flex flex-col gap-2">
+            <Textarea
+              placeholder={isAuthenticated ? t('placeholder') : t('loginToComment')}
+              value={commentContent}
+              onChange={(e) => setCommentContent(e.target.value)}
+              disabled={!isAuthenticated || createCommentMutation.isPending}
+              className="min-h-[60px] resize-none"
+              rows={2}
+            />
+            <div className="flex justify-end">
+              <Button
+                size="sm"
+                onClick={handleSubmitComment}
+                disabled={!isAuthenticated || !commentContent.trim() || createCommentMutation.isPending}
+              >
+                <Send className="h-4 w-4 mr-1" />
+                {t('submit')}
+              </Button>
+            </div>
+          </div>
+        </div>
 
         {isLoading ? (
           <div className="space-y-3 p-2">
