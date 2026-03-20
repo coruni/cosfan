@@ -39,7 +39,7 @@ import {
   Loader2,
   Camera,
 } from "lucide-react";
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Dialog,
@@ -52,6 +52,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { ImageCropDialog } from "@/components/ui/image-crop-dialog";
 import { toast } from "sonner";
 import {
   Pagination,
@@ -133,12 +134,12 @@ export default function ProfileContent() {
     refreshUser,
   } = useAuth();
   const [showEditDialog, setShowEditDialog] = useState(false);
+  const [showAvatarCropDialog, setShowAvatarCropDialog] = useState(false);
   const [editForm, setEditForm] = useState({
     nickname: "",
     bio: "",
     avatar: "",
   });
-  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const searchParams = useSearchParams();
   const pathname = usePathname();
@@ -224,13 +225,10 @@ export default function ProfileContent() {
   };
 
   const handleAvatarClick = () => {
-    fileInputRef.current?.click();
+    setShowAvatarCropDialog(true);
   };
 
-  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const handleAvatarCropConfirm = async (file: File) => {
     try {
       const response = await uploadControllerUploadFile({
         body: { file },
@@ -585,13 +583,6 @@ export default function ProfileContent() {
                   <Camera className="h-3 w-3 text-white" />
                 </div>
               </div>
-              <input
-                type="file"
-                ref={fileInputRef}
-                className="hidden"
-                accept="image/*"
-                onChange={handleFileChange}
-              />
               <Button variant="ghost" size="sm" onClick={handleAvatarClick}>
                 {tProfile("changeAvatar")}
               </Button>
@@ -636,6 +627,17 @@ export default function ProfileContent() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Avatar Crop Dialog */}
+      <ImageCropDialog
+        open={showAvatarCropDialog}
+        onOpenChange={setShowAvatarCropDialog}
+        title={tProfile("changeAvatar")}
+        aspectRatio={1}
+        width={200}
+        height={200}
+        onConfirm={handleAvatarCropConfirm}
+      />
     </div>
   );
 }
