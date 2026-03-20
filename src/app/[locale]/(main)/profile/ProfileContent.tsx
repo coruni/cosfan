@@ -511,7 +511,9 @@ export default function ProfileContent() {
             <CardContent>
               <ArticleGrid
                 articles={
-                  (browseHistory?.data as ArticleControllerFindAllResponse["data"]["data"]) ||
+                  (browseHistory?.data
+                    ?.map((item) => item.article)
+                    .filter(Boolean) as ArticleControllerFindAllResponse["data"]["data"]) ||
                   []
                 }
               />
