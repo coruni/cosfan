@@ -727,7 +727,8 @@
     "articlesCount": "{count} 套图集",
     "viewWorks": "查看 {name} 的Cosplay作品集",
     "totalCount": "共 {count} 位Coser",
-    "empty": "暂无Coser"
+    "empty": "暂无Coser",
+    "searchPlaceholder": "搜索Coser..."
   },
   "discover": {
     "title": "发现",

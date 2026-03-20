@@ -727,7 +727,8 @@
     "articlesCount": "{count} galleries",
     "viewWorks": "View {name}'s Cosplay collection",
     "totalCount": "{count} Cosers",
-    "empty": "No Cosers found"
+    "empty": "No Cosers found",
+    "searchPlaceholder": "Search Coser..."
   },
   "discover": {
     "title": "Discover",

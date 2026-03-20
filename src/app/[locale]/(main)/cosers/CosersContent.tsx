@@ -1,12 +1,15 @@
 "use client";
 
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
-import { usePathname, Link } from "@/i18n";
+import { usePathname, useRouter, Link } from "@/i18n";
 import { categoryControllerFindAll } from "@/api/sdk.gen";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -16,12 +19,8 @@ import {
   PaginationPrevious,
   PaginationEllipsis,
 } from "@/components/ui/pagination";
-import { User } from "lucide-react";
+import { User, Search } from "lucide-react";
 import type { CategoryControllerFindAllResponse } from "@/api";
-
-type Category = NonNullable<
-  CategoryControllerFindAllResponse["data"]["data"]
->[number];
 
 function CategoryCardSkeleton() {
   return (
@@ -34,17 +33,23 @@ function CategoryCardSkeleton() {
 export function CosersContent() {
   const t = useTranslations("coser");
   const tPagination = useTranslations("pagination");
+  const router = useRouter();
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
+  const keyword = searchParams.get("q") || "";
+  const [searchInput, setSearchInput] = useState(keyword);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["cosers", currentPage],
+    queryKey: ["cosers", currentPage, keyword],
     queryFn: async () => {
       const response = await categoryControllerFindAll({
         query: {
           page: currentPage,
           limit: 24,
+          name: keyword || undefined,
+          sortBy: "createdAt",
+          sortOrder: "DESC",
         },
       });
       return (
@@ -54,6 +59,14 @@ export function CosersContent() {
       );
     },
   });
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchInput) params.set("q", searchInput);
+    if (currentPage !== 1) params.set("page", "1");
+    router.push(`${pathname}?${params.toString()}`);
+  };
 
   const cosers = data?.data?.data || [];
   const meta = data?.data?.meta as
@@ -107,13 +120,30 @@ export function CosersContent() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">{t("list")}</h1>
-        {total > 0 && (
-          <span className="text-sm text-muted-foreground">
-            {t("totalCount", { count: total })}
-          </span>
-        )}
+        <div className="flex items-center gap-4 w-full sm:w-auto">
+          <form onSubmit={handleSearch} className="flex gap-2 flex-1 sm:flex-initial">
+            <div className="relative flex-1 sm:w-64">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                type="search"
+                placeholder={t("searchPlaceholder")}
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            <Button type="submit" size="icon" variant="secondary">
+              <Search className="h-4 w-4" />
+            </Button>
+          </form>
+          {total > 0 && (
+            <span className="text-sm text-muted-foreground whitespace-nowrap">
+              {t("totalCount", { count: total })}
+            </span>
+          )}
+        </div>
       </div>
 
       {isLoading ? (
