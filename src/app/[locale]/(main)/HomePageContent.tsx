@@ -1,5 +1,6 @@
 'use client';
 
+import { useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { articleControllerFindAll } from '@/api/sdk.gen';
@@ -50,17 +51,16 @@ export function HomePageContent() {
   const articles = data?.data?.data || [];
   const meta = data?.data?.meta as { total: number; page: number; limit: number } | undefined;
   const total = meta?.total || 0;
-  const totalPages = Math.ceil(total / 20);
+  const totalPages = useMemo(() => Math.ceil(total / 20), [total]);
 
-  const createPageUrl = (page: number) => {
+  const createPageUrl = useCallback((page: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', page.toString());
     return `${pathname}?${params.toString()}`;
-  };
+  }, [searchParams, pathname]);
 
-  const getPageNumbers = () => {
+  const pageNumbers = useMemo(() => {
     const pages: (number | 'ellipsis')[] = [];
-    // 减少显示页码数量，避免移动端溢出
     const showPages = 3;
 
     if (totalPages <= showPages + 2) {
@@ -93,7 +93,7 @@ export function HomePageContent() {
     }
 
     return pages;
-  };
+  }, [totalPages, currentPage]);
 
   return (
     <main className="space-y-6">
@@ -144,7 +144,7 @@ export function HomePageContent() {
                       />
                     </PaginationItem>
                     
-                    {getPageNumbers().map((page, index) => (
+                    {pageNumbers.map((page, index) => (
                       <PaginationItem key={index}>
                         {page === 'ellipsis' ? (
                           <PaginationEllipsis />

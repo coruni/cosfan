@@ -39,7 +39,7 @@ import {
   Loader2,
   Camera,
 } from "lucide-react";
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useSearchParams } from "next/navigation";
 import {
   Dialog,
@@ -103,7 +103,6 @@ function getVipStatus(user: UserControllerGetProfileResponse["data"]) {
 
 function getPageNumbers(currentPage: number, totalPages: number) {
   const pages: (number | "ellipsis")[] = [];
-  // 减少显示页码数量，避免移动端溢出
   const showPages = 3;
 
   if (totalPages <= showPages + 2) {
@@ -147,12 +146,12 @@ export default function ProfileContent() {
   const currentTab = searchParams.get("tab") || "history";
   const currentPage = parseInt(searchParams.get("page") || "1", 10);
 
-  const createTabUrl = (tab: string, page: number = 1) => {
+  const createTabUrl = useCallback((tab: string, page: number = 1) => {
     const params = new URLSearchParams();
     params.set("tab", tab);
     if (page > 1) params.set("page", page.toString());
     return `${pathname}?${params.toString()}`;
-  };
+  }, [pathname]);
 
   const { data: browseHistory } = useQuery({
     queryKey: ["browse-history", currentPage],
@@ -210,7 +209,7 @@ export default function ProfileContent() {
     },
   });
 
-  const handleEditClick = () => {
+  const handleEditClick = useCallback(() => {
     const userData = user as UserControllerGetProfileResponse["data"];
     setEditForm({
       nickname: userData?.nickname || "",
@@ -218,17 +217,17 @@ export default function ProfileContent() {
       avatar: userData?.avatar || "",
     });
     setShowEditDialog(true);
-  };
+  }, [user]);
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = useCallback(() => {
     updateMutation.mutate(editForm);
-  };
+  }, [updateMutation, editForm]);
 
-  const handleAvatarClick = () => {
+  const handleAvatarClick = useCallback(() => {
     setShowAvatarCropDialog(true);
-  };
+  }, []);
 
-  const handleAvatarCropConfirm = async (file: File) => {
+  const handleAvatarCropConfirm = useCallback(async (file: File) => {
     try {
       const response = await uploadControllerUploadFile({
         body: { file },
@@ -244,11 +243,11 @@ export default function ProfileContent() {
       const message = error instanceof Error ? error.message : tToast("avatarUploadFailed");
       toast.error(message);
     }
-  };
+  }, [tToast]);
 
-  const handleTabChange = (tab: string) => {
+  const handleTabChange = useCallback((tab: string) => {
     router.push(createTabUrl(tab, 1));
-  };
+  }, [router, createTabUrl]);
 
   if (isAuthLoading) {
     return (
@@ -280,11 +279,12 @@ export default function ProfileContent() {
   }
 
   const userData = user as UserControllerGetProfileResponse["data"];
-  const vipStatus = getVipStatus(userData);
+  const vipStatus = useMemo(() => getVipStatus(userData), [userData]);
 
-  const renderPagination = (total: number) => {
+  const renderPagination = useCallback((total: number) => {
     const totalPages = Math.ceil(total / 20);
     if (totalPages <= 1) return null;
+    const pages = getPageNumbers(currentPage, totalPages);
 
     return (
       <div className="flex flex-col items-center gap-4 mt-6">
@@ -298,7 +298,7 @@ export default function ProfileContent() {
                 }
               />
             </PaginationItem>
-            {getPageNumbers(currentPage, totalPages).map((page, index) => (
+            {pages.map((page, index) => (
               <PaginationItem key={index}>
                 {page === "ellipsis" ? (
                   <PaginationEllipsis />
@@ -329,7 +329,7 @@ export default function ProfileContent() {
         </p>
       </div>
     );
-  };
+  }, [currentTab, currentPage, createTabUrl, tProfile]);
 
   return (
     <div className="container py-6">

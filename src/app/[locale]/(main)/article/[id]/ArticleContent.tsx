@@ -1,5 +1,6 @@
 "use client";
 
+import { useMemo, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
 import { usePathname } from "@/i18n";
@@ -129,7 +130,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
       });
     },
     onSuccess: () => {
-      const newIsLiked = !isLiked;
+      const newIsLiked = !(article?.isLiked ?? false);
       toast.success(newIsLiked ? t("liked") : t("unliked"));
       queryClient.setQueryData(["article", id], (old: Article | undefined) => {
         if (!old) return old;
@@ -152,7 +153,7 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
       });
     },
     onSuccess: () => {
-      const newIsFavorited = !isFavorited;
+      const newIsFavorited = !(article?.isFavorited ?? false);
       toast.success(newIsFavorited ? t("favorited") : t("unfavorited"));
       queryClient.setQueryData(["article", id], (old: Article | undefined) => {
         if (!old) return old;
@@ -164,23 +165,23 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
     },
   });
 
-  const handleLike = () => {
+  const handleLike = useCallback(() => {
     if (!isAuthenticated) {
       toast.error(tAuth("pleaseLogin"));
       return;
     }
     likeMutation.mutate();
-  };
+  }, [isAuthenticated, tAuth, likeMutation]);
 
-  const handleFavorite = () => {
+  const handleFavorite = useCallback(() => {
     if (!isAuthenticated) {
       toast.error(tAuth("pleaseLogin"));
       return;
     }
     favoriteMutation.mutate();
-  };
+  }, [isAuthenticated, tAuth, favoriteMutation]);
 
-  const handleShare = async () => {
+  const handleShare = useCallback(async () => {
     if (navigator.share) {
       try {
         await navigator.share({
@@ -194,17 +195,33 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
       await navigator.clipboard.writeText(window.location.href);
       toast.success(t("linkCopied"));
     }
-  };
+  }, [article, t]);
 
-  const getDownloadTypeLabel = (type?: string) => {
-    const typeKey = type || "unknown";
-    return t(
-      `downloadType.${typeKey}` as
-        | "downloadType.original"
-        | "downloadType.preview"
-        | "downloadType.unknown",
-    );
-  };
+  const getDownloadTypeLabel = useCallback(
+    (type?: string) => {
+      const typeKey = type || "unknown";
+      return t(
+        `downloadType.${typeKey}` as
+          | "downloadType.original"
+          | "downloadType.preview"
+          | "downloadType.unknown",
+      );
+    },
+    [t],
+  );
+
+  // 派生状态：图片可见性 - 移到这里，确保在条件性返回之前
+  const { imagesLength, canViewAllImages, remainingImages, hasImages } =
+    useMemo(() => {
+      const len = article?.images?.length ?? 0;
+      return {
+        imagesLength: len,
+        canViewAllImages: article?.imageCount === len,
+        remainingImages:
+          article?.imageCount && len ? article.imageCount - len : 0,
+        hasImages: len > 0,
+      };
+    }, [article?.images, article?.imageCount]);
 
   if (isLoading && !initialData) {
     return (
@@ -240,15 +257,6 @@ export function ArticleContent({ initialData }: ArticleContentProps) {
 
   const isLiked = article.isLiked ?? false;
   const isFavorited = article.isFavorited ?? false;
-
-  // 判断是否能看到全部图片：imageCount 和 images.length 相等
-  const imagesLength = article.images?.length ?? 0;
-  const canViewAllImages = article.imageCount === imagesLength;
-  const remainingImages =
-    article.imageCount && imagesLength ? article.imageCount - imagesLength : 0;
-
-  // 判断是否有图片可以显示
-  const hasImages = imagesLength > 0;
 
   return (
     <>

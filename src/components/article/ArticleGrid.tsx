@@ -1,5 +1,7 @@
 'use client';
 
+import { memo } from 'react';
+
 import { useTranslations } from 'next-intl';
 import {
   ArticleControllerFindAllResponse,
@@ -32,7 +34,7 @@ function ArticleCardSkeleton() {
   );
 }
 
-export function ArticleGrid({ articles, isLoading = false, priority = false }: ArticleGridProps) {
+export const ArticleGrid = memo(function ArticleGrid({ articles, isLoading = false, priority = false }: ArticleGridProps) {
   const t = useTranslations('component.articleGrid');
 
   if (isLoading) {

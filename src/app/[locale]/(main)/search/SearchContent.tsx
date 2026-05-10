@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'next/navigation';
 import { useTranslations } from 'next-intl';
@@ -24,17 +24,17 @@ export function SearchContent() {
 
   const [searchInput, setSearchInput] = useState(keyword);
 
-  const createPageUrl = (pageNum: number) => {
+  const createPageUrl = useCallback((pageNum: number) => {
     const params = new URLSearchParams(searchParams);
     params.set('page', pageNum.toString());
     return `${pathname}?${params.toString()}`;
-  };
+  }, [searchParams, pathname]);
 
-  const SORT_OPTIONS = [
+  const SORT_OPTIONS = useMemo(() => [
     { value: 'latest', label: t('sort.latest') },
     { value: 'popular', label: t('sort.popular') },
     { value: 'likes', label: t('sort.likes') },
-  ];
+  ], [t]);
 
   const { data, isLoading } = useQuery({
     queryKey: ['search', keyword, sort, page],
@@ -52,17 +52,23 @@ export function SearchContent() {
     enabled: !!keyword,
   });
 
-  const handleSearch = (e: React.FormEvent) => {
+  const handleSearch = useCallback((e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
     if (searchInput) params.set('q', searchInput);
     if (sort !== 'latest') params.set('sort', sort);
     router.push(`${pathname}?${params.toString()}`);
-  };
+  }, [searchInput, sort, router, pathname]);
 
   const articles: ArticleControllerFindAllResponse['data']['data'] = data?.data?.data as ArticleControllerFindAllResponse['data']['data'] || [];
   const total = data?.data?.meta?.total || 0;
   const totalPages = Math.ceil(total / 20);
+
+  const handleSortChange = useCallback((value: string) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('sort', value);
+    router.push(`${pathname}?${params.toString()}`);
+  }, [searchParams, router, pathname]);
 
   return (
     <div className="space-y-6">
@@ -78,11 +84,7 @@ export function SearchContent() {
               className="pl-10"
             />
           </div>
-          <Select value={sort} onValueChange={(value) => {
-            const params = new URLSearchParams(searchParams.toString());
-            params.set('sort', value);
-            router.push(`${pathname}?${params.toString()}`);
-          }}>
+          <Select value={sort} onValueChange={handleSortChange}>
             <SelectTrigger className="w-[140px]">
               <SelectValue />
             </SelectTrigger>

@@ -16,7 +16,7 @@ import { commentControllerFindAll, commentControllerGetCommentCount, commentCont
 import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { useAuth } from '@/contexts/AuthContext';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 
 interface Comment {
@@ -125,13 +125,13 @@ export function ArticleComments({ articleId }: { articleId: string }) {
     },
   });
 
-  const handleSubmitComment = () => {
+  const handleSubmitComment = useCallback(() => {
     if (!commentContent.trim()) {
       toast.error(t('commentEmpty'));
       return;
     }
     createCommentMutation.mutate(commentContent.trim());
-  };
+  }, [commentContent, createCommentMutation, t]);
 
   const commentCount = countData ?? 0;
 

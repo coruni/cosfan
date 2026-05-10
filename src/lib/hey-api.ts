@@ -78,8 +78,15 @@ function clearTokens() {
   document.cookie = "refresh_token=; path=/; max-age=0";
   localStorage.removeItem(STORAGE_KEYS.ACCESS_TOKEN);
   localStorage.removeItem(STORAGE_KEYS.REFRESH_TOKEN);
-  cookieStore.delete("access_token");
-  cookieStore.delete("refresh_token");
+  // 部分浏览器支持 cookieStore API（仅 HTTPS），尝试使用但不阻塞
+  try {
+    if (typeof cookieStore !== "undefined") {
+      cookieStore.delete("access_token");
+      cookieStore.delete("refresh_token");
+    }
+  } catch {
+    // cookieStore API 不可用或不在 HTTPS 环境，忽略
+  }
 }
 
 export const createClientConfig: CreateClientConfig = (config) => ({
