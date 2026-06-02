@@ -107,11 +107,11 @@ export default function DashboardLayout({
       {/* Desktop Sidebar */}
       <aside
         className={cn(
-          'hidden md:flex flex-col border-r bg-background transition-all duration-300',
+          'hidden md:flex flex-col border-r bg-background transition-all duration-300 h-full',
           sidebarOpen ? 'w-64' : 'w-16'
         )}
       >
-        <div className="flex items-center justify-between p-4 border-b h-16">
+        <div className="flex items-center justify-between p-4 border-b h-16 flex-shrink-0">
           {sidebarOpen && (
             <Link href="/dashboard" className="text-xl font-bold text-primary">
               PicArt Admin
@@ -127,13 +127,13 @@ export default function DashboardLayout({
           </Button>
         </div>
 
-        <nav className="flex-1 p-3 space-y-1">
+        <nav className="flex-1 p-3 space-y-1 overflow-y-auto">
           {ADMIN_NAV_LINKS.map((link) => (
             <NavLink key={link.href} {...link} />
           ))}
         </nav>
 
-        <div className="p-3 border-t">
+        <div className="p-3 border-t flex-shrink-0">
           <Link
             href="/"
             className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
@@ -197,9 +197,11 @@ export default function DashboardLayout({
       )}
 
       {/* Main Content */}
-      <main className="flex-1 overflow-auto pt-14 md:pt-0">
-        <div className="p-4 md:p-6 lg:p-8 max-w-full overflow-x-hidden">
-          {children}
+      <main className="flex-1 overflow-hidden">
+        <div className="h-full overflow-y-auto pt-14 md:pt-0">
+          <div className="h-full p-4 md:p-6 lg:p-8">
+            {children}
+          </div>
         </div>
       </main>
     </div>
